@@ -1,7 +1,7 @@
 
 import { config } from 'dotenv';
 import fs from 'fs';
-import logger from './logger.config.ts';
+import logger from './logger.config';
 
 interface EnvConfig {
   APP_URL?: string;
@@ -22,6 +22,8 @@ if (fs.existsSync(envFile)) {
 } else {
   logger.warn(`⚠️  Environment file ${envFile} not found. Make sure to run configureEnvironment.`);
 }
+
+console.log(`🔧 Environment loaded from ${envFile}`);
 
 export const envConfig: EnvConfig = ({
   APP_URL: process.env.APP_URL,

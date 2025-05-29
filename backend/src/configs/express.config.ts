@@ -1,4 +1,3 @@
-
 import cookieParser from 'cookie-parser';
 import express, { Application } from 'express';
 import helmet from 'helmet';
@@ -8,8 +7,7 @@ import {
   errorMiddleware,
   limiterMiddleware,
   morganMiddleware,
-} from '../middlewares/index.ts';
-import server from '../server.ts';
+} from '../middlewares/index';
 
 const configureExpress = (): Application => {
   const app: Application = express();
@@ -25,13 +23,9 @@ const configureExpress = (): Application => {
   app.use(cookieParser());
   app.use(limiterMiddleware);
 
-  // add your routes in here!!
   app.use(errorMiddleware);
 
-  server();
-  
   return app;
 };
 
 export default configureExpress;
-    

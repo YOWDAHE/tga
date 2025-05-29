@@ -1,16 +1,8 @@
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 
-import logger from './logger.config.ts';
-import sequelize from './sequelize.config.ts';
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-export default async function connectToDatabase(): Promise<void> {
-  try {
-    await sequelize.authenticate();
-    logger.info(
-      'Connection to the database has been established successfully.',
-    );
-
-  } catch (error) {
-    await sequelize.close();
-    logger.error('Unable to connect to the database:', error);
-  }
-}
+export const db = drizzle(pool);

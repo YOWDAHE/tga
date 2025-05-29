@@ -1,17 +1,29 @@
+import { envConfig } from './configs/env.config.js';
+import next from 'next';
+import configureExpress from './configs/express.config.js';
+import uploadsRouter from './routes/uploads.route.js';
 
-import app from './app.ts';
-import connectToDatabase from './configs/database.config.ts';
-import { envConfig } from './configs/env.config.ts';
-import logger from './configs/logger.config.ts';
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
+const handle = app.getRequestHandler();
 
-export default async function server(): Promise<void> {
-  try {
-    await connectToDatabase();
-    app.listen(envConfig.APP_PORT, async () => {
-      logger.info(`Server running on port ${envConfig.APP_PORT}`);
-    });
-  } catch (error) {
-    logger.error('Failed to start server', error);
-    process.exit(1);
-  }
-}
+const server = configureExpress();
+
+app.prepare().then(() => {
+  // Mount your API routes
+  server.get('/', (req, res) => {
+    res.send('Welcome to the API!');
+  });
+  server.use('/api/uploads', uploadsRouter);
+
+  // Catch-all handler for Next.js pages
+  server.all('*splat', (req, res) => {
+    return handle(req, res);
+  });
+
+  const PORT = envConfig.APP_PORT || 3000;
+  server.listen(PORT, () => {
+    console.log(`🚀 Server is running in ${process.env.NODE_ENV} mode`);
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+});
