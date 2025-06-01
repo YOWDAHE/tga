@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { v2 as cloudinary } from 'cloudinary';
+import { ApiResponse } from '../types/api';
+import { file_upload } from '../types/files';
 
 declare global {
   namespace Express {
@@ -33,7 +35,7 @@ const getById = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    res.status(200).json({ message: `GET upload by id: ${req.params.id}` });
+    res.status(200).json({ message: `GET upload by idd: ${req.params.id}` });
   } catch (error) {
     next(error);
   }
@@ -45,12 +47,14 @@ const create = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
+
+    console.log("Reached here...")
     if (!req.file) {
       res.status(400).json({ error: 'File is required' });
       return;
     }
 
-    // Upload file buffer to Cloudinary
+    console.log('Received file:', req.file.originalname);
     const uploadResult = await new Promise<any>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: 'uploads' },
@@ -62,7 +66,13 @@ const create = async (
       stream.end(req.file!.buffer);
     });
 
-    res.status(201).json({ url: uploadResult.secure_url, public_id: uploadResult.public_id });
+    res.status(201).json({
+      message: "File uploaded successfully",
+      data: {
+        url: uploadResult.secure_url,
+        public_id: uploadResult.public_id,
+      },
+    });
   } catch (error) {
     next(error);
   }
