@@ -2,6 +2,8 @@ import { envConfig } from './configs/env.config.js';
 import next from 'next';
 import configureExpress from './configs/express.config.js';
 import uploadsRouter from './routes/uploads.route.js';
+import categoryRouter from './routes/category.route.js';
+import searchRouter from './routes/search.route.js';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -15,6 +17,8 @@ app.prepare().then(() => {
     res.send('Welcome to the API!');
   });
   server.use('/api/uploads', uploadsRouter);
+  server.use('/api/category', categoryRouter);
+  server.use('/api/search', searchRouter);
 
   // Catch-all handler for Next.js pages
   server.all('*splat', (req, res) => {

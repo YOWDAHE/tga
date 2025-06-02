@@ -4,6 +4,10 @@ export const categories = pgTable('categories', {
     id: serial('id').primaryKey(),
     name: varchar('name', { length: 100 }).notNull(),
     description: text('description'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+        .defaultNow()
+        .notNull(),
 });
 
 export const documents = pgTable('documents', {
@@ -12,9 +16,11 @@ export const documents = pgTable('documents', {
     title: varchar('title', { length: 255 }).notNull(),
     category_id: integer('category_id').references(() => categories.id).notNull(),
     author: varchar('author', { length: 100 }),
-    upload_date: timestamp('upload_date', { withTimezone: true }).defaultNow(),
     content_text: text('content_text'),
-    file_url: varchar('file_url', { length: 500 }).notNull(),
+    file_url: varchar('file_url', { length: 500 }).notNull(),      // secure_url from Cloudinary
+    public_id: varchar('public_id', { length: 255 }).notNull(),    // public_id from Cloudinary
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const news = pgTable('news', {
@@ -26,6 +32,10 @@ export const news = pgTable('news', {
     source_id: varchar('source_id', { length: 255 }),
     published_date: timestamp('published_date', { withTimezone: true }),
     created_by: varchar('created_by', { length: 100 }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+        .defaultNow()
+        .notNull(),
 });
 
 // Users Table
@@ -36,4 +46,8 @@ export const users = pgTable('users', {
     phone_number: varchar('phone_number', { length: 100 }).notNull(),
     password_hash: varchar('password_hash', { length: 255 }).notNull(),
     role: varchar('role', { length: 50 }).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+        .defaultNow()
+        .notNull(),
 });

@@ -1,27 +1,25 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
-import { documents } from '../db/schema';
+import { categories } from '../db/schema';
 import { eq } from 'drizzle-orm';
-import { v2 as cloudinary } from 'cloudinary';
-import type { document_create } from '../models/document.model';
+import type { category_create } from '../models/category.model';
 
-// GET all documents
 const get = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const data = await db.select().from(documents);
+    const data = await db.select().from(categories);
     res.status(200).json({
-      message: 'Documents fetched successfully',
+      message: 'Categories fetched successfully',
       status: 'success',
       error: null,
       data,
     });
   } catch (error) {
     res.status(500).json({
-      message: 'Failed to fetch documents',
+      message: 'Failed to fetch categories',
       status: 'error',
       error: error instanceof Error ? error.message : error,
       data: null,
@@ -30,7 +28,6 @@ const get = async (
   }
 };
 
-// GET document by ID
 const getById = async (
   req: Request,
   res: Response,
@@ -38,10 +35,10 @@ const getById = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const data = await db.select().from(documents).where(eq(documents.id, id));
+    const data = await db.select().from(categories).where(eq(categories.id, id));
     if (data.length === 0) {
       res.status(404).json({
-        message: 'Document not found',
+        message: 'Category not found',
         status: 'error',
         error: 'Not found',
         data: null,
@@ -49,14 +46,14 @@ const getById = async (
       return;
     }
     res.status(200).json({
-      message: 'Document fetched successfully',
+      message: 'Category fetched successfully',
       status: 'success',
       error: null,
       data: data[0],
     });
   } catch (error) {
     res.status(500).json({
-      message: 'Failed to fetch document',
+      message: 'Failed to fetch category',
       status: 'error',
       error: error instanceof Error ? error.message : error,
       data: null,
@@ -65,7 +62,40 @@ const getById = async (
   }
 };
 
-// UPDATE document metadata (not file)
+const create = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { name, description } = req.body as category_create;
+    if (!name) {
+      res.status(400).json({
+        message: 'Name is required',
+        status: 'error',
+        error: 'Validation error',
+        data: null,
+      });
+      return;
+    }
+    const [created] = await db.insert(categories).values({ name, description }).returning();
+    res.status(201).json({
+      message: 'Category created successfully',
+      status: 'success',
+      error: null,
+      data: created,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to create category',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
 const update = async (
   req: Request,
   res: Response,
@@ -73,15 +103,15 @@ const update = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const { filename, title, category_id, author } = req.body as Partial<document_create>;
+    const { name, description } = req.body as category_create;
     const [updated] = await db
-      .update(documents)
-      .set({ filename, title, category_id, author, updatedAt: new Date() })
-      .where(eq(documents.id, id))
+      .update(categories)
+      .set({ name, description, updatedAt: new Date() })
+      .where(eq(categories.id, id))
       .returning();
     if (!updated) {
       res.status(404).json({
-        message: 'Document not found',
+        message: 'Category not found',
         status: 'error',
         error: 'Not found',
         data: null,
@@ -89,14 +119,14 @@ const update = async (
       return;
     }
     res.status(200).json({
-      message: 'Document updated successfully',
+      message: 'Category updated successfully',
       status: 'success',
       error: null,
       data: updated,
     });
   } catch (error) {
     res.status(500).json({
-      message: 'Failed to update document',
+      message: 'Failed to update category',
       status: 'error',
       error: error instanceof Error ? error.message : error,
       data: null,
@@ -105,7 +135,6 @@ const update = async (
   }
 };
 
-// DELETE document (and remove from Cloudinary)
 const remove = async (
   req: Request,
   res: Response,
@@ -113,32 +142,25 @@ const remove = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    // Get document to find Cloudinary public_id
-    const [doc] = await db.select().from(documents).where(eq(documents.id, id));
-    if (!doc) {
+    const [deleted] = await db.delete(categories).where(eq(categories.id, id)).returning();
+    if (!deleted) {
       res.status(404).json({
-        message: 'Document not found',
+        message: 'Category not found',
         status: 'error',
         error: 'Not found',
         data: null,
       });
       return;
     }
-
-    // Delete from Cloudinary
-    await cloudinary.uploader.destroy(doc.public_id, { resource_type: 'raw' });
-
-    // Delete from DB
-    const [deleted] = await db.delete(documents).where(eq(documents.id, id)).returning();
     res.status(200).json({
-      message: 'Document deleted successfully',
+      message: 'Category deleted successfully',
       status: 'success',
       error: null,
       data: deleted,
     });
   } catch (error) {
     res.status(500).json({
-      message: 'Failed to delete document',
+      message: 'Failed to delete category',
       status: 'error',
       error: error instanceof Error ? error.message : error,
       data: null,
@@ -147,4 +169,4 @@ const remove = async (
   }
 };
 
-export default { get, getById, update, remove };
+export default { get, getById, create, update, remove };
