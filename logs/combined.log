@@ -18,3 +18,15 @@
 {"level":"info","message":"::1 - - [02/Jun/2025:09:37:59 +0000] \"POST /api/uploads HTTP/1.1\" 201 - \"-\" \"PostmanRuntime/7.44.0\""}
 {"level":"info","message":"::1 - - [02/Jun/2025:09:39:12 +0000] \"GET /api/uploads HTTP/1.1\" 200 34 \"-\" \"PostmanRuntime/7.44.0\""}
 {"level":"info","message":"::1 - - [02/Jun/2025:10:51:47 +0000] \"GET /api/uploads HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:15:33 +0000] \"GET /api/search HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:16:18 +0000] \"GET /api/search HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:17:39 +0000] \"GET /api/search HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:18:46 +0000] \"GET /api/search HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:23:14 +0000] \"GET /api/search HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:23:50 +0000] \"POST /api/uploads HTTP/1.1\" 500 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:24:12 +0000] \"POST /api/uploads HTTP/1.1\" 201 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:25:15 +0000] \"GET /api/search HTTP/1.1\" 500 323 \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:25:41 +0000] \"GET /api/search HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:27:33 +0000] \"GET /api/search?q=policy&category=1 HTTP/1.1\" 200 86 \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:27:49 +0000] \"GET /api/search?q=International&category=1 HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [02/Jun/2025:11:28:37 +0000] \"GET /api/search?q=project&category=1 HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
