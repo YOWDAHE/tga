@@ -5,6 +5,7 @@ import uploadsRouter from './routes/uploads.route.js';
 import categoryRouter from './routes/category.route.js';
 import searchRouter from './routes/search.route.js';
 import telegramRouter from './routes/telegram.route.js';
+import newsRouter from './routes/news.route.js';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -21,6 +22,7 @@ app.prepare().then(() => {
   server.use('/api/category', categoryRouter);
   server.use('/api/search', searchRouter);
   server.use('/api/telegram', telegramRouter);
+  server.use('/api/news', newsRouter);
 
   // Catch-all handler for Next.js pages
   server.all('*splat', (req, res) => {
