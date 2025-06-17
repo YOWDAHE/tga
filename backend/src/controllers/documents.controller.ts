@@ -1,9 +1,43 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
-import { documents } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { documents as documentsTable } from '../db/schema';
+import { eq, desc, sql } from 'drizzle-orm';
 import { v2 as cloudinary } from 'cloudinary';
 import type { document_create } from '../models/document.model';
+
+// In-memory cache for top 5 most viewed documents
+let topViewedCache: any[] = [];
+
+async function updateTopViewedCache() {
+  topViewedCache = await db
+    .select()
+    .from(documentsTable)
+    .orderBy(desc(documentsTable.view_count))
+    .limit(5);
+}
+
+const getTopViewed = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    res.status(200).json({
+      message: 'Top 5 most viewed documents',
+      status: 'success',
+      error: null,
+      data: topViewedCache,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch top viewed documents',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
 
 // GET all documents
 const get = async (
@@ -12,7 +46,7 @@ const get = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const data = await db.select().from(documents);
+    const data = await db.select().from(documentsTable);
     res.status(200).json({
       message: 'Documents fetched successfully',
       status: 'success',
@@ -38,7 +72,7 @@ const getById = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const data = await db.select().from(documents).where(eq(documents.id, id));
+    const data = await db.select().from(documentsTable).where(eq(documentsTable.id, id));
     if (data.length === 0) {
       res.status(404).json({
         message: 'Document not found',
@@ -48,6 +82,14 @@ const getById = async (
       });
       return;
     }
+    await db.update(documentsTable)
+      .set({
+        view_count: sql`${documentsTable.view_count} + 1`,
+      })
+      .where(eq(documentsTable.id, id))
+
+    updateTopViewedCache();
+
     res.status(200).json({
       message: 'Document fetched successfully',
       status: 'success',
@@ -75,9 +117,9 @@ const update = async (
     const id = Number(req.params.id);
     const { filename, title, category_id, author } = req.body as Partial<document_create>;
     const [updated] = await db
-      .update(documents)
+      .update(documentsTable)
       .set({ filename, title, category_id, author, updatedAt: new Date() })
-      .where(eq(documents.id, id))
+      .where(eq(documentsTable.id, id))
       .returning();
     if (!updated) {
       res.status(404).json({
@@ -114,7 +156,7 @@ const remove = async (
   try {
     const id = Number(req.params.id);
     // Get document to find Cloudinary public_id
-    const [doc] = await db.select().from(documents).where(eq(documents.id, id));
+    const [doc] = await db.select().from(documentsTable).where(eq(documentsTable.id, id));
     if (!doc) {
       res.status(404).json({
         message: 'Document not found',
@@ -129,7 +171,7 @@ const remove = async (
     await cloudinary.uploader.destroy(doc.public_id, { resource_type: 'raw' });
 
     // Delete from DB
-    const [deleted] = await db.delete(documents).where(eq(documents.id, id)).returning();
+    const [deleted] = await db.delete(documentsTable).where(eq(documentsTable.id, id)).returning();
     res.status(200).json({
       message: 'Document deleted successfully',
       status: 'success',

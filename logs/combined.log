@@ -58,3 +58,7 @@
 {"level":"info","message":"::1 - - [06/Jun/2025:07:55:38 +0000] \"GET /api/news/1 HTTP/1.1\" 404 77 \"-\" \"PostmanRuntime/7.44.0\""}
 {"level":"info","message":"::1 - - [06/Jun/2025:07:55:43 +0000] \"GET /api/news/2 HTTP/1.1\" 200 465 \"-\" \"PostmanRuntime/7.44.0\""}
 {"level":"info","message":"::1 - - [06/Jun/2025:07:55:51 +0000] \"DELETE /api/news/2 HTTP/1.1\" 200 465 \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [17/Jun/2025:17:38:00 +0000] \"POST /api/landing/ HTTP/1.1\" 201 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [17/Jun/2025:17:40:00 +0000] \"GET /api/landing/ HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [17/Jun/2025:18:31:19 +0000] \"DELETE /api/landing/1 HTTP/1.1\" 200 91 \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [17/Jun/2025:18:31:28 +0000] \"GET /api/landing/ HTTP/1.1\" 200 141 \"-\" \"PostmanRuntime/7.44.0\""}
