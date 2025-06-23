@@ -1,5 +1,5 @@
 import { desc, like } from 'drizzle-orm';
-import { pgTable, serial, varchar, text, timestamp, integer, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, text, timestamp, integer, jsonb, boolean } from 'drizzle-orm/pg-core';
 
 export const categories = pgTable('categories', {
     id: serial('id').primaryKey(),
@@ -30,6 +30,7 @@ export const news = pgTable('news', {
     id: serial('id').primaryKey(),
     title: varchar('title', { length: 255 }).notNull(),
     visual_content: jsonb('visual_content'),
+    links: jsonb('links'),
     content: text('content').notNull(),
     source: varchar('source', { length: 100 }),
     view_count: integer('view_count').default(0).notNull(),
@@ -47,15 +48,18 @@ export const news = pgTable('news', {
 export const comments = pgTable('comments', {
     id: serial('id').primaryKey(),
     news_id: integer('news_id').references(() => news.id).notNull(),
-    user_name: text('user_id').references(() => users.id).notNull(),
+    user_name: text('user_name').references(() => users.id).notNull(),
     likes: integer('likes').default(0).notNull(),
     dislikes: integer('dislikes').default(0).notNull(),
+    visible: boolean('visible').default(true).notNull(),
+    edited: boolean('edited').default(false).notNull(),
+    flaged: boolean('flaged').default(false).notNull(),
     content: text('content').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
         .defaultNow()
         .notNull(),
-})
+});
 
 // Users Table
 export const users = pgTable('users', {
