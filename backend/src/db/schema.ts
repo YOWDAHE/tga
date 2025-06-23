@@ -1,4 +1,4 @@
-import { desc } from 'drizzle-orm';
+import { desc, like } from 'drizzle-orm';
 import { pgTable, serial, varchar, text, timestamp, integer, jsonb } from 'drizzle-orm/pg-core';
 
 export const categories = pgTable('categories', {
@@ -18,6 +18,7 @@ export const documents = pgTable('documents', {
     category_id: integer('category_id').references(() => categories.id).notNull(),
     author: varchar('author', { length: 100 }),
     content_text: text('content_text'),
+    file_size: integer('file_size').notNull(), // size in bytes
     file_url: varchar('file_url', { length: 500 }).notNull(),      // secure_url from Cloudinary
     public_id: varchar('public_id', { length: 255 }).notNull(),    // public_id from Cloudinary
     view_count: integer('view_count').default(0).notNull(),
@@ -31,6 +32,7 @@ export const news = pgTable('news', {
     visual_content: jsonb('visual_content'),
     content: text('content').notNull(),
     source: varchar('source', { length: 100 }),
+    view_count: integer('view_count').default(0).notNull(),
     source_id: varchar('source_id', { length: 255 }),
     message_id: varchar('message_id', { length: 255 }),
     published_date: timestamp('published_date', { withTimezone: true }),
@@ -40,6 +42,20 @@ export const news = pgTable('news', {
         .defaultNow()
         .notNull(),
 });
+
+// News comments table
+export const comments = pgTable('comments', {
+    id: serial('id').primaryKey(),
+    news_id: integer('news_id').references(() => news.id).notNull(),
+    user_name: text('user_id').references(() => users.id).notNull(),
+    likes: integer('likes').default(0).notNull(),
+    dislikes: integer('dislikes').default(0).notNull(),
+    content: text('content').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+        .defaultNow()
+        .notNull(),
+})
 
 // Users Table
 export const users = pgTable('users', {

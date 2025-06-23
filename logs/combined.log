@@ -62,3 +62,9 @@
 {"level":"info","message":"::1 - - [17/Jun/2025:17:40:00 +0000] \"GET /api/landing/ HTTP/1.1\" 200 - \"-\" \"PostmanRuntime/7.44.0\""}
 {"level":"info","message":"::1 - - [17/Jun/2025:18:31:19 +0000] \"DELETE /api/landing/1 HTTP/1.1\" 200 91 \"-\" \"PostmanRuntime/7.44.0\""}
 {"level":"info","message":"::1 - - [17/Jun/2025:18:31:28 +0000] \"GET /api/landing/ HTTP/1.1\" 200 141 \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [18/Jun/2025:14:35:18 +0000] \"POST /api/remark/ HTTP/1.1\" 308 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [18/Jun/2025:14:35:42 +0000] \"POST /api/remark HTTP/1.1\" 404 - \"http://localhost:3000/api/remark/\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [18/Jun/2025:14:36:48 +0000] \"POST /api/remark/ HTTP/1.1\" 201 257 \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [18/Jun/2025:14:38:10 +0000] \"POST /api/remark/1 HTTP/1.1\" 404 - \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [18/Jun/2025:14:38:23 +0000] \"POST /api/remark/reply/1 HTTP/1.1\" 400 102 \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"info","message":"::1 - - [18/Jun/2025:14:38:58 +0000] \"POST /api/remark/reply/1 HTTP/1.1\" 200 81 \"-\" \"PostmanRuntime/7.44.0\""}
