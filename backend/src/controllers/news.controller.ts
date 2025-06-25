@@ -3,6 +3,7 @@ import { db } from '../db';
 import { news } from '../db/schema';
 import { v2 as cloudinary } from 'cloudinary';
 import { eq, desc, asc } from 'drizzle-orm';
+import { logAudit } from './audit.controller';
 
 
 const get = async (
@@ -50,7 +51,7 @@ const get = async (
 const getById = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction, 
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
@@ -90,7 +91,6 @@ const create = async (
   try {
     const { title, content, published_date, created_by } = req.body;
     let visual_content: string[] | null = null;
-
     if (req.files && Array.isArray(req.files)) {
       visual_content = [];
       for (const file of req.files) {
@@ -101,7 +101,6 @@ const create = async (
       const url = await uploadToCloudinary(req.file.buffer);
       visual_content = [url];
     }
-
     const [created] = await db.insert(news).values({
       title,
       content,
@@ -110,7 +109,17 @@ const create = async (
       created_by: created_by || 'admin',
       source: 'Admin',
     }).returning();
-
+    await logAudit({
+      tableName: 'news',
+      action: 'INSERT',
+      description: 'Created news',
+      oldData: null,
+      newData: created,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(201).json({
       message: 'News created successfully',
       status: 'success',
@@ -137,7 +146,6 @@ const update = async (
     const id = Number(req.params.id);
     const { title, content, published_date, created_by } = req.body;
     let visual_content: string[] | null = null;
-
     if (req.files && Array.isArray(req.files)) {
       visual_content = [];
       for (const file of req.files) {
@@ -148,7 +156,7 @@ const update = async (
       const url = await uploadToCloudinary(req.file.buffer);
       visual_content = [url];
     }
-
+    const oldNews = await db.select().from(news).where(eq(news.id, id));
     const [updated] = await db
       .update(news)
       .set({
@@ -161,7 +169,6 @@ const update = async (
       })
       .where(eq(news.id, id))
       .returning();
-
     if (!updated) {
       res.status(404).json({
         message: 'News not found',
@@ -171,7 +178,17 @@ const update = async (
       });
       return;
     }
-
+    await logAudit({
+      tableName: 'news',
+      action: 'UPDATE',
+      description: 'Updated news',
+      oldData: oldNews[0] || null,
+      newData: updated,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'News updated successfully',
       status: 'success',
@@ -196,8 +213,8 @@ const remove = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
+    const oldNews = await db.select().from(news).where(eq(news.id, id));
     const [deleted] = await db.delete(news).where(eq(news.id, id)).returning();
-
     if (!deleted) {
       res.status(404).json({
         message: 'News not found',
@@ -207,21 +224,17 @@ const remove = async (
       });
       return;
     }
-
-    if (deleted.visual_content && Array.isArray(deleted.visual_content)) {
-      for (const url of deleted.visual_content) {
-        const matches = url.match(/\/([^\/]+)\.(jpg|jpeg|png|gif|webp|bmp|tiff|svg|pdf)$/i);
-        if (matches && matches[1]) {
-          const publicId = `news/${matches[1]}`;
-          try {
-            await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
-          } catch (err) {
-            console.error(`Failed to delete Cloudinary image: ${publicId}`, err);
-          }
-        }
-      }
-    }
-
+    await logAudit({
+      tableName: 'news',
+      action: 'DELETE',
+      description: 'Deleted news',
+      oldData: oldNews[0] || null,
+      newData: null,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'News deleted successfully',
       status: 'success',

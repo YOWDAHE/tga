@@ -7,6 +7,7 @@ import pdfParse from 'pdf-parse';
 import { db } from '../db';
 import { categories, documents } from '../db/schema';
 import { eq } from 'drizzle-orm';
+import { logAudit } from './audit.controller';
 
 declare global {
   namespace Express {
@@ -95,7 +96,6 @@ const create = async (
 ): Promise<void> => {
   try {
     const { category_id, title, author } = req.body;
-
     if (!req.file) {
       res.status(400).json({
         message: "File is required",
@@ -114,7 +114,6 @@ const create = async (
       });
       return;
     }
-
     const category = await db.select().from(categories).where(eq(categories.id, Number(category_id)));
     if (category.length === 0) {
       res.status(404).json({
@@ -125,12 +124,10 @@ const create = async (
       });
       return;
     }
-
     // 1. Extract text from PDF
     const pdfBuffer = req.file.buffer;
     const pdfData = await pdfParse(pdfBuffer);
     const content_text = pdfData.text;
-
     // 2. Upload file to Cloudinary
     const uploadResult = await new Promise<any>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
@@ -142,10 +139,10 @@ const create = async (
       );
       stream.end(pdfBuffer);
     });
-
     // 3.Save both URLs in the DB
     const [created] = await db.insert(documents).values({
       filename: req.file.originalname,
+      file_size: req.file.size,
       title: title || req.file.originalname,
       category_id: Number(category_id),
       author,
@@ -153,7 +150,17 @@ const create = async (
       file_url: uploadResult.secure_url,
       public_id: uploadResult.public_id,
     }).returning();
-
+    await logAudit({
+      tableName: 'documents',
+      action: 'INSERT',
+      description: 'Uploaded document',
+      oldData: null,
+      newData: created,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(201).json({
       message: "File uploaded and document created successfully",
       status: 'success',
@@ -190,7 +197,19 @@ const remove = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
+    const oldDoc = await db.select().from(documents).where(eq(documents.id, Number(id)));
     await cloudinary.uploader.destroy(id);
+    await logAudit({
+      tableName: 'documents',
+      action: 'DELETE',
+      description: 'Deleted uploaded document',
+      oldData: oldDoc[0] || null,
+      newData: null,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({ message: `Deleted upload with public_id: ${id}` });
   } catch (error) {
     next(error);

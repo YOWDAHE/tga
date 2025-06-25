@@ -4,6 +4,7 @@ import { documents as documentsTable } from '../db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 import { v2 as cloudinary } from 'cloudinary';
 import type { document_create } from '../models/document.model';
+import { logAudit } from './audit.controller';
 
 // In-memory cache for top 5 most viewed documents
 let topViewedCache: any[] = [];
@@ -116,6 +117,7 @@ const update = async (
   try {
     const id = Number(req.params.id);
     const { filename, title, category_id, author } = req.body as Partial<document_create>;
+    const oldDoc = await db.select().from(documentsTable).where(eq(documentsTable.id, id));
     const [updated] = await db
       .update(documentsTable)
       .set({ filename, title, category_id, author, updatedAt: new Date() })
@@ -130,6 +132,17 @@ const update = async (
       });
       return;
     }
+    await logAudit({
+      tableName: 'documents',
+      action: 'UPDATE',
+      description: 'Updated document',
+      oldData: oldDoc[0] || null,
+      newData: updated,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'Document updated successfully',
       status: 'success',
@@ -166,12 +179,21 @@ const remove = async (
       });
       return;
     }
-
     // Delete from Cloudinary
     await cloudinary.uploader.destroy(doc.public_id, { resource_type: 'raw' });
-
     // Delete from DB
     const [deleted] = await db.delete(documentsTable).where(eq(documentsTable.id, id)).returning();
+    await logAudit({
+      tableName: 'documents',
+      action: 'DELETE',
+      description: 'Deleted document',
+      oldData: doc,
+      newData: null,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'Document deleted successfully',
       status: 'success',

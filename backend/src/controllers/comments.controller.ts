@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
 import { comments, news, users } from '../db/schema';
 import { eq } from 'drizzle-orm';
+import { logAudit } from './audit.controller';
 
 
 function containsObfuscatedLink(text: string): boolean {
@@ -110,14 +111,27 @@ const create = async (
     }
 
     // Check for obfuscated links
-    const flaged = containsObfuscatedLink(content);
+    const flagged = containsObfuscatedLink(content);
 
     const [created] = await db.insert(comments).values({
       news_id,
       user_name,
       content,
-      flaged,
+      flagged,
+      flagged_reason: flagged ? 'Might contain obfuscated link' : null,
     }).returning();
+
+    await logAudit({
+      tableName: 'comments',
+      action: 'INSERT',
+      description: 'Created comment',
+      oldData: null,
+      newData: created,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
 
     res.status(201).json({
       message: 'Comment created successfully',
@@ -146,13 +160,16 @@ const update = async (
     const { content } = req.body;
 
     // Check for obfuscated links
-    const flaged = content ? containsObfuscatedLink(content) : undefined;
+    const flagged = content ? containsObfuscatedLink(content) : undefined;
+
+    const oldComment = await db.select().from(comments).where(eq(comments.id, id));
 
     const [updated] = await db
       .update(comments)
       .set({
         content,
-        flaged,
+        flagged,
+        flagged_reason: flagged ? 'Might contain obfuscated link' : null,
         edited: true,
         updatedAt: new Date(),
       })
@@ -168,6 +185,19 @@ const update = async (
       });
       return;
     }
+
+    await logAudit({
+      tableName: 'comments',
+      action: 'UPDATE',
+      description: 'Updated comment',
+      oldData: oldComment[0] || null,
+      newData: updated,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
+
     res.status(200).json({
       message: 'Comment updated successfully',
       status: 'success',
@@ -192,6 +222,7 @@ const remove = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
+    const oldComment = await db.select().from(comments).where(eq(comments.id, id));
     const [deleted] = await db.delete(comments).where(eq(comments.id, id)).returning();
     if (!deleted) {
       res.status(404).json({
@@ -202,6 +233,17 @@ const remove = async (
       });
       return;
     }
+    await logAudit({
+      tableName: 'comments',
+      action: 'DELETE',
+      description: 'Deleted comment',
+      oldData: oldComment[0] || null,
+      newData: null,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'Comment deleted successfully',
       status: 'success',

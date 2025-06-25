@@ -3,6 +3,7 @@ import { db } from '../db';
 import { categories } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import type { category_create } from '../models/category.model';
+import { logAudit } from './audit.controller';
 
 const get = async (
   req: Request,
@@ -79,6 +80,17 @@ const create = async (
       return;
     }
     const [created] = await db.insert(categories).values({ name, description }).returning();
+    await logAudit({
+      tableName: 'categories',
+      action: 'INSERT',
+      description: 'Created category',
+      oldData: null,
+      newData: created,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(201).json({
       message: 'Category created successfully',
       status: 'success',
@@ -104,6 +116,7 @@ const update = async (
   try {
     const id = Number(req.params.id);
     const { name, description } = req.body as category_create;
+    const oldCategory = await db.select().from(categories).where(eq(categories.id, id));
     const [updated] = await db
       .update(categories)
       .set({ name, description, updatedAt: new Date() })
@@ -118,6 +131,17 @@ const update = async (
       });
       return;
     }
+    await logAudit({
+      tableName: 'categories',
+      action: 'UPDATE',
+      description: 'Updated category',
+      oldData: oldCategory[0] || null,
+      newData: updated,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'Category updated successfully',
       status: 'success',
@@ -142,6 +166,7 @@ const remove = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
+    const oldCategory = await db.select().from(categories).where(eq(categories.id, id));
     const [deleted] = await db.delete(categories).where(eq(categories.id, id)).returning();
     if (!deleted) {
       res.status(404).json({
@@ -152,6 +177,17 @@ const remove = async (
       });
       return;
     }
+    await logAudit({
+      tableName: 'categories',
+      action: 'DELETE',
+      description: 'Deleted category',
+      oldData: oldCategory[0] || null,
+      newData: null,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'Category deleted successfully',
       status: 'success',

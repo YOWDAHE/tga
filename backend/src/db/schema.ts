@@ -48,12 +48,13 @@ export const news = pgTable('news', {
 export const comments = pgTable('comments', {
     id: serial('id').primaryKey(),
     news_id: integer('news_id').references(() => news.id).notNull(),
-    user_name: text('user_name').references(() => users.id).notNull(),
+    user_name: text('user_name'),
     likes: integer('likes').default(0).notNull(),
     dislikes: integer('dislikes').default(0).notNull(),
     visible: boolean('visible').default(true).notNull(),
     edited: boolean('edited').default(false).notNull(),
-    flaged: boolean('flaged').default(false).notNull(),
+    flagged: boolean('flagged').default(false).notNull(),
+    flagged_reason: text('flagged_reason'),
     content: text('content').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
@@ -68,7 +69,8 @@ export const users = pgTable('users', {
     email: varchar('email', { length: 100 }).notNull(),
     phone_number: varchar('phone_number', { length: 100 }).notNull(),
     password_hash: varchar('password_hash', { length: 255 }).notNull(),
-    role: varchar('role', { length: 50 }).notNull(),
+    role_name: varchar('role_name', { length: 100 }).notNull(),
+    roles: jsonb('roles').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
         .defaultNow()
@@ -126,18 +128,6 @@ export const partners = pgTable('partners', {
 });
 
 
-//testimonials
-export const testimonials = pgTable('testimonials', {
-    id: serial('id').primaryKey(),
-    client: varchar('client', { length: 100 }).notNull(),
-    position: text('position').notNull(),
-    content: text('content').notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at')
-        .defaultNow()
-        .notNull(),
-});
-
 // contact us info
 export const contactUsInfo = pgTable('contact_us_info', {
     id: serial('id').primaryKey(),
@@ -156,8 +146,25 @@ export const remarks = pgTable('remarks', {
     name: varchar('name', { length: 100 }).notNull(),
     email: varchar('email', { length: 100 }).notNull(),
     content: text('content').notNull(),
+    response: text('response'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
         .defaultNow()
         .notNull(),
+});
+
+export const auditLog = pgTable('audit_log', {
+    id: serial('id').primaryKey(),
+    tableName: text('table_name').notNull(),
+    action: text('action', {
+        enum: ['INSERT', 'UPDATE', 'DELETE'],
+    }).notNull(),
+    description: text('description').notNull(),
+    oldData: jsonb('old_data'),
+    newData: jsonb('new_data'),
+    user_id: integer('user_id').references(() => users.id).notNull(),
+    changedBy: text('changed_by'),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    changeTimestamp: timestamp('change_timestamp').defaultNow().notNull(),
 });

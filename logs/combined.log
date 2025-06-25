@@ -68,3 +68,40 @@
 {"level":"info","message":"::1 - - [18/Jun/2025:14:38:10 +0000] \"POST /api/remark/1 HTTP/1.1\" 404 - \"-\" \"PostmanRuntime/7.44.0\""}
 {"level":"info","message":"::1 - - [18/Jun/2025:14:38:23 +0000] \"POST /api/remark/reply/1 HTTP/1.1\" 400 102 \"-\" \"PostmanRuntime/7.44.0\""}
 {"level":"info","message":"::1 - - [18/Jun/2025:14:38:58 +0000] \"POST /api/remark/reply/1 HTTP/1.1\" 200 81 \"-\" \"PostmanRuntime/7.44.0\""}
+{"level":"warn","message":"⚠️  Environment file .env.development.local not found. Make sure to run configureEnvironment."}
+{"level":"warn","message":"⚠️  Environment file .env.development.local not found. Make sure to run configureEnvironment."}
+{"level":"warn","message":"⚠️  Environment file .env.development.local not found. Make sure to run configureEnvironment."}
+{"level":"info","message":"::1 - - [23/Jun/2025:08:31:24 +0000] \"GET /api/remark HTTP/1.1\" 200 260 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [23/Jun/2025:14:46:01 +0000] \"GET /api/news HTTP/1.1\" 500 356 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [23/Jun/2025:14:46:29 +0000] \"GET /api/news/ HTTP/1.1\" 500 356 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:29:33 +0000] \"GET /api/auth/ HTTP/1.1\" 308 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:29:40 +0000] \"GET /api/auth HTTP/1.1\" 404 - \"http://localhost:3000/api/auth/\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:31:17 +0000] \"POST /api/auth/signup HTTP/1.1\" 500 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:31:47 +0000] \"POST /api/auth/signup HTTP/1.1\" 500 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:32:01 +0000] \"POST /api/auth/signup HTTP/1.1\" 500 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:32:28 +0000] \"POST /api/auth/signup HTTP/1.1\" 500 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:32:52 +0000] \"POST /api/auth/signup HTTP/1.1\" 500 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:32:58 +0000] \"POST /api/auth/signup HTTP/1.1\" 500 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:33:02 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 500 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:33:52 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 500 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:34:33 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 400 129 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:35:01 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 400 91 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:35:21 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 400 106 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:37:20 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 400 106 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:37:48 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 201 380 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:48:38 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 409 90 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:06:48:48 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 200 628 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:07:59:32 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 200 628 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:06:26 +0000] \"GET /api/auth/signup/ HTTP/1.1\" 308 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:06:28 +0000] \"GET /api/auth/signup HTTP/1.1\" 404 - \"http://localhost:3000/api/auth/signup/\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:06:39 +0000] \"GET /api/auth/signup/ HTTP/1.1\" 308 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:06:39 +0000] \"GET /api/auth/signup HTTP/1.1\" 404 - \"http://localhost:3000/api/auth/signup/\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:06:59 +0000] \"POST /api/auth/signup/ HTTP/1.1\" 200 557 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:08:34 +0000] \"POST /api/category HTTP/1.1\" 401 102 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:08:57 +0000] \"POST /api/category HTTP/1.1\" 401 113 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:09:02 +0000] \"POST /api/category HTTP/1.1\" 403 130 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:09:30 +0000] \"POST /api/category HTTP/1.1\" 403 133 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:08:09:57 +0000] \"POST /api/category HTTP/1.1\" 201 209 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:11:39:51 +0000] \"POST /api/category HTTP/1.1\" 201 208 \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:11:40:44 +0000] \"POST /api/category/3 HTTP/1.1\" 404 - \"-\" \"PostmanRuntime/7.32.3\""}
+{"level":"info","message":"::1 - - [25/Jun/2025:11:41:11 +0000] \"PUT /api/category/3 HTTP/1.1\" 200 208 \"-\" \"PostmanRuntime/7.32.3\""}

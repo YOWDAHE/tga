@@ -3,6 +3,7 @@ import { db } from '../db';
 import { remarks } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import nodemailer from 'nodemailer';
+import { logAudit } from './audit.controller';
 
 // GET all remarks
 const get = async (
@@ -82,6 +83,17 @@ const create = async (
       return;
     }
     const [created] = await db.insert(remarks).values({ name, email, content }).returning();
+    await logAudit({
+      tableName: 'remarks',
+      action: 'INSERT',
+      description: 'Created remark',
+      oldData: null,
+      newData: created,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(201).json({
       message: 'Remark created successfully',
       status: 'success',
@@ -108,6 +120,7 @@ const update = async (
   try {
     const id = Number(req.params.id);
     const { name, email, content } = req.body;
+    const oldRemark = await db.select().from(remarks).where(eq(remarks.id, id));
     const [updated] = await db
       .update(remarks)
       .set({ name, email, content, updatedAt: new Date() })
@@ -122,6 +135,17 @@ const update = async (
       });
       return;
     }
+    await logAudit({
+      tableName: 'remarks',
+      action: 'UPDATE',
+      description: 'Updated remark',
+      oldData: oldRemark[0] || null,
+      newData: updated,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'Remark updated successfully',
       status: 'success',
@@ -147,6 +171,7 @@ const remove = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
+    const oldRemark = await db.select().from(remarks).where(eq(remarks.id, id));
     const [deleted] = await db.delete(remarks).where(eq(remarks.id, id)).returning();
     if (!deleted) {
       res.status(404).json({
@@ -157,6 +182,17 @@ const remove = async (
       });
       return;
     }
+    await logAudit({
+      tableName: 'remarks',
+      action: 'DELETE',
+      description: 'Deleted remark',
+      oldData: oldRemark[0] || null,
+      newData: null,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'Remark deleted successfully',
       status: 'success',
