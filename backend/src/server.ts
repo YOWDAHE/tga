@@ -11,6 +11,8 @@ import remarksRouter from './routes/remarks.route.js';
 import authRouter from './routes/auth.route.js';
 import { authenticateJWT, authorizePermissions } from './middlewares/jwtAuth.js';
 import commentsRouter from './routes/comments.route.js';
+import usersRouter from './routes/users.route.js';
+import auditRouter from './routes/audit.route.js';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -32,6 +34,8 @@ app.prepare().then(() => {
   server.use('/api/landing', authenticateJWT, authorizePermissions('HOMEPAGE_CRUD'), landingRouter);
   server.use('/api/remark', authenticateJWT, authorizePermissions('REMARKS_CRUD'), remarksRouter);
   server.use('/api/comments', authenticateJWT, authorizePermissions('NEWS_CRUD'), commentsRouter);
+  server.use('/api/users', authenticateJWT, authorizePermissions('USER_CRUD'), usersRouter);
+  server.use('/api/audit-logs', authenticateJWT, authorizePermissions('USER_CRUD'), auditRouter);
 
   // Catch-all handler for Next.js pages
   server.all('*splat', (req, res) => {

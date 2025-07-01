@@ -20,33 +20,38 @@ export function verifyToken(token: string): JwtPayload {
 }
 
 export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers['authorization'];
-    if (!authHeader) {
-        res.status(401).json({
-            message: 'No token provided',
-            error: "Authorization header is missing",
-            status: "error",
-            data: null,
-        });
-        return;
+
+    const authHeader = req.headers["authorization"];
+    let token: string | undefined;
+    console.log("Authentication: ", req.cookies)
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
     }
-    const token = authHeader.split(' ')[1];
+
+    // If not in Authorization, try from cookie
+    if (!token && req.cookies?.tgaAccessToken) {
+        console.log("Using cookie for token");
+        token = req.cookies.tgaAccessToken;
+    }
+
     if (!token) {
         res.status(401).json({
-            message: 'Token missing',
-            error: "Token is missing from the authorization header",
+            message: "No token provided",
+            error: "Authorization header or cookie is missing",
             status: "error",
             data: null,
         });
         return;
     }
+
     try {
         const user = verifyToken(token);
         req.user = user;
         next();
     } catch (err) {
-        res.status(403).json({
-            message: 'Invalid or expired token',
+         res.status(403).json({
+            message: "Invalid or expired token",
             error: err,
             status: "error",
             data: null,
@@ -76,5 +81,8 @@ export function generateRefreshToken(payload: JwtPayload) {
 }
 
 export function verifyRefreshToken(token: string): JwtPayload {
+    return jwt.verify(token, JWT_SECRET) as JwtPayload;
+}
+export function verifyAccessToken(token: string): JwtPayload {
     return jwt.verify(token, JWT_SECRET) as JwtPayload;
 }

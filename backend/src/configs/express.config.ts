@@ -8,10 +8,12 @@ import {
   limiterMiddleware,
   morganMiddleware,
 } from '../middlewares/index';
+import cors from 'cors';
 
 const configureExpress = (): Application => {
   const app: Application = express();
 
+  app.use(corsMiddleware);
   app.use(compressionMiddleware);
   app.use(morganMiddleware);
   app.use(helmet());
@@ -19,7 +21,6 @@ const configureExpress = (): Application => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  app.use(corsMiddleware);
   app.use(cookieParser());
   app.use(limiterMiddleware);
 

@@ -69,7 +69,7 @@ export const users = pgTable('users', {
     email: varchar('email', { length: 100 }).notNull(),
     phone_number: varchar('phone_number', { length: 100 }).notNull(),
     password_hash: varchar('password_hash', { length: 255 }).notNull(),
-    role_name: varchar('role_name', { length: 100 }).notNull(),
+    role_name: varchar('role_name', { length: 100 }),
     roles: jsonb('roles').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')

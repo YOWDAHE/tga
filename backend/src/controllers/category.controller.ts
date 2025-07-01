@@ -114,6 +114,7 @@ const update = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
+    console.log("Updating category ", req.body);
     const id = Number(req.params.id);
     const { name, description } = req.body as category_create;
     const oldCategory = await db.select().from(categories).where(eq(categories.id, id));
