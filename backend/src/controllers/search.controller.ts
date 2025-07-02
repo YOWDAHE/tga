@@ -57,16 +57,35 @@ const get = async (
         : desc(sortColumn)
     );
 
+    // Get total count for pagination
+    const totalCountResult = await db
+      .select({ count: documents.id })
+      .from(documents)
+      .where(whereClauses.length > 0 ? and(...whereClauses) : undefined)
+      .execute();
+    
+    const totalCount = totalCountResult.length;
+
     const data = await orderedQuery
       .limit(pageSize)
       .offset((pageNum - 1) * pageSize)
       .execute();
 
+    const totalPages = Math.ceil(totalCount / pageSize);
+
     res.status(200).json({
       message: 'Documents fetched successfully',
       status: 'success',
       error: null,
-      data,
+      data: {
+        documents: data,
+        pagination: {
+          currentPage: pageNum,
+          totalPages,
+          totalCount,
+          limit: pageSize,
+        }
+      },
     });
   } catch (error) {
     res.status(500).json({

@@ -40,19 +40,63 @@ const getTopViewed = async (
   }
 };
 
-// GET all documents
+// GET all documents with pagination and search
 const get = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const data = await db.select().from(documentsTable);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 6;
+    const search = req.query.search as string;
+    const offset = (page - 1) * limit;
+
+    // Get total count for pagination
+    let countQuery;
+    if (search) {
+      countQuery = db.select({ count: sql<number>`count(*)` }).from(documentsTable).where(
+        sql`${documentsTable.title} ILIKE ${`%${search}%`} OR ${documentsTable.filename} ILIKE ${`%${search}%`} OR ${documentsTable.author} ILIKE ${`%${search}%`}`
+      );
+    } else {
+      countQuery = db.select({ count: sql<number>`count(*)` }).from(documentsTable);
+    }
+
+    const [{ count }] = await countQuery;
+    const totalPages = Math.ceil(count / limit);
+
+    // Get paginated data
+    let data;
+    if (search) {
+      data = await db.select()
+        .from(documentsTable)
+        .where(
+          sql`${documentsTable.title} ILIKE ${`%${search}%`} OR ${documentsTable.filename} ILIKE ${`%${search}%`} OR ${documentsTable.author} ILIKE ${`%${search}%`}`
+        )
+        .orderBy(desc(documentsTable.createdAt))
+        .limit(limit)
+        .offset(offset);
+    } else {
+      data = await db.select()
+        .from(documentsTable)
+        .orderBy(desc(documentsTable.createdAt))
+        .limit(limit)
+        .offset(offset);
+    }
+
     res.status(200).json({
       message: 'Documents fetched successfully',
       status: 'success',
       error: null,
-      data,
+      data: {
+        documents: data,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: count,
+          itemsPerPage: limit,
+        },
+      },
     });
   } catch (error) {
     res.status(500).json({

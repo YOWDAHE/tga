@@ -7,6 +7,7 @@ import { useDisclosure } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { IconEdit, IconTrash, IconPlus } from "@tabler/icons-react"
 import { createCategory, updateCategory, deleteCategory } from "@/app/actions/category.actions"
+import DeleteConfirmationModal from "./DeleteConfirmationModal"
 
 interface Category {
   id: number
@@ -31,6 +32,8 @@ export default function CategoriesManagement({ categories: initialCategories }: 
   const [opened, { open, close }] = useDisclosure(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false)
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string } | null>(null)
 
   const form = useForm({
     initialValues: {
@@ -86,13 +89,25 @@ export default function CategoriesManagement({ categories: initialCategories }: 
   }
 
   const handleDelete = async (id: number) => {
-    const result = await deleteCategory(id)
+    const category = categories.find(cat => cat.id === id)
+    if (category) {
+      setCategoryToDelete({ id, name: category.name })
+      openDeleteModal()
+    }
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!categoryToDelete) return
+
+    const result = await deleteCategory(categoryToDelete.id)
     if (result.success) {
-      setCategories((prev) => prev.filter((item) => item.id !== id))
+      setCategories((prev) => prev.filter((item) => item.id !== categoryToDelete.id))
       notifications.show({ title: "Success", message: "Category deleted successfully", color: "red" })
     } else {
       notifications.show({ title: "Error", message: result.error, color: "red" })
     }
+    closeDeleteModal()
+    setCategoryToDelete(null)
   }
 
   const handleClose = () => {
@@ -217,6 +232,17 @@ export default function CategoriesManagement({ categories: initialCategories }: 
           </Stack>
         </form>
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        opened={deleteModalOpened}
+        onClose={closeDeleteModal}
+        onConfirm={handleConfirmDelete}
+        title="Delete Category"
+        itemName={categoryToDelete?.name}
+        itemType="category"
+        loading={isLoading}
+      />
     </div>
   )
 }

@@ -12,10 +12,14 @@ export interface Document {
     title: string;
     category_id: number;
     author: string | null;
+    description: string | null;
     content_text: string | null;
+    file_size: number;
     file_url: string;
     public_id: string;
     view_count: number;
+    createdAt: string | Date;
+    updatedAt: string | Date;
 }
 
 // News

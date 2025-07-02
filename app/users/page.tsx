@@ -8,6 +8,10 @@ interface PageProps {
     page?: string;
     usersPage?: string;
     auditPage?: string;
+    search?: string;
+    auditUser?: string;
+    auditStartDate?: string;
+    auditEndDate?: string;
   };
 }
 
@@ -26,10 +30,11 @@ export default async function UsersPage({ searchParams }: PageProps) {
     if (currentUsersPage < 1) currentUsersPage = 1;
     if (currentAuditPage < 1) currentAuditPage = 1;
 
-    // Fetch users with pagination
+    // Fetch users with pagination and search
     const usersResult = await fetchUsers({
       limit: 6,
-      page: currentUsersPage
+      page: currentUsersPage,
+      search: searchParams.search
     });
     if (usersResult.success) {
       users = usersResult.data?.users || [];
@@ -38,10 +43,13 @@ export default async function UsersPage({ searchParams }: PageProps) {
       console.error("Failed to fetch users:", usersResult.error);
     }
 
-    // Fetch audit logs with pagination
+    // Fetch audit logs with pagination and filters
     const auditResult = await fetchAuditLogs({
       limit: 6,
-      page: currentAuditPage
+      page: currentAuditPage,
+      changedBy: searchParams.auditUser,
+      startDate: searchParams.auditStartDate,
+      endDate: searchParams.auditEndDate
     });
     if (auditResult.success) {
       auditLogs = auditResult.data?.logs || [];
@@ -61,6 +69,10 @@ export default async function UsersPage({ searchParams }: PageProps) {
       currentAuditPage={currentAuditPage}
       usersTotalPages={usersTotalPages}
       auditTotalPages={auditTotalPages}
+      searchQuery={searchParams.search || ''}
+      auditUserFilter={searchParams.auditUser || ''}
+      auditStartDate={searchParams.auditStartDate || ''}
+      auditEndDate={searchParams.auditEndDate || ''}
     />
   );
 }

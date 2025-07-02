@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
 import { users } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, like, or, and } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
 import bcrypt from 'bcryptjs';
 import { ADMIN_PERMISSIONS, AdminPermission } from '../types/permissions';
@@ -12,16 +12,38 @@ const get = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { page = 1, limit = 50 } = req.query;
+    const { page = 1, limit = 50, search } = req.query;
     const offset = (Number(page) - 1) * Number(limit);
+
+    // Build where conditions for search
+    const conditions = [];
+    
+    if (search) {
+      const searchTerm = `%${search}%`;
+      conditions.push(
+        or(
+          like(users.username, searchTerm),
+          like(users.email, searchTerm),
+          like(users.phone_number, searchTerm),
+          like(users.role_name, searchTerm)
+        )
+      );
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     const data = await db
       .select()
       .from(users)
+      .where(whereClause)
       .limit(Number(limit))
       .offset(offset);
 
-    const totalCount = await db.select({ count: users.id }).from(users);
+    // Get total count for pagination with search
+    const totalCount = await db
+      .select({ count: users.id })
+      .from(users)
+      .where(whereClause);
 
     res.status(200).json({
       message: 'Users fetched successfully',

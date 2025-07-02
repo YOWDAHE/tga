@@ -20,6 +20,7 @@ export const documents = pgTable('documents', {
     content_text: text('content_text'),
     file_size: integer('file_size').notNull(), // size in bytes
     file_url: varchar('file_url', { length: 500 }).notNull(),      // secure_url from Cloudinary
+    description: text('description'),
     public_id: varchar('public_id', { length: 255 }).notNull(),    // public_id from Cloudinary
     view_count: integer('view_count').default(0).notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),

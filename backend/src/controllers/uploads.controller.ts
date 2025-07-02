@@ -6,7 +6,7 @@ import { document_create } from '../models/document.model';
 import pdfParse from 'pdf-parse';
 import { db } from '../db';
 import { categories, documents } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, like, or } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
 
 declare global {
@@ -29,21 +29,56 @@ const get = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const docs = await db.select().from(documents);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 6;
+    const search = req.query.search as string;
+    const offset = (page - 1) * limit;
+
+    let whereClause = undefined;
+
+    if (search) {
+      whereClause = or(
+        like(documents.title, `%${search}%`),
+        like(documents.author || '', `%${search}%`),
+        like(documents.filename, `%${search}%`)
+      );
+    }
+
+    const totalDocs = await db.select().from(documents).where(whereClause);
+    const totalCount = totalDocs.length;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const docs = await db.select().from(documents).where(whereClause).limit(limit).offset(offset);
+
     if (docs.length === 0) {
-      res.status(404).json({
+      res.status(200).json({
         message: 'No Upload data found',
-        status: 'error',
+        status: 'success',
         error: 'Not found',
         data: null,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalCount,
+          limit,
+        },
       });
       return;
     }
+
     res.status(200).json({
       message: 'successfully fetched all uploads',
       status: 'success',
       error: null,
-      data: docs,
+      data: {
+        documents: docs,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalCount,
+          limit,
+        },
+      }
     });
   } catch (error) {
     next(error);
@@ -95,7 +130,7 @@ const create = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { category_id, title, author } = req.body;
+    const { category_id, title, author, description } = req.body;
     if (!req.file) {
       res.status(400).json({
         message: "File is required",
@@ -131,7 +166,7 @@ const create = async (
     // 2. Upload file to Cloudinary
     const uploadResult = await new Promise<any>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: 'uploads', resource_type: 'raw' },
+        { folder: 'uploads', resource_type: 'auto'},
         (error, result) => {
           if (error) return reject(error);
           resolve(result);
@@ -146,6 +181,7 @@ const create = async (
       title: title || req.file.originalname,
       category_id: Number(category_id),
       author,
+      description,
       content_text,
       file_url: uploadResult.secure_url,
       public_id: uploadResult.public_id,
@@ -196,22 +232,46 @@ const remove = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { id } = req.params;
-    const oldDoc = await db.select().from(documents).where(eq(documents.id, Number(id)));
-    await cloudinary.uploader.destroy(id);
+    const id = Number(req.params.id);
+    // Get document to find Cloudinary public_id
+    const [doc] = await db.select().from(documents).where(eq(documents.id, id));
+    if (!doc) {
+      res.status(404).json({
+        message: 'Document not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+    // Delete from Cloudinary
+    await cloudinary.uploader.destroy(doc.public_id, { resource_type: 'raw' });
+    // Delete from DB
+    const [deleted] = await db.delete(documents).where(eq(documents.id, id)).returning();
     await logAudit({
       tableName: 'documents',
       action: 'DELETE',
-      description: 'Deleted uploaded document',
-      oldData: oldDoc[0] || null,
+      description: 'Deleted document',
+      oldData: doc,
       newData: null,
       user_id: req.user?.id,
       changedBy: req.user?.username,
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'] as string,
     });
-    res.status(200).json({ message: `Deleted upload with public_id: ${id}` });
+    res.status(200).json({
+      message: 'Document deleted successfully',
+      status: 'success',
+      error: null,
+      data: deleted,
+    });
   } catch (error) {
+    res.status(500).json({
+      message: 'Failed to delete document',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
     next(error);
   }
 };
