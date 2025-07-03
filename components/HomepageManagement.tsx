@@ -22,7 +22,7 @@ import { useForm } from "@mantine/form"
 import { useDisclosure } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { IconUpload, IconPlus, IconEdit, IconTrash, IconPhoto } from "@tabler/icons-react"
-import SimpleRichTextEditor from "./SimpleRichTextEditor"
+import { RichTextEditor } from '@mantine/rte'
 
 interface LandingPageContent {
   logo_url: string | null
@@ -64,6 +64,15 @@ interface ContactInfo {
   phone_number?: string
 }
 
+interface HomepageManagementProps {
+  initialContent?: LandingPageContent;
+  initialStats?: Stat[];
+  initialPractices?: Practice[];
+  initialPartners?: Partner[];
+  initialTestimonials?: Testimonial[];
+  initialContactInfo?: ContactInfo[];
+}
+
 const initialContent: LandingPageContent = {
   logo_url: null,
   hero_image_url: null,
@@ -98,14 +107,21 @@ const mockContactInfo: ContactInfo[] = [
   { id: 3, medium: "WhatsApp", phone_number: "+1 234 567 8901" },
 ]
 
-export default function HomepageManagement() {
-  const [content, setContent] = useState<LandingPageContent>(initialContent)
+export default function HomepageManagement({
+  initialContent: defaultContent = initialContent,
+  initialStats = mockStats,
+  initialPractices = mockPractices,
+  initialPartners = mockPartners,
+  initialTestimonials = mockTestimonials,
+  initialContactInfo = mockContactInfo,
+}: HomepageManagementProps) {
+  const [content, setContent] = useState<LandingPageContent>(defaultContent)
   const [aboutUsContent, setAboutUsContent] = useState(content.about_us)
-  const [stats, setStats] = useState<Stat[]>(mockStats)
-  const [practices, setPractices] = useState<Practice[]>(mockPractices)
-  const [partners, setPartners] = useState<Partner[]>(mockPartners)
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(mockTestimonials)
-  const [contactInfo, setContactInfo] = useState<ContactInfo[]>(mockContactInfo)
+  const [stats, setStats] = useState<Stat[]>(initialStats)
+  const [practices, setPractices] = useState<Practice[]>(initialPractices)
+  const [partners, setPartners] = useState<Partner[]>(initialPartners)
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials)
+  const [contactInfo, setContactInfo] = useState<ContactInfo[]>(initialContactInfo)
 
   // Modal states
   const [statModalOpened, { open: openStatModal, close: closeStatModal }] = useDisclosure(false)
@@ -422,12 +438,10 @@ export default function HomepageManagement() {
           <Accordion.Panel>
             <Paper withBorder p="md">
               <Stack>
-                <SimpleRichTextEditor
-                  label="About Us Content"
+                <RichTextEditor
                   value={aboutUsContent}
                   onChange={setAboutUsContent}
-                  placeholder="Enter about us content..."
-                  rows={10}
+                  style={{ minHeight: 200 }}
                 />
                 <Button onClick={handleAboutUsSubmit}>Update About Us</Button>
               </Stack>

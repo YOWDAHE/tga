@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
 import { news } from '../db/schema';
 import { v2 as cloudinary } from 'cloudinary';
-import { eq, desc, asc } from 'drizzle-orm';
+import { eq, desc, asc, count, like, or } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
 
 
@@ -17,6 +17,7 @@ const get = async (
       limit = 10,
       sortBy = 'createdAt',
       order = 'desc',
+      q = '',
     } = req.query as Record<string, string>;
 
     const pageNum = Math.max(Number(page), 1);
@@ -24,10 +25,46 @@ const get = async (
     const allowedSortFields = ['createdAt', 'updatedAt', 'published_date', 'title'];
     const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
 
-    const data = await db
-      .select()
-      .from(news)
-      .orderBy(order === 'asc' ? asc(news.createdAt) : desc(news.createdAt))
+    // Build search condition
+    let whereCondition = undefined;
+    if (q && q.trim()) {
+      const searchTerm = `%${q.trim()}%`;
+      whereCondition = or(
+        like(news.title, searchTerm),
+        like(news.content, searchTerm),
+        like(news.created_by, searchTerm),
+        like(news.source, searchTerm)
+      );
+    }
+
+    // Get total count for pagination
+    const totalCountQuery = whereCondition 
+      ? db.select({ count: count() }).from(news).where(whereCondition)
+      : db.select({ count: count() }).from(news);
+    const totalCount = await totalCountQuery;
+
+    // Execute the main query with ordering and pagination
+    const dataQuery = whereCondition
+      ? db.select().from(news).where(whereCondition)
+      : db.select().from(news);
+    
+    // Dynamic sorting based on sortField
+    let sortedQuery;
+    if (sortField === 'createdAt') {
+      sortedQuery = order === 'asc' ? asc(news.createdAt) : desc(news.createdAt);
+    } else if (sortField === 'updatedAt') {
+      sortedQuery = order === 'asc' ? asc(news.updatedAt) : desc(news.updatedAt);
+    } else if (sortField === 'published_date') {
+      sortedQuery = order === 'asc' ? asc(news.published_date) : desc(news.published_date);
+    } else if (sortField === 'title') {
+      sortedQuery = order === 'asc' ? asc(news.title) : desc(news.title);
+    } else {
+      // Default fallback
+      sortedQuery = desc(news.createdAt);
+    }
+    
+    const data = await dataQuery
+      .orderBy(sortedQuery)
       .limit(pageSize)
       .offset((pageNum - 1) * pageSize);
 
@@ -35,7 +72,14 @@ const get = async (
       message: 'News fetched successfully',
       status: 'success',
       error: null,
-      data,
+      data: {
+        news: data,
+        pagination: {
+          currentPage: pageNum,
+          totalPages: Math.ceil(totalCount[0].count / pageSize),
+          totalItems: totalCount[0].count,
+        },
+      },
     });
   } catch (error) {
     res.status(500).json({

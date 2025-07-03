@@ -11,18 +11,24 @@ interface NewsPageProps {
   searchParams: {
     page?: string;
     search?: string;
+    sortBy?: string;
+    order?: string;
   };
 }
 
 export default async function NewsPage({ searchParams }: NewsPageProps) {
   const page = searchParams.page ? parseInt(searchParams.page) : 1;
   const search = searchParams.search || "";
+  const sortBy = searchParams.sortBy || "createdAt";
+  const order = searchParams.order || "desc";
 
   try {
     const newsRes = await fetchNews({
       page,
       limit: 6,
       search: search || undefined,
+      sortBy: sortBy || undefined,
+      order: order || undefined,
     });
     const news = newsRes.success ? newsRes.data : [];
     const pagination = newsRes.pagination || { currentPage: 1, totalPages: 1 };
@@ -31,26 +37,26 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
       return (
         <EmptyState
           title="No news found"
-          description="There are no news articles to display at the moment."
+          description={
+            search || sortBy !== "createdAt" || order !== "desc"
+              ? "There are no news articles that match your search criteria."
+              : "There are no news articles to display at the moment."
+          }
           icon={<FileX2Icon size={48} />}
           action={
-          //   <Group>
-          //     <TextInput
-          //       placeholder="Search news..."
-          //       leftSection={<IconSearch size={16} />}
-          //       defaultValue={search}
-          //       onKeyDown={e => {
-          //         if (e.key === "Enter") {
-          //           const value = (e.target as HTMLInputElement).value;
-          //           window.location.href = `/news?search=${encodeURIComponent(value)}`;
-          //         }
-          //       }}
-          //       style={{ minWidth: 250 }}
-          //     />
-              <Button component={Link} href="/news/create">
+            search || sortBy !== "createdAt" || order !== "desc" ? (
+              <Button 
+                variant="light" 
+                component={Link} 
+                href="/news"
+              >
+                Clear Search
+              </Button>
+            ) : (
+              <Button component={Link} href="/news/add">
                 <IconPlus size={16} style={{ marginRight: 4 }} /> Add News
               </Button>
-          //   </Group>
+            )
           }
         />
       );
@@ -63,6 +69,8 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}
           searchQuery={search}
+          sortBy={sortBy}
+          order={order}
         />
       </Suspense>
     );
@@ -70,7 +78,14 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
     console.error("Error in NewsPage:", error);
     return (
       <Suspense fallback={<Skeleton height={400} />}>
-        <NewsManagement initialNews={[]} currentPage={1} totalPages={1} searchQuery={search} />
+        <NewsManagement 
+          initialNews={[]} 
+          currentPage={1} 
+          totalPages={1} 
+          searchQuery={search}
+          sortBy={sortBy}
+          order={order}
+        />
       </Suspense>
     );
   }
