@@ -1,4 +1,4 @@
-import { get } from '@/lib/axiosServerWrapper';
+import { get, put } from '@/lib/axiosServerWrapper';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.BACKEND_API_URL;

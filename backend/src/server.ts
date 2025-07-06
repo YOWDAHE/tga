@@ -8,6 +8,7 @@ import telegramRouter from './routes/telegram.route.js';
 import newsRouter from './routes/news.route.js';
 import landingRouter from './routes/landing.route.js';
 import remarksRouter from './routes/remarks.route.js';
+import contactRouter from './routes/contact.route.js';
 import authRouter from './routes/auth.route.js';
 import { authenticateJWT, authorizePermissions } from './middlewares/jwtAuth.js';
 import commentsRouter from './routes/comments.route.js';
@@ -33,6 +34,7 @@ app.prepare().then(() => {
   server.use('/api/news', authenticateJWT, authorizePermissions('NEWS_CRUD'), newsRouter);
   server.use('/api/landing', authenticateJWT, authorizePermissions('HOMEPAGE_CRUD'), landingRouter);
   server.use('/api/remark', authenticateJWT, authorizePermissions('REMARKS_CRUD'), remarksRouter);
+  server.use('/api/contact', authenticateJWT, authorizePermissions('HOMEPAGE_CRUD'), contactRouter);
   server.use('/api/comments', authenticateJWT, authorizePermissions('NEWS_CRUD'), commentsRouter);
   server.use('/api/users', authenticateJWT, authorizePermissions('USER_CRUD'), usersRouter);
   server.use('/api/audit-logs', authenticateJWT, authorizePermissions('USER_CRUD'), auditRouter);

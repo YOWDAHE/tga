@@ -7,35 +7,34 @@ const BACKEND_URL = process.env.BACKEND_API_URL;
 export async function GET(req: NextRequest) {
     try {
         const tokens = req.cookies ? await getTokenCookie(req) : null;
-        const res = await axios.get(`${BACKEND_URL}/landing`, {
+        const res = await axios.get(`${BACKEND_URL}/contact`, {
             headers: {
                 Authorization: `Bearer ${tokens?.accessToken}`,
             },
         });
         if (!res.data) {
-            return NextResponse.json({ success: false, error: res.data?.error || "Failed to fetch homepage data" }, { status: 500 });
+            return NextResponse.json({ success: false, error: res.data?.error || "Failed to fetch contact info" }, { status: 500 });
         }
         return NextResponse.json({ success: true, data: res.data.data });
     } catch (error: any) {
-        return NextResponse.json({ success: false, error: error?.response?.data?.message || error?.message || "Failed to fetch homepage data" }, { status: 500 });
+        return NextResponse.json({ success: false, error: error?.response?.data?.message || error?.message || "Failed to fetch contact info" }, { status: 500 });
     }
 }
 
-export async function PUT(req: NextRequest) {
+export async function POST(req: NextRequest) {
     try {
         const tokens = req.cookies ? await getTokenCookie(req) : null;
         const body = await req.json();
-        console.log("PUTting here", body);
-        const res = await axios.put(`${BACKEND_URL}/landing`, body, {
+        const res = await axios.post(`${BACKEND_URL}/contact`, body, {
             headers: {
                 Authorization: `Bearer ${tokens?.accessToken}`,
             },
         });
         if (!res.data) {
-            return NextResponse.json({ success: false, error: res.data?.error || "Failed to update homepage data" }, { status: 500 });
+            return NextResponse.json({ success: false, error: res.data?.error || "Failed to create contact info" }, { status: 500 });
         }
         return NextResponse.json({ success: true, data: res.data.data });
     } catch (error: any) {
-        return NextResponse.json({ success: false, error: error?.response?.data?.message || error?.message || "Failed to update homepage data" }, { status: 500 });
+        return NextResponse.json({ success: false, error: error?.response?.data?.message || error?.message || "Failed to create contact info" }, { status: 500 });
     }
 } 

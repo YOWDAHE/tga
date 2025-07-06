@@ -178,9 +178,9 @@ const update = async (
       });
     }
 
-    // (replace all: delete then insert)
     let updatedStats: any[] = [];
-    if (Array.isArray(statsArr)) {
+    if (statsArr && Array.isArray(statsArr)) {
+      // Replace all stats only if statsArr is present
       const oldStats = await db.select().from(stats);
       await db.delete(stats);
       updatedStats = await db.insert(stats).values(statsArr).returning();
@@ -198,7 +198,7 @@ const update = async (
     }
 
     let updatedPartners: any[] = [];
-    if (Array.isArray(partnersArr)) {
+    if (partnersArr && Array.isArray(partnersArr)) {
       const oldPartners = await db.select().from(partners);
       await db.delete(partners);
       updatedPartners = await db.insert(partners).values(partnersArr).returning();
@@ -216,7 +216,7 @@ const update = async (
     }
 
     let updatedPractices: any[] = [];
-    if (Array.isArray(practicesArr)) {
+    if (practicesArr && Array.isArray(practicesArr)) {
       const oldPractices = await db.select().from(practices);
       await db.delete(practices);
       updatedPractices = await db.insert(practices).values(practicesArr).returning();
@@ -234,7 +234,7 @@ const update = async (
     }
 
     let updatedContactUs: any[] = [];
-    if (Array.isArray(contactUsArr)) {
+    if (contactUsArr && Array.isArray(contactUsArr)) {
       const oldContactUs = await db.select().from(contactUsInfo);
       await db.delete(contactUsInfo);
       updatedContactUs = await db.insert(contactUsInfo).values(contactUsArr).returning();

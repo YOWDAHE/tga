@@ -1,305 +1,326 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Title, Table, Group, ActionIcon, Paper, Badge, Text, Stack, Modal, Button, Textarea } from "@mantine/core"
-import { useForm } from "@mantine/form"
-import { useDisclosure } from "@mantine/hooks"
-import { notifications } from "@mantine/notifications"
-import { IconEye, IconMessage, IconCheck } from "@tabler/icons-react"
+import { useState } from "react";
+import {
+	Title,
+	Button,
+	TextInput,
+	Textarea,
+	Paper,
+	Text,
+	Stack,
+	Group,
+	Modal,
+	Table,
+	ActionIcon,
+	Badge,
+	ScrollArea,
+	Divider,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconEdit, IconTrash, IconMail, IconEye } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
+import { deleteRemark, replyToRemark } from "@/app/actions/remarks.actions";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 interface Remark {
-  id: number
-  name: string
-  email: string
-  content: string
-  response: string
-  createdAt: Date
-  updatedAt: Date
+	id: number;
+	name: string;
+	email: string;
+	content: string;
+	response?: string;
+	createdAt: string;
+	updatedAt: string;
 }
 
-const mockRemarks: Remark[] = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@email.com",
-    content: "I have a question about your services. Can you provide more information about pricing?",
-    response: "",
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date("2024-01-15"),
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane.smith@email.com",
-    content: "I'm experiencing issues with the document download feature. It keeps failing.",
-    response:
-      "Thank you for reporting this issue. Our technical team is looking into it and will have a fix deployed soon.",
-    createdAt: new Date("2024-01-14"),
-    updatedAt: new Date("2024-01-14"),
-  },
-  {
-    id: 3,
-    name: "Mike Johnson",
-    email: "mike.johnson@email.com",
-    content: "Great website! I love the new design and functionality. Keep up the good work!",
-    response: "",
-    createdAt: new Date("2024-01-13"),
-    updatedAt: new Date("2024-01-13"),
-  },
-  {
-    id: 4,
-    name: "Sarah Wilson",
-    email: "sarah.wilson@email.com",
-    content: "I would like to suggest adding a dark mode feature to the website. It would be very helpful.",
-    response:
-      "Thank you for the suggestion! We're actually working on a dark mode feature and it should be available in the next update.",
-    createdAt: new Date("2024-01-12"),
-    updatedAt: new Date("2024-01-12"),
-  },
-]
+interface RemarksManagementProps {
+	initialRemarks?: Remark[];
+}
 
-export default function RemarksManagement() {
-  const [remarks, setRemarks] = useState<Remark[]>(mockRemarks)
-  const [viewOpened, { open: openView, close: closeView }] = useDisclosure(false)
-  const [replyOpened, { open: openReply, close: closeReply }] = useDisclosure(false)
-  const [viewingRemark, setViewingRemark] = useState<Remark | null>(null)
-  const [replyingRemark, setReplyingRemark] = useState<Remark | null>(null)
+export default function RemarksManagement({
+	initialRemarks = [],
+}: RemarksManagementProps) {
+	const router = useRouter();
+	const [remarks, setRemarks] = useState<Remark[]>(initialRemarks);
+	const [selectedRemark, setSelectedRemark] = useState<Remark | null>(null);
+	const [replyModalOpened, { open: openReplyModal, close: closeReplyModal }] =
+		useDisclosure(false);
+	const [viewModalOpened, { open: openViewModal, close: closeViewModal }] =
+		useDisclosure(false);
+	const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] =
+		useDisclosure(false);
 
-  const replyForm = useForm({
-    initialValues: {
-      response: "",
-    },
-  })
+	const replyForm = useForm({
+		initialValues: {
+			subject: "",
+			response: "",
+		},
+		validate: {
+			subject: (value) => (!value ? "Subject is required" : null),
+			response: (value) => (!value ? "Message is required" : null),
+		},
+	});
 
-  const handleViewRemark = (remark: Remark) => {
-    setViewingRemark(remark)
-    openView()
-  }
+	const handleReply = async (values: typeof replyForm.values) => {
+		if (!selectedRemark) return;
 
-  const handleReplyRemark = (remark: Remark) => {
-    setReplyingRemark(remark)
-    replyForm.setValues({
-      response: remark.response || "",
-    })
-    openReply()
-  }
+		try {
+			console.log(values);
+			const result = await replyToRemark(selectedRemark.id, values);
+			if (result.success) {
+			    notifications.show({
+			        title: "Success",
+			        message: "Reply sent successfully",
+			        color: "green",
+			    });
+			    closeReplyModal();
+			    replyForm.reset();
+			    setSelectedRemark(null);
+			} else {
+			    notifications.show({
+			        title: "Error",
+			        message: result.error || "Failed to send reply",
+			        color: "red",
+			    });
+			}
+		} catch (error: any) {
+			notifications.show({
+				title: "Error",
+				message: error.message || "An unexpected error occurred",
+				color: "red",
+			});
+		}
+	};
 
-  const handleSubmitReply = (values: typeof replyForm.values) => {
-    if (!replyingRemark) return
+	const handleDelete = async (id: number) => {
+		try {
+			const result = await deleteRemark(id);
+			if (result.success) {
+				setRemarks((prev) => prev.filter((item) => item.id !== id));
+				notifications.show({
+					title: "Success",
+					message: "Remark deleted successfully",
+					color: "red",
+				});
+				closeDeleteModal();
+				setSelectedRemark(null);
+			} else {
+				notifications.show({
+					title: "Error",
+					message: result.error || "Failed to delete remark",
+					color: "red",
+				});
+			}
+		} catch (error: any) {
+			notifications.show({
+				title: "Error",
+				message: error.message || "An unexpected error occurred",
+				color: "red",
+			});
+		}
+	};
 
-    setRemarks((prev) =>
-      prev.map((remark) =>
-        remark.id === replyingRemark.id
-          ? {
-              ...remark,
-              response: values.response,
-              updatedAt: new Date(),
-            }
-          : remark,
-      ),
-    )
+	const handleViewRemark = (remark: Remark) => {
+		setSelectedRemark(remark);
+		openViewModal();
+	};
 
-    notifications.show({
-      title: "Success",
-      message: "Reply sent successfully",
-      color: "green",
-    })
+	const handleReplyToRemark = (remark: Remark) => {
+		setSelectedRemark(remark);
+		replyForm.setValues({
+			subject: `Re: Your remark from TGA Law Office`,
+			response: "",
+		});
+		openReplyModal();
+	};
 
-    closeReply()
-    setReplyingRemark(null)
-    replyForm.reset()
-  }
+	const handleDeleteRemark = (remark: Remark) => {
+		setSelectedRemark(remark);
+		openDeleteModal();
+	};
 
-  const getStatusBadge = (remark: Remark) => {
-    if (remark.response.trim()) {
-      return (
-        <Badge color="green" variant="light">
-          Replied
-        </Badge>
-      )
-    }
-    return (
-      <Badge color="orange" variant="light">
-        Pending
-      </Badge>
-    )
-  }
+	const formatDate = (dateString: string) => {
+		return new Date(dateString).toLocaleDateString("en-US", {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+	};
 
-  const handleCloseReply = () => {
-    closeReply()
-    setReplyingRemark(null)
-    replyForm.reset()
-  }
+	const rows = remarks.map((remark) => (
+		<Table.Tr key={remark.id}>
+			<Table.Td>
+				<Text size="sm" fw={500}>
+					{remark.name}
+				</Text>
+				<Text size="xs" c="dimmed">
+					{remark.email}
+				</Text>
+			</Table.Td>
+			<Table.Td>
+				<Text size="sm" lineClamp={2}>
+					{remark.content}
+				</Text>
+			</Table.Td>
+			<Table.Td>
+				<Badge color={remark.response ? "green" : "yellow"} variant="light">
+					{remark.response ? "Replied" : "Pending"}
+				</Badge>
+			</Table.Td>
+			<Table.Td>
+				<Text size="sm" c="dimmed">
+					{formatDate(remark.createdAt)}
+				</Text>
+			</Table.Td>
+			<Table.Td>
+				<Group gap="xs">
+					<ActionIcon
+						variant="subtle"
+						color="blue"
+						onClick={() => handleViewRemark(remark)}
+					>
+						<IconEye size={16} />
+					</ActionIcon>
+					{remark.response ? null : <ActionIcon
+						variant="subtle"
+						color="green"
+						onClick={() => handleReplyToRemark(remark)}
+					>
+						<IconMail size={16} />
+					</ActionIcon>}
+					{/* <ActionIcon
+						variant="subtle"
+						color="red"
+						onClick={() => handleDeleteRemark(remark)}
+					>
+						<IconTrash size={16} />
+					</ActionIcon> */}
+				</Group>
+			</Table.Td>
+		</Table.Tr>
+	));
 
-  return (
-    <div style={{ padding: "24px" }}>
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={2}>Remarks Management</Title>
-          <Text c="gray.6" size="sm" mt="xs">
-            View and respond to user remarks and feedback
-          </Text>
-        </div>
-      </Group>
+	return (
+		<div style={{ padding: "24px" }}>
+			<Title order={2} mb="lg">
+				Remarks Management
+			</Title>
 
-      <Paper withBorder>
-        <Table striped highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Name</Table.Th>
-              <Table.Th>Email</Table.Th>
-              <Table.Th>Message Preview</Table.Th>
-              <Table.Th>Status</Table.Th>
-              <Table.Th>Date</Table.Th>
-              <Table.Th>Actions</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {remarks.map((remark) => (
-              <Table.Tr key={remark.id}>
-                <Table.Td>
-                  <Text fw={500} size="sm">
-                    {remark.name}
-                  </Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text size="sm" c="dimmed">
-                    {remark.email}
-                  </Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text size="sm" c="dimmed" lineClamp={2} maw={300}>
-                    {remark.content}
-                  </Text>
-                </Table.Td>
-                <Table.Td>{getStatusBadge(remark)}</Table.Td>
-                <Table.Td>
-                  <Text size="sm">{remark.createdAt.toLocaleDateString()}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Group gap="xs">
-                    <ActionIcon variant="light" color="blue" onClick={() => handleViewRemark(remark)}>
-                      <IconEye size={16} />
-                    </ActionIcon>
-                    <ActionIcon variant="light" color="green" onClick={() => handleReplyRemark(remark)}>
-                      <IconMessage size={16} />
-                    </ActionIcon>
-                  </Group>
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </Paper>
+			<Paper withBorder p="md">
+				<Table>
+					<Table.Thead>
+						<Table.Tr>
+							<Table.Th>User</Table.Th>
+							<Table.Th>Content</Table.Th>
+							<Table.Th>Status</Table.Th>
+							<Table.Th>Date</Table.Th>
+							<Table.Th>Actions</Table.Th>
+						</Table.Tr>
+					</Table.Thead>
+					<Table.Tbody>
+						{rows.length > 0 ?
+							rows
+						:	<Table.Tr>
+								<Table.Td colSpan={5}>
+									<Text ta="center" c="dimmed" py="xl">
+										No remarks found
+									</Text>
+								</Table.Td>
+							</Table.Tr>
+						}
+					</Table.Tbody>
+				</Table>
+			</Paper>
 
-      {/* View Remark Modal */}
-      <Modal opened={viewOpened} onClose={closeView} title="View Remark" size="lg">
-        {viewingRemark && (
-          <Stack>
-            <Group>
-              <div>
-                <Text fw={500} mb="xs">
-                  From
-                </Text>
-                <Text size="sm">{viewingRemark.name}</Text>
-                <Text size="xs" c="dimmed">
-                  {viewingRemark.email}
-                </Text>
-              </div>
-              <div style={{ marginLeft: "auto" }}>{getStatusBadge(viewingRemark)}</div>
-            </Group>
+			{/* View Remark Modal */}
+			<Modal
+				opened={viewModalOpened}
+				onClose={closeViewModal}
+				title="View Remark"
+				size="lg"
+			>
+				{selectedRemark && (
+					<Stack>
+						<Group>
+							<Text fw={500}>Name:</Text>
+							<Text>{selectedRemark.name}</Text>
+						</Group>
+						<Group>
+							<Text fw={500}>Email:</Text>
+							<Text>{selectedRemark.email}</Text>
+						</Group>
+						<Divider />
+						<Text fw={500}>Content:</Text>
+						<Paper withBorder p="md">
+							<Text>{selectedRemark.content}</Text>
+						</Paper>
+						{selectedRemark.response && (
+							<>
+								<Divider />
+								<Text fw={500}>Response:</Text>
+								<Paper withBorder p="md" bg="gray.0">
+									<Text>{selectedRemark.response}</Text>
+								</Paper>
+							</>
+						)}
+						<Group>
+							<Text fw={500}>Date:</Text>
+							<Text>{formatDate(selectedRemark.createdAt)}</Text>
+						</Group>
+					</Stack>
+				)}
+			</Modal>
 
-            <div>
-              <Text fw={500} mb="xs">
-                Message
-              </Text>
-              <Paper withBorder p="md" bg="gray.0">
-                <Text size="sm">{viewingRemark.content}</Text>
-              </Paper>
-            </div>
+			{/* Reply Modal */}
+			<Modal
+				opened={replyModalOpened}
+				onClose={closeReplyModal}
+				title="Reply to Remark"
+				size="lg"
+			>
+				<form onSubmit={replyForm.onSubmit(handleReply)}>
+					<Stack>
+						{selectedRemark && (
+							<Paper withBorder p="md" bg="gray.0">
+								<Text size="sm" fw={500} mb="xs">
+									Original Remark:
+								</Text>
+								<Text size="sm">{selectedRemark.content}</Text>
+							</Paper>
+						)}
+						<TextInput
+							label="Subject"
+							placeholder="Enter email subject"
+							{...replyForm.getInputProps("subject")}
+						/>
+						<Textarea
+							label="Message"
+							placeholder="Enter your reply message"
+							minRows={4}
+							{...replyForm.getInputProps("response")}
+						/>
+						<Group justify="flex-end">
+							<Button variant="outline" onClick={closeReplyModal}>
+								Cancel
+							</Button>
+							<Button type="submit">Send Reply</Button>
+						</Group>
+					</Stack>
+				</form>
+			</Modal>
 
-            {viewingRemark.response && (
-              <div>
-                <Text fw={500} mb="xs">
-                  Your Response
-                </Text>
-                <Paper withBorder p="md" bg="blue.0">
-                  <Text size="sm">{viewingRemark.response}</Text>
-                </Paper>
-              </div>
-            )}
-
-            <Group justify="space-between">
-              <Text size="xs" c="dimmed">
-                Received on {viewingRemark.createdAt.toLocaleDateString()}
-                {viewingRemark.response && ` • Replied on ${viewingRemark.updatedAt.toLocaleDateString()}`}
-              </Text>
-              <Button
-                size="sm"
-                leftSection={<IconMessage size={16} />}
-                onClick={() => {
-                  closeView()
-                  handleReplyRemark(viewingRemark)
-                }}
-              >
-                {viewingRemark.response ? "Update Reply" : "Reply"}
-              </Button>
-            </Group>
-          </Stack>
-        )}
-      </Modal>
-
-      {/* Reply Modal */}
-      <Modal opened={replyOpened} onClose={handleCloseReply} title="Reply to Remark" size="lg">
-        {replyingRemark && (
-          <form onSubmit={replyForm.onSubmit(handleSubmitReply)}>
-            <Stack>
-              <div>
-                <Text fw={500} mb="xs">
-                  Original Message
-                </Text>
-                <Paper withBorder p="md" bg="gray.0">
-                  <Group justify="space-between" mb="xs">
-                    <div>
-                      <Text fw={500} size="sm">
-                        {replyingRemark.name}
-                      </Text>
-                      <Text size="xs" c="dimmed">
-                        {replyingRemark.email}
-                      </Text>
-                    </div>
-                    <Text size="xs" c="dimmed">
-                      {replyingRemark.createdAt.toLocaleDateString()}
-                    </Text>
-                  </Group>
-                  <Text size="sm">{replyingRemark.content}</Text>
-                </Paper>
-              </div>
-
-              <div>
-                <Text fw={500} mb="xs">
-                  Your Response
-                </Text>
-                <Textarea
-                  placeholder="Type your response here..."
-                  rows={6}
-                  required
-                  {...replyForm.getInputProps("response")}
-                />
-              </div>
-
-              <Group justify="flex-end">
-                <Button variant="light" onClick={handleCloseReply}>
-                  Cancel
-                </Button>
-                <Button type="submit" leftSection={<IconCheck size={16} />}>
-                  Send Reply
-                </Button>
-              </Group>
-            </Stack>
-          </form>
-        )}
-      </Modal>
-    </div>
-  )
+			{/* Delete Confirmation Modal */}
+			<DeleteConfirmationModal
+				opened={deleteModalOpened}
+				onClose={closeDeleteModal}
+				onConfirm={() => selectedRemark && handleDelete(selectedRemark.id)}
+				title="Delete Remark"
+				message={`Are you sure you want to delete the remark from ${selectedRemark?.name}? This action cannot be undone.`}
+			/>
+		</div>
+	);
 }

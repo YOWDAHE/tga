@@ -218,8 +218,8 @@ const reply = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const { subject, message } = req.body;
-    if (!subject || !message) {
+    const { subject, response } = req.body;
+    if (!subject || !response) {
       res.status(400).json({
         message: 'Subject and message are required',
         status: 'error',
@@ -256,8 +256,8 @@ const reply = async (
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to: userEmail,
       subject,
-      text: message,
-    }, (err, data) => {
+      text: response,
+    }, async (err, data) => {
       if (err) {
         res.status(500).json({
           message: 'Failed to send reply',
@@ -267,6 +267,18 @@ const reply = async (
         });
         next(err);
       } else {
+        const [updated] = await db.update(remarks).set({ response, updatedAt: new Date() }).where(eq(remarks.id, id)).returning();
+        await logAudit({
+          tableName: 'remarks',
+          action: 'UPDATE',
+          description: 'Replied to remark',
+          oldData: null,
+          newData: updated,
+          user_id: req.user?.id,
+          changedBy: req.user?.username,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'] as string,
+        });
         res.status(200).json({
           message: 'Reply sent successfully',
           status: 'success',
