@@ -3,6 +3,13 @@ import { db } from '../db';
 import { landing, stats, partners, practices, contactUsInfo } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // GET all landing data
 const get = async (
@@ -364,4 +371,115 @@ const remove = async (
   }
 };
 
-export default { get, create, update, remove };
+// UPLOAD IMAGE
+const uploadImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { imageType } = req.body; // 'hero_image' or 'logo'
+    
+    if (!req.file) {
+      res.status(400).json({
+        message: "File is required",
+        status: 'error',
+        error: "Validation error",
+        data: null,
+      });
+      return;
+    }
+
+    if (!imageType || !['hero_image', 'logo'].includes(imageType)) {
+      res.status(400).json({
+        message: "imageType must be either 'hero_image' or 'logo'",
+        status: 'error',
+        error: "Validation error",
+        data: null,
+      });
+      return;
+    }
+
+    // Upload file to Cloudinary
+    const uploadResult = await new Promise<any>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { 
+          folder: 'landing', 
+          resource_type: 'auto',
+          transformation: imageType === 'hero_image' ? [
+            { width: 1920, height: 1080, crop: 'fill' }
+          ] : [
+            { width: 200, height: 200, crop: 'fill' }
+          ]
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
+      );
+      stream.end(req.file!.buffer);
+    });
+
+    // Get existing landing data
+    const existingLanding = await db.select().from(landing).limit(1);
+    
+    if (existingLanding.length === 0) {
+      res.status(404).json({
+        message: "No landing page data found. Please create landing page first.",
+        status: 'error',
+        error: "Not found",
+        data: null,
+      });
+      return;
+    }
+
+    const landingId = existingLanding[0].id;
+    const oldData = existingLanding[0];
+
+    // Update the landing page with the new image URL
+    const updateData: any = {};
+    if (imageType === 'hero_image') {
+      updateData.hero_image_url = uploadResult.secure_url;
+    } else if (imageType === 'logo') {
+      updateData.logo_url = uploadResult.secure_url;
+    }
+
+    const [updatedLanding] = await db.update(landing)
+      .set(updateData)
+      .where(eq(landing.id, landingId))
+      .returning();
+
+    await logAudit({
+      tableName: 'landing',
+      action: 'UPDATE',
+      description: `Updated ${imageType} for landing page`,
+      oldData: oldData,
+      newData: updatedLanding,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
+
+    res.status(200).json({
+      message: `${imageType} uploaded successfully`,
+      status: 'success',
+      error: null,
+      data: {
+        imageUrl: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
+        updatedLanding: updatedLanding,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to upload image",
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+export default { get, create, update, remove, uploadImage };

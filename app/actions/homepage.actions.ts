@@ -9,3 +9,26 @@ export async function updateHomepage(updateData: any) {
         return { success: false, error: error.message };
     }
 }
+
+export async function uploadHomepageImage(file: File, imageType: 'hero_image' | 'logo') {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('imageType', imageType);
+
+        const res = await fetch('/api/landing/upload', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const data = await res.json();
+        
+        if (!res.ok) {
+            throw new Error(data.error || 'Failed to upload image');
+        }
+
+        return { success: true, data: data.data };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}

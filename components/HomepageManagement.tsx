@@ -39,7 +39,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { updateHomepage } from "@/app/actions/homepage.actions";
+import { updateHomepage, uploadHomepageImage } from "@/app/actions/homepage.actions";
 import { useRouter } from "next/navigation";
 
 interface LandingPageContent {
@@ -320,11 +320,44 @@ export default function HomepageManagement({
 
 	const handleHeroSubmit = async (values: typeof heroForm.values) => {
 		try {
-			const updatedContent = {
-				...content,
-				hero_title: values.hero_title,
-			};
-			const result = await updateHomepage({ landing: updatedContent });
+			// Handle file uploads first if files are selected
+			let updatedContent = { ...content, hero_title: values.hero_title };
+
+			// Upload logo if a new file is selected
+			if (values.logo_url instanceof File) {
+				const logoResult = await uploadHomepageImage(values.logo_url, 'logo');
+				if (logoResult.success) {
+					updatedContent.logo_url = logoResult.data.imageUrl;
+				} else {
+					notifications.show({
+						title: "Error",
+						message: logoResult.error || "Failed to upload logo",
+						color: "red",
+					});
+					return;
+				}
+			}
+
+			// Upload hero image if a new file is selected
+			if (values.hero_image_url instanceof File) {
+				const heroResult = await uploadHomepageImage(values.hero_image_url, 'hero_image');
+				if (heroResult.success) {
+					updatedContent.hero_image_url = heroResult.data.imageUrl;
+				} else {
+					notifications.show({
+						title: "Error",
+						message: heroResult.error || "Failed to upload hero image",
+						color: "red",
+					});
+					return;
+				}
+			}
+
+			// Remove createdAt and updatedAt from the data being sent
+			const { createdAt, updatedAt, ...sanitizedContent } = updatedContent as any;
+
+			// Update the landing page data
+			const result = await updateHomepage({ landing: sanitizedContent });
 			if (result.success) {
 				// Update local state immediately
 				setContent(updatedContent);
@@ -803,6 +836,7 @@ export default function HomepageManagement({
 												accept={IMAGE_MIME_TYPE}
 												onDrop={(files: File[]) => {
 													heroForm.setFieldValue("logo_url", files[0]);
+													// Show preview immediately
 													setContent((prev) => ({
 														...prev,
 														logo_url: URL.createObjectURL(files[0]),
@@ -841,6 +875,7 @@ export default function HomepageManagement({
 												accept={IMAGE_MIME_TYPE}
 												onDrop={(files: File[]) => {
 													heroForm.setFieldValue("hero_image_url", files[0]);
+													// Show preview immediately
 													setContent((prev) => ({
 														...prev,
 														hero_image_url: URL.createObjectURL(files[0]),
