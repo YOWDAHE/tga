@@ -1821,3 +1821,6 @@
 {"level":"info","message":"::1 - - [08/Jul/2025:17:28:31 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
 {"level":"info","message":"::1 - - [08/Jul/2025:17:28:46 +0000] \"GET /api/news/27 HTTP/1.1\" 200 606 \"-\" \"axios/1.10.0\""}
 {"level":"info","message":"::1 - - [08/Jul/2025:17:28:48 +0000] \"GET /api/news/%5Bobject%20Object%5D HTTP/1.1\" 500 411 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [08/Jul/2025:17:33:44 +0000] \"GET /api/news/27 HTTP/1.1\" 200 606 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [08/Jul/2025:17:33:45 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [08/Jul/2025:17:34:45 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
