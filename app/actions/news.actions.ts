@@ -1,4 +1,3 @@
-"use client";
 
 import { del, post, put } from "@/lib/axiosWrapper";
 
@@ -15,14 +14,18 @@ export async function createNews(data: any) {
         if (hasFiles) {
             formData = new FormData();
             
+            console.log('Creating FormData with files:', data.visual_content);
+            
             // Handle visual_content - can be single file or array of files
             if (Array.isArray(data.visual_content)) {
                 data.visual_content.forEach((file: File, index: number) => {
                     if (file instanceof File) {
+                        console.log('Appending file:', file.name, file.size);
                         formData!.append('visual_content', file);
                     }
                 });
             } else if (data.visual_content instanceof File) {
+                console.log('Appending single file:', data.visual_content.name, data.visual_content.size);
                 formData.append('visual_content', data.visual_content);
             }
             
@@ -32,6 +35,11 @@ export async function createNews(data: any) {
                     formData!.append(key, String(value));
                 }
             });
+            
+            console.log('FormData entries:');
+            for (const [key, value] of formData.entries()) {
+                console.log(`${key}:`, value instanceof File ? `File: ${value.name} (${value.size} bytes)` : value);
+            }
         }
         
         const res = await post("/news", formData || data);

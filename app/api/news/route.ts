@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { get, post } from "@/lib/axiosServerWrapper";
 import { getTokenCookie } from "@/app/utils/server/token";
+import axios from "axios";
+
+
+const BACKEND_URL = process.env.BACKEND_API_URL;
 
 export async function GET(request: NextRequest) {
     try {
@@ -16,9 +20,9 @@ export async function GET(request: NextRequest) {
 
         const queryString = params.toString();
         const url = `/news${queryString ? `?${queryString}` : ''}`;
-        
+
         const res = await get(url);
-        
+
         if (!res.data) {
             return NextResponse.json({
                 success: false,
@@ -39,13 +43,19 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const contentType = request.headers.get('content-type') || '';
-        
+        const tokens = await getTokenCookie(request);
         if (contentType.includes('multipart/form-data')) {
-            // Handle FormData (file upload) - forward directly to backend
+                        // Handle FormData (file upload) - forward directly to backend
             const formData = await request.formData();
-            const res = await post('/news', formData, {
+            
+            console.log('API Route - FormData entries:');
+            for (const [key, value] of formData.entries()) {
+                console.log(`${key}:`, value instanceof File ? `File: ${value.name} (${value.size} bytes)` : value);
+            }
+            
+            const res = await axios.post(`${BACKEND_URL}/news`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${tokens?.accessToken}`,
                 },
             });
 

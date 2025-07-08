@@ -26,7 +26,7 @@ export interface Document {
 export interface News {
     id?: number;
     title: string;
-    visual_content: string[] | null;
+    visual_content: (string | { public_id: string; secure_url: string })[] | null;
     content: string;
     source: string | null;
     source_id: string | null;

@@ -6,9 +6,6 @@ import { cookies } from "next/headers";
 const api: AxiosInstance = axios.create({
   baseURL: process.env.BACKEND_API_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // Request interceptor to add access token from cookies for server-side requests
@@ -87,7 +84,19 @@ export async function post<T = any>(
   config?: AxiosRequestConfig
 ): Promise<AxiosResponse<T>> {
   try {
-    return await api.post<T>(url, data, config);
+    // Set appropriate Content-Type based on data type
+    const finalConfig = { ...config };
+    if (data instanceof FormData) {
+      // Let the browser set the Content-Type for FormData
+      delete finalConfig.headers?.['Content-Type'];
+    } else {
+      finalConfig.headers = {
+        'Content-Type': 'application/json',
+        ...finalConfig.headers,
+      };
+    }
+    
+    return await api.post<T>(url, data, finalConfig);
   } catch (error: any) {
     throw formatAxiosError(error);
   }
@@ -113,7 +122,19 @@ export async function put<T = any>(
   config?: AxiosRequestConfig
 ): Promise<AxiosResponse<T>> {
   try {
-    return await api.put<T>(url, data, config);
+    // Set appropriate Content-Type based on data type
+    const finalConfig = { ...config };
+    if (data instanceof FormData) {
+      // Let the browser set the Content-Type for FormData
+      delete finalConfig.headers?.['Content-Type'];
+    } else {
+      finalConfig.headers = {
+        'Content-Type': 'application/json',
+        ...finalConfig.headers,
+      };
+    }
+    
+    return await api.put<T>(url, data, finalConfig);
   } catch (error: any) {
     throw formatAxiosError(error);
   }

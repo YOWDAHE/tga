@@ -4,6 +4,20 @@ import { news } from '../db/schema';
 import { v2 as cloudinary } from 'cloudinary';
 import { eq, desc, asc, count, like, or } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
+import TelegramBot from 'node-telegram-bot-api';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const token = process.env.TELEGRAM_BOT_TOKEN!;
+const bot = new TelegramBot(token, { polling: false }); // Set polling to false since we only send messages
+const channelId = process.env.TELEGRAM_CHANNEL_ID!;
+
+
 
 
 const get = async (
@@ -134,25 +148,53 @@ const create = async (
 ): Promise<void> => {
   try {
     const { title, content, published_date, created_by } = req.body;
-    let visual_content: string[] | null = null;
+    console.log('Create news - req.files:', req.files);
+    console.log('Create news - req.file:', req.file);
+    console.log('Create news - req.body:', req.body);
+    
+    let visual_content: any[] | null = null;
     if (req.files && Array.isArray(req.files)) {
       visual_content = [];
       for (const file of req.files) {
-        const url = await uploadToCloudinary(file.buffer);
-        visual_content.push(url);
+        console.log('Processing file:', file.originalname, file.size);
+        try {
+          const uploadResult = await uploadToCloudinary(file.buffer);
+          visual_content.push(uploadResult);
+        } catch (error) {
+          console.error('Failed to upload file to Cloudinary:', error);
+          throw error;
+        }
       }
     } else if (req.file) {
-      const url = await uploadToCloudinary(req.file.buffer);
-      visual_content = [url];
+      console.log('Processing single file:', req.file.originalname, req.file.size);
+      try {
+        const uploadResult = await uploadToCloudinary(req.file.buffer);
+        visual_content = [uploadResult];
+      } catch (error) {
+        console.error('Failed to upload file to Cloudinary:', error);
+        throw error;
+      }
     }
+    // Send to Telegram channel first to get message ID
+    const telegramMessageId = await sendNewsToTelegram({
+      title,
+      content,
+      visual_content,
+      published_date: published_date ? new Date(published_date) : new Date(),
+      created_by: created_by || 'admin',
+      source: 'Website',
+    });
+
     const [created] = await db.insert(news).values({
       title,
       content,
       visual_content,
       published_date: published_date ? new Date(published_date) : new Date(),
       created_by: created_by || 'admin',
-      source: 'Admin',
+      source: 'Website',
+      telegram_message_id: telegramMessageId,
     }).returning();
+    
     await logAudit({
       tableName: 'news',
       action: 'INSERT',
@@ -189,18 +231,40 @@ const update = async (
   try {
     const id = Number(req.params.id);
     const { title, content, published_date, created_by } = req.body;
-    let visual_content: string[] | null = null;
+    let visual_content: any[] | null = null;
     if (req.files && Array.isArray(req.files)) {
       visual_content = [];
       for (const file of req.files) {
-        const url = await uploadToCloudinary(file.buffer);
-        visual_content.push(url);
+        try {
+          const uploadResult = await uploadToCloudinary(file.buffer);
+          visual_content.push(uploadResult);
+        } catch (error) {
+          console.error('Failed to upload file to Cloudinary:', error);
+          throw error;
+        }
       }
     } else if (req.file) {
-      const url = await uploadToCloudinary(req.file.buffer);
-      visual_content = [url];
+      try {
+        const uploadResult = await uploadToCloudinary(req.file.buffer);
+        visual_content = [uploadResult];
+      } catch (error) {
+        console.error('Failed to upload file to Cloudinary:', error);
+        throw error;
+      }
     }
     const oldNews = await db.select().from(news).where(eq(news.id, id));
+    
+    // Delete old images from Cloudinary if new images are being uploaded or if images are being removed
+    if (oldNews[0]?.visual_content && Array.isArray(oldNews[0].visual_content)) {
+      if (visual_content && visual_content.length > 0) {
+        // New images are being uploaded, delete old ones
+        await deleteMultipleFromCloudinary(oldNews[0].visual_content);
+      } else if (!visual_content || visual_content.length === 0) {
+        // Images are being removed, delete old ones
+        await deleteMultipleFromCloudinary(oldNews[0].visual_content);
+      }
+    }
+    
     const [updated] = await db
       .update(news)
       .set({
@@ -222,6 +286,13 @@ const update = async (
       });
       return;
     }
+    
+    // Edit Telegram message only if it was originally created by website
+    // This prevents editing news that came from Telegram
+    if (oldNews[0]?.source === 'Website' && oldNews[0]?.telegram_message_id) {
+      await editTelegramMessage(oldNews[0].telegram_message_id, updated);
+    }
+    
     await logAudit({
       tableName: 'news',
       action: 'UPDATE',
@@ -258,8 +329,8 @@ const remove = async (
   try {
     const id = Number(req.params.id);
     const oldNews = await db.select().from(news).where(eq(news.id, id));
-    const [deleted] = await db.delete(news).where(eq(news.id, id)).returning();
-    if (!deleted) {
+    
+    if (oldNews.length === 0) {
       res.status(404).json({
         message: 'News not found',
         status: 'error',
@@ -268,6 +339,19 @@ const remove = async (
       });
       return;
     }
+
+    // Delete images from Cloudinary before deleting from database
+    if (oldNews[0].visual_content && Array.isArray(oldNews[0].visual_content)) {
+      await deleteMultipleFromCloudinary(oldNews[0].visual_content);
+    }
+
+    // Delete from Telegram if it was originally created by website
+    if (oldNews[0].source === 'Website') {
+      await deleteFromTelegram(id);
+    }
+
+    const [deleted] = await db.delete(news).where(eq(news.id, id)).returning();
+    
     await logAudit({
       tableName: 'news',
       action: 'DELETE',
@@ -296,16 +380,188 @@ const remove = async (
   }
 };
 
-async function uploadToCloudinary(buffer: Buffer): Promise<string> {
-  return await new Promise<string>((resolve, reject) => {
-    cloudinary.uploader.upload_stream(
-      { folder: 'news' },
+async function uploadToCloudinary(buffer: Buffer): Promise<{ public_id: string; secure_url: string }> {
+  return await new Promise<{ public_id: string; secure_url: string }>((resolve, reject) => {
+    console.log('Starting Cloudinary upload, buffer size:', buffer.length);
+    
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { 
+        folder: 'news',
+        timeout: 60000, // 60 seconds timeout
+        resource_type: 'auto'
+      },
       (error, result) => {
-        if (error || !result) return reject(error);
-        resolve(result.secure_url);
+        if (error) {
+          console.error('Cloudinary upload error:', error);
+          return reject(error);
+        }
+        if (!result) {
+          console.error('Cloudinary upload failed - no result');
+          return reject(new Error('Upload failed - no result'));
+        }
+        console.log('Cloudinary upload successful:', result.public_id);
+        resolve({
+          public_id: result.public_id,
+          secure_url: result.secure_url
+        });
       }
-    ).end(buffer);
+    );
+    
+    uploadStream.end(buffer);
   });
+}
+
+async function deleteFromCloudinary(imageData: string | { public_id: string; secure_url: string }): Promise<void> {
+  try {
+    let publicId: string;
+    
+    if (typeof imageData === 'string') {
+      // Handle legacy string URLs
+      const urlParts = imageData.split('/');
+      const filenameWithExtension = urlParts[urlParts.length - 1];
+      publicId = `news/${filenameWithExtension.split('.')[0]}`;
+    } else {
+      // Handle new object structure
+      publicId = imageData.public_id;
+    }
+    
+    await cloudinary.uploader.destroy(publicId);
+    console.log(`Deleted image from Cloudinary: ${publicId}`);
+  } catch (error) {
+    console.error(`Error deleting image from Cloudinary:`, imageData, error);
+    // Don't throw error to avoid breaking the main deletion flow
+  }
+}
+
+async function deleteMultipleFromCloudinary(images: any[]): Promise<void> {
+  if (!images || images.length === 0) return;
+  
+  const deletePromises = images.map(image => deleteFromCloudinary(image));
+  await Promise.allSettled(deletePromises);
+}
+
+async function sendNewsToTelegram(newsData: any): Promise<number | null> {
+  try {
+    if (!token || !channelId) {
+      console.log('Telegram bot token or channel ID not configured');
+      return null;
+    }
+
+    const caption = `${newsData.title}\n\n${newsData.content}`;
+    
+    let telegramMessageId: number | null = null;
+    
+    if (newsData.visual_content && newsData.visual_content.length > 0) {
+      if (newsData.visual_content.length === 1) {
+        // Send single photo with caption
+        const imageUrl = typeof newsData.visual_content[0] === 'string' 
+          ? newsData.visual_content[0] 
+          : newsData.visual_content[0].secure_url;
+        const result = await bot.sendPhoto(channelId, imageUrl, {
+          caption: caption,
+          parse_mode: 'HTML'
+        });
+        telegramMessageId = result.message_id;
+      } else {
+        // Send multiple photos as media group
+        const media = newsData.visual_content.map((imageData: any, index: number) => ({
+          type: 'photo',
+          media: typeof imageData === 'string' ? imageData : imageData.secure_url,
+          caption: index === 0 ? caption : undefined, // Only first photo gets caption
+          parse_mode: 'HTML'
+        }));
+        
+        const result = await bot.sendMediaGroup(channelId, media);
+        // For media groups, we store the first message ID
+        telegramMessageId = result[0]?.message_id || null;
+      }
+    } else {
+      // Send text only
+      const result = await bot.sendMessage(channelId, caption, {
+        parse_mode: 'HTML'
+      });
+      console.log(`Telegram message ID: ${result}`);
+      telegramMessageId = result.message_id;
+    }
+    
+    console.log('News sent to Telegram successfully');
+    return telegramMessageId;
+  } catch (error) {
+    console.error('Error sending news to Telegram:', error);
+    // Don't throw error to avoid breaking the main news creation flow
+    return null;
+  }
+}
+
+async function editTelegramMessage(messageId: number, newsData: any): Promise<void> {
+  try {
+    if (!token || !channelId) {
+      console.log('Telegram bot token or channel ID not configured');
+      return;
+    }
+
+    const caption = `${newsData.title}\n\n${newsData.content}`;
+    
+    if (newsData.visual_content && newsData.visual_content.length > 0) {
+      if (newsData.visual_content.length === 1) {
+        // Edit photo with new caption
+        await bot.editMessageCaption(caption, {
+          chat_id: channelId,
+          message_id: messageId,
+          parse_mode: 'HTML'
+        });
+        console.log(`Edited Telegram message ${messageId} with new caption`);
+      } else {
+        // For multiple images, we can only edit the caption of the first image
+        // Note: Telegram doesn't support editing media groups, so we'll edit the caption only
+        await bot.editMessageCaption(caption, {
+          chat_id: channelId,
+          message_id: messageId,
+          parse_mode: 'HTML'
+        });
+        console.log(`Edited Telegram message ${messageId} caption (media group)`);
+      }
+    } else {
+      // Edit text message
+      await bot.editMessageText(caption, {
+        chat_id: channelId,
+        message_id: messageId,
+        parse_mode: 'HTML'
+      });
+      console.log(`Edited Telegram message ${messageId} with new text`);
+    }
+  } catch (error) {
+    console.error(`Error editing Telegram message ${messageId}:`, error);
+    // Don't throw error to avoid breaking the main update flow
+  }
+}
+
+async function deleteFromTelegram(newsId: number): Promise<void> {
+  try {
+    if (!token || !channelId) {
+      console.log('Telegram bot token or channel ID not configured');
+      return;
+    }
+
+    // Get the news item to find the telegram_message_id
+    const newsItem = await db.select().from(news).where(eq(news.id, newsId));
+    if (newsItem.length === 0) {
+      console.log(`News item not found for ID: ${newsId}`);
+      return;
+    }
+
+    const telegramMessageId = newsItem[0].telegram_message_id;
+    if (!telegramMessageId) {
+      console.log(`No Telegram message ID found for news ID: ${newsId}`);
+      return;
+    }
+
+    await bot.deleteMessage(channelId, telegramMessageId);
+    console.log(`Deleted Telegram message ${telegramMessageId} for news ID ${newsId}`);
+  } catch (error) {
+    console.error(`Error deleting Telegram message for news ID ${newsId}:`, error);
+    // Don't throw error to avoid breaking the main deletion flow
+  }
 }
 
 export default { get, getById, create, update, remove };

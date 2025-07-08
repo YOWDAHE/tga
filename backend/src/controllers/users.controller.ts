@@ -215,7 +215,6 @@ const update = async (
     if (role_name !== undefined) updateData.role_name = role_name;
     if (roles !== undefined) updateData.roles = roles;
 
-    console.log(updateData)
     const [updated] = await db
       .update(users)
       .set(updateData)
@@ -353,8 +352,6 @@ const updateProfile = async (
       });
       return;
     }
-
-    console.log(`update profile: ${req.body}, with token: ${req.user?.id}`)
 
     const { username, email, phone_number } = req.body;
     

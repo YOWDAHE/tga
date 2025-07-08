@@ -41,7 +41,7 @@ interface NewsItem {
   id: number
   title: string
   content: string
-  visual_content?: string[] | null
+  visual_content?: (string | { public_id: string; secure_url: string })[] | null
   source?: string
   published_date?: string
   created_by?: string
@@ -132,6 +132,14 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
   const [actioningComment, setActioningComment] = useState<Comment | null>(null)
   const [actionType, setActionType] = useState<"flag" | "unflag" | "hide" | "show" | "delete">("flag")
   const [actionReason, setActionReason] = useState("")
+
+  // Helper function to get image URL from either string or object
+  const getImageUrl = (imageData: string | { public_id: string; secure_url: string }): string => {
+    if (typeof imageData === 'string') {
+      return imageData;
+    }
+    return imageData.secure_url;
+  };
 
   const handleCommentAction = (comment: Comment, action: "flag" | "unflag" | "hide" | "show" | "delete") => {
     setActioningComment(comment)
@@ -265,10 +273,10 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
                 <div>
                   <Text size="sm" fw={500} mb="xs">Visual Content:</Text>
                   <Group>
-                    {news.visual_content.map((imageUrl, index) => (
+                    {news.visual_content.map((imageData, index) => (
                       <Image 
                         key={index}
-                        src={imageUrl} 
+                        src={getImageUrl(imageData)} 
                         alt={`News visual content ${index + 1}`} 
                         radius="md" 
                         width={200}

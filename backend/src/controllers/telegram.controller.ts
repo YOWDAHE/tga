@@ -3,6 +3,7 @@ import { Request, Response, NextFunction, response } from 'express';
 import TelegramBot from 'node-telegram-bot-api';
 import { db } from '../db';
 import { news } from '../db/schema';
+import { eq } from 'drizzle-orm';
 import { v2 as cloudinary } from 'cloudinary';
 
 const token = process.env.TELEGRAM_BOT_TOKEN!;
@@ -60,6 +61,60 @@ bot.on('channel_post', async (msg) => {
   }
 });
 
+// Handle edited channel posts
+bot.on('edited_channel_post', async (msg) => {
+  try {
+    console.log('Processing edited channel post:', msg.message_id);
+    
+    if (msg.media_group_id) {
+      
+      const groupId = msg.media_group_id;
+      if (!mediaGroups.has(groupId)) {
+        mediaGroups.set(groupId, []);
+        setTimeout(() => processEditedMediaGroup(groupId), 1000);
+      }
+      mediaGroups.get(groupId)!.push(msg);
+    } else {
+      
+      const existingNews = await db.select().from(news).where(eq(news.message_id, String(msg.message_id)));
+      
+      if (existingNews.length > 0) {
+        
+        await db.update(news)
+          .set({
+            title: msg.caption?.slice(0, 15).concat('...') || msg.text?.slice(0, 15).concat('...') || 'No title',
+            content: msg.caption || msg.text || '',
+            updatedAt: new Date(),
+          })
+          .where(eq(news.message_id, String(msg.message_id)));
+        
+        console.log('Updated news item for edited channel post:', msg.message_id);
+      } else {
+        console.log('No existing news found for edited message:', msg.message_id);
+      }
+    }
+  } catch (error) {
+    console.error('Error processing edited channel post:', error);
+  }
+});
+
+bot.on('channel_post_delete', async (msg) => {
+  try {
+    console.log('Processing deleted channel post:', msg.message_id);
+    const deletedNews = await db.delete(news)
+      .where(eq(news.message_id, String(msg.message_id)))
+      .returning();
+    
+    if (deletedNews.length > 0) {
+      console.log('Deleted news item for deleted channel post:', msg.message_id);
+    } else {
+      console.log('No existing news found for deleted message:', msg.message_id);
+    }
+  } catch (error) {
+    console.error('Error processing deleted channel post:', error);
+  }
+});
+
 async function processMediaGroup(groupId: string) {
   const messages: TelegramBot.Message[] = mediaGroups.get(groupId) || [];
   mediaGroups.delete(groupId);
@@ -85,6 +140,41 @@ async function processMediaGroup(groupId: string) {
     published_date: new Date(messages[0]?.date * 1000),
     created_by: 'telegram',
   });
+}
+
+// Handle edited media groups
+async function processEditedMediaGroup(groupId: string) {
+  const messages: TelegramBot.Message[] = mediaGroups.get(groupId) || [];
+  mediaGroups.delete(groupId);
+
+  messages.sort((a, b) => a.message_id - b.message_id);
+
+  const images: string[] = [];
+  for (const msg of messages) {
+    if (msg.photo && msg.photo.length > 0) {
+      const bestPhoto = msg.photo[msg.photo.length - 1];
+      const url = await uploadTelegramPhoto(bestPhoto.file_id);
+      images.push(url);
+    }
+  }
+
+  // Find and update the existing news entry
+  const existingNews = await db.select().from(news).where(eq(news.message_id, String(messages[0]?.message_id)));
+  
+  if (existingNews.length > 0) {
+    await db.update(news)
+      .set({
+        title: messages[0]?.caption?.slice(0, 15).concat('...') || 'No title',
+        content: messages[0]?.caption || '',
+        visual_content: images.length > 0 ? images : null,
+        updatedAt: new Date(),
+      })
+      .where(eq(news.message_id, String(messages[0]?.message_id)));
+    
+    console.log('Updated media group news item:', messages[0]?.message_id);
+  } else {
+    console.log('No existing news found for edited media group:', messages[0]?.message_id);
+  }
 }
 
 

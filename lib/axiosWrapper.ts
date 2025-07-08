@@ -6,9 +6,6 @@ const api: AxiosInstance = axios.create({
   // baseURL: process.env.BACKEND_API_URL,
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // api.interceptors.request.use((config) => {
@@ -76,7 +73,16 @@ export async function post<T = any>(
   config?: AxiosRequestConfig
 ): Promise<AxiosResponse<T>> {
   try {
-    return await api.post<T>(url, data, config);
+    // Set Content-Type based on data type
+    const headers: any = {};
+    if (data instanceof FormData) {
+      // Let browser set Content-Type for FormData
+      delete headers['Content-Type'];
+    } else {
+      headers['Content-Type'] = 'application/json';
+    }
+    
+    return await api.post<T>(url, data, { ...config, headers });
   } catch (error: any) {
     throw formatAxiosError(error);
   }
@@ -95,14 +101,23 @@ export async function get<T = any>(
   }
 }
 
-// PATCH wrapper
+// PUT wrapper
 export async function put<T = any>(
   url: string,
   data?: any,
   config?: AxiosRequestConfig
 ): Promise<AxiosResponse<T>> {
   try {
-    return await api.put<T>(url, data, config);
+    // Set Content-Type based on data type
+    const headers: any = {};
+    if (data instanceof FormData) {
+      // Let browser set Content-Type for FormData
+      delete headers['Content-Type'];
+    } else {
+      headers['Content-Type'] = 'application/json';
+    }
+    
+    return await api.put<T>(url, data, { ...config, headers });
   } catch (error: any) {
     throw formatAxiosError(error);
   }
