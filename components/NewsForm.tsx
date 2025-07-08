@@ -101,12 +101,14 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 		const files = event.target.files;
 		if (files && files.length > 0) {
 			const newFiles = Array.from(files);
-			setVisualFiles(newFiles);
-			form.setFieldValue("visual_content", newFiles);
+			// Add new files to existing ones instead of replacing
+			const updatedFiles = [...visualFiles, ...newFiles];
+			setVisualFiles(updatedFiles);
+			form.setFieldValue("visual_content", updatedFiles);
 			
-			// Create preview URLs for new files
+			// Create preview URLs for new files and add to existing previews
 			const newPreviews = newFiles.map(file => URL.createObjectURL(file));
-			setImagePreviews(newPreviews);
+			setImagePreviews(prev => [...prev, ...newPreviews]);
 		} else {
 			setVisualFiles([]);
 			setImagePreviews([]);
