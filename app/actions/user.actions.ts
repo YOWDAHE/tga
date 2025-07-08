@@ -17,6 +17,9 @@ export const userSchema = z.object({
 // Zod schema for user updates (only role_name and roles)
 export const userUpdateSchema = z.object({
     id: z.number(),
+    username: z.string().optional(),
+    email: z.string().email("Invalid email format").optional(),
+    phone_number: z.string().min(1, "Phone number is required").optional(),
     role_name: z.string().optional(),
     roles: z.array(z.enum(USER_PERMISSIONS)).optional(),
 });

@@ -7,13 +7,14 @@ import {
 	useEffect,
 	type ReactNode,
 } from "react";
+import { UserPermission, USER_PERMISSIONS } from "@/types/permissions";
 
 interface User {
 	id: number;
 	username: string;
 	email?: string;
 	phone_number?: string;
-	role?: string;
+	role_name?: string;
 	roles: string[];
 	createdAt?: string;
 	updatedAt?: string;
@@ -26,6 +27,9 @@ interface AuthContextType {
 	logout: () => void;
 	updateUser: (userData: Partial<User>) => void;
 	isLoading: boolean;
+	hasPermission: (permission: UserPermission) => boolean;
+	hasAnyPermission: (permissions: UserPermission[]) => boolean;
+	hasAllPermissions: (permissions: UserPermission[]) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -35,6 +39,9 @@ const AuthContext = createContext<AuthContextType>({
 	logout: () => {},
 	updateUser: () => {},
 	isLoading: true,
+	hasPermission: () => false,
+	hasAnyPermission: () => false,
+	hasAllPermissions: () => false,
 });
 
 export const useAuth = () => {
@@ -102,9 +109,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		}
 	};
 
+	// Role-based permission helpers
+	const hasPermission = (permission: UserPermission): boolean => {
+		if (!user || !user.roles) return false;
+		return user.roles.includes(permission);
+	};
+
+	const hasAnyPermission = (permissions: UserPermission[]): boolean => {
+		if (!user || !user.roles) return false;
+		return permissions.some(permission => user.roles.includes(permission));
+	};
+
+	const hasAllPermissions = (permissions: UserPermission[]): boolean => {
+		if (!user || !user.roles) return false;
+		return permissions.every(permission => user.roles.includes(permission));
+	};
+
 	return (
 		<AuthContext.Provider
-			value={{ user, isAuthenticated, login, logout, updateUser, isLoading }}
+			value={{ 
+				user, 
+				isAuthenticated, 
+				login, 
+				logout, 
+				updateUser, 
+				isLoading,
+				hasPermission,
+				hasAnyPermission,
+				hasAllPermissions,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>

@@ -22,17 +22,25 @@ import {
   IconLogout,
   IconChevronDown,
 } from "@tabler/icons-react"
+import { UserPermission } from "@/types/permissions"
 
-const navigationItems = [
+interface NavigationItem {
+  label: string;
+  icon: React.ComponentType<any>;
+  href: string;
+  permission?: UserPermission;
+}
+
+const navigationItems: NavigationItem[] = [
   { label: "Dashboard", icon: IconDashboard, href: "/" },
-  { label: "News Management", icon: IconNews, href: "/news" },
-  { label: "Archives", icon: IconArchive, href: "/archives" },
-  { label: "Categories", icon: IconCategory, href: "/categories" },
-  { label: "Homepage", icon: IconHome, href: "/homepage" },
-  { label: "Users", icon: IconUsers, href: "/users" },
-  { label: "Contact Info", icon: IconPhone, href: "/contact" },
-  { label: "Reports", icon: IconFlag, href: "/reports" },
-  { label: "Remarks", icon: IconMessage, href: "/remarks" },
+  { label: "News Management", icon: IconNews, href: "/news", permission: "NEWS_CRUD" },
+  { label: "Archives", icon: IconArchive, href: "/archives", permission: "ARCHIVES_CRUD" },
+  { label: "Categories", icon: IconCategory, href: "/categories", permission: "CATEGORY_CRUD" },
+  { label: "Homepage", icon: IconHome, href: "/homepage", permission: "HOMEPAGE_CRUD" },
+  { label: "Users", icon: IconUsers, href: "/users", permission: "USER_CRUD" },
+  { label: "Contact Info", icon: IconPhone, href: "/contact", permission: "HOMEPAGE_CRUD" },
+  { label: "Reports", icon: IconFlag, href: "/reports", permission: "NEWS_CRUD" },
+  { label: "Remarks", icon: IconMessage, href: "/remarks", permission: "REMARKS_CRUD" },
 ]
 
 interface AdminLayoutProps {
@@ -43,14 +51,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [opened, { toggle }] = useDisclosure()
   const pathname = usePathname()
   const router = useRouter()
-  const { user, logout, isAuthenticated } = useAuth()
+  const { user, logout, isAuthenticated, hasPermission } = useAuth()
 
   const handleLogout = () => {
     logout()
     router.push("/login")
   }
 
-  // Don't render layout for login page
+  // Filter navigation items based on user permissions
+  const filteredNavigationItems = navigationItems.filter(item => {
+    
+    if (!item.permission) return true;
+    return hasPermission(item.permission);
+  });
+
   if (pathname === "/login" || !isAuthenticated) {
     return <>{children}</>
   }
@@ -100,7 +114,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     {user?.username || "User"}
                   </Text>
                   <Text size="xs" c="dimmed">
-                    {user?.role || "User"}
+                    {user?.role_name || "User"}
                   </Text>
                 </div>
                 <IconChevronDown size={14} />
@@ -141,7 +155,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <Text size="xs" tt="uppercase" fw={700} c="gray.6" mb="lg">
             Navigation
           </Text>
-          {navigationItems.map((item) => (
+          {filteredNavigationItems.map((item) => (
             <NavLink
               key={item.href}
               active={pathname === item.href}
@@ -198,9 +212,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <AppShell.Main
         style={{
           backgroundColor: "#f8f9fa",
-          minHeight: "calc(100vh - 70px)",
-          // margin: 24,
-          // marginTop: 25,
+          minHeight: "100vh",
         }}
       >
         {children}

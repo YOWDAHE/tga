@@ -10,9 +10,11 @@ import landingRouter from './routes/landing.route.js';
 import remarksRouter from './routes/remarks.route.js';
 import contactRouter from './routes/contact.route.js';
 import authRouter from './routes/auth.route.js';
+import dashboardRouter from './routes/dashboard.route.js';
 import { authenticateJWT, authorizePermissions } from './middlewares/jwtAuth.js';
 import commentsRouter from './routes/comments.route.js';
 import usersRouter from './routes/users.route.js';
+import profileRouter from './routes/profile.route.js';
 import auditRouter from './routes/audit.route.js';
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -37,7 +39,9 @@ app.prepare().then(() => {
   server.use('/api/contact', authenticateJWT, authorizePermissions('HOMEPAGE_CRUD'), contactRouter);
   server.use('/api/comments', authenticateJWT, authorizePermissions('NEWS_CRUD'), commentsRouter);
   server.use('/api/users', authenticateJWT, authorizePermissions('USER_CRUD'), usersRouter);
+  server.use('/api/profile', profileRouter);
   server.use('/api/audit-logs', authenticateJWT, authorizePermissions('USER_CRUD'), auditRouter);
+  server.use('/api/dashboard', authenticateJWT, dashboardRouter);
 
   // Catch-all handler for Next.js pages
   server.all('*splat', (req, res) => {

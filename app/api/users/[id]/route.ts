@@ -41,6 +41,8 @@ export async function PUT(
         error: parsed.error.errors.map(e => e.message).join(", "),
       }, { status: 400 });
     }
+
+    console.log('Data from the /api route:', parsed.data)
     
     const res = await put(`/users/${id}`, parsed.data, {
       headers: {

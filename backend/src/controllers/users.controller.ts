@@ -193,6 +193,20 @@ const update = async (
       return;
     }
 
+    // Check if username is being changed and if it already exists
+    if (username && username !== oldUser[0].username) {
+      const existingUser = await db.select().from(users).where(eq(users.username, username));
+      if (existingUser.length > 0) {
+        res.status(409).json({
+          message: 'Username already exists',
+          status: 'error',
+          error: 'Username taken',
+          data: null,
+        });
+        return;
+      }
+    }
+
     // Build update object with only provided fields
     const updateData: any = { updatedAt: new Date() };
     if (username !== undefined) updateData.username = username;
@@ -201,6 +215,7 @@ const update = async (
     if (role_name !== undefined) updateData.role_name = role_name;
     if (roles !== undefined) updateData.roles = roles;
 
+    console.log(updateData)
     const [updated] = await db
       .update(users)
       .set(updateData)
@@ -221,7 +236,7 @@ const update = async (
     await logAudit({
       tableName: 'users',
       action: 'UPDATE',
-      description: `Updated user: ${oldUser[0].username}`,
+      description: `Updated user account: ${oldUser[0].username}`,
       oldData: oldUser[0] || null,
       newData: updated,
       user_id: req.user?.id,
@@ -281,4 +296,240 @@ const remove = async (
   }
 };
 
-export default { get, getById, create, update, remove };
+// Get current user's profile
+const getProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    if (!req.user?.id) {
+      res.status(401).json({
+        message: 'Unauthorized',
+        status: 'error',
+        error: 'Authentication required',
+        data: null,
+      });
+      return;
+    }
+
+    const userData = await db.select().from(users).where(eq(users.id, req.user.id));
+    if (userData.length === 0) {
+      res.status(404).json({
+        message: 'User not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Return user without password
+    const { password_hash, ...userWithoutPassword } = userData[0];
+    res.status(200).json({
+      message: 'Profile fetched successfully',
+      status: 'success',
+      error: null,
+      data: userWithoutPassword,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Update current user's profile
+const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    if (!req.user?.id) {
+      res.status(401).json({
+        message: 'Unauthorized',
+        status: 'error',
+        error: 'Authentication required',
+        data: null,
+      });
+      return;
+    }
+
+    console.log(`update profile: ${req.body}, with token: ${req.user?.id}`)
+
+    const { username, email, phone_number } = req.body;
+    
+    // Get current user data for audit logging
+    const oldUser = await db.select().from(users).where(eq(users.id, req.user.id));
+    if (oldUser.length === 0) {
+      res.status(404).json({
+        message: 'User not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Check if username is being changed and if it already exists
+    if (username && username !== oldUser[0].username) {
+      const existingUser = await db.select().from(users).where(eq(users.username, username));
+      if (existingUser.length > 0) {
+        res.status(409).json({
+          message: 'Username already exists',
+          status: 'error',
+          error: 'Username taken',
+          data: null,
+        });
+        return;
+      }
+    }
+
+    // Build update object
+    const updateData: any = { updatedAt: new Date() };
+    if (username !== undefined) updateData.username = username;
+    if (email !== undefined) updateData.email = email;
+    if (phone_number !== undefined) updateData.phone_number = phone_number;
+
+    const [updated] = await db
+      .update(users)
+      .set(updateData)
+      .where(eq(users.id, req.user.id))
+      .returning();
+
+    if (!updated) {
+      res.status(404).json({
+        message: 'User not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Create audit log entry
+    await logAudit({
+      tableName: 'users',
+      action: 'UPDATE',
+      description: 'Updated profile information',
+      oldData: oldUser[0],
+      newData: updated,
+      user_id: req.user.id,
+      changedBy: req.user.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
+
+    // Return user without password
+    const { password_hash, ...userWithoutPassword } = updated;
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      status: 'success',
+      error: null,
+      data: userWithoutPassword,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Change current user's password
+const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    if (!req.user?.id) {
+      res.status(401).json({
+        message: 'Unauthorized',
+        status: 'error',
+        error: 'Authentication required',
+        data: null,
+      });
+      return;
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({
+        message: 'Current password and new password are required',
+        status: 'error',
+        error: 'Missing fields',
+        data: null,
+      });
+      return;
+    }
+
+    // Get current user data
+    const userData = await db.select().from(users).where(eq(users.id, req.user.id));
+    if (userData.length === 0) {
+      res.status(404).json({
+        message: 'User not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userData[0].password_hash);
+    if (!isCurrentPasswordValid) {
+      res.status(400).json({
+        message: 'Current password is incorrect',
+        status: 'error',
+        error: 'Invalid password',
+        data: null,
+      });
+      return;
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    const [updated] = await db
+      .update(users)
+      .set({ 
+        password_hash: hashedNewPassword,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, req.user.id))
+      .returning();
+
+    if (!updated) {
+      res.status(404).json({
+        message: 'User not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Create audit log entry
+    await logAudit({
+      tableName: 'users',
+      action: 'UPDATE',
+      description: 'Changed password',
+      oldData: { ...userData[0], password_hash: '[HIDDEN]' },
+      newData: { ...updated, password_hash: '[HIDDEN]' },
+      user_id: req.user.id,
+      changedBy: req.user.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
+
+    res.status(200).json({
+      message: 'Password changed successfully',
+      status: 'success',
+      error: null,
+      data: { message: 'Password updated' },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { get, getById, create, update, remove, getProfile, updateProfile, changePassword };

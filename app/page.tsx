@@ -1,6 +1,6 @@
-"use client"
 import { IconNews, IconArchive, IconCategory, IconHome, IconDashboard } from "@tabler/icons-react"
 import Dashboard from "@/components/Dashboard"
+import { getDashboardDataServer } from "@/app/actionsServers/dashboard.server.actions"
 
 const navigationItems = [
   { label: "Dashboard", icon: IconDashboard, value: "dashboard" },
@@ -10,6 +10,8 @@ const navigationItems = [
   { label: "Homepage", icon: IconHome, value: "homepage" },
 ]
 
-export default function AdminDashboard() {
-  return <Dashboard />
+export default async function AdminDashboard() {
+  const dashboardResult = await getDashboardDataServer();
+  
+  return <Dashboard initialData={dashboardResult.success ? dashboardResult.data : null} />
 }

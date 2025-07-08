@@ -1,43 +1,65 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect } from "react"
-import { useRouter, usePathname } from "next/navigation"
-import { useAuth } from "@/contexts/AuthContext"
-import { Loader, Center } from "@mantine/core"
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { UserPermission } from "@/types/permissions";
+import { Center, Loader } from "@mantine/core";
 
 interface AuthGuardProps {
-  children: React.ReactNode
+	children: React.ReactNode;
+	requiredPermissions?: UserPermission[];
+	requireAny?: boolean;
 }
 
-const publicRoutes = ["/login", "/signup"]
+export default function AuthGuard({
+	children,
+	requiredPermissions = [],
+	requireAny = true,
+}: AuthGuardProps) {
+	const { isAuthenticated, isLoading, hasAnyPermission, hasAllPermissions } =
+		useAuth();
+	const router = useRouter();
 
-export default function AuthGuard({ children }: AuthGuardProps) {
-  const { isAuthenticated, user, isLoading } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
+	useEffect(() => {
+		if (!isLoading && !isAuthenticated) {
+			router.push("/login");
+		}
+	}, [isAuthenticated, isLoading, router]);
 
-  useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated && !publicRoutes.includes(pathname)) {
-        router.push("/login");
-        return;
-      }
-      if (isAuthenticated && pathname === "/login") {
-        router.push("/");
-        return;
-      }
-    }
-  }, [isAuthenticated, pathname, router, isLoading]);
+	if (isLoading) {
+		return (
+			<Center h="100vh">
+				<Loader size="lg" />
+			</Center>
+		);
+	}
 
-  if (isLoading || (!isAuthenticated && !publicRoutes.includes(pathname))) {
-    return (
-      <Center h="100vh">
-        <Loader size="lg" />
-      </Center>
-    );
-  }
+	if (!isAuthenticated) {
+		return null;
+	}
 
-  return <>{children}</>;
+	if (requiredPermissions.length > 0) {
+		const hasPermission =
+			requireAny ?
+				hasAnyPermission(requiredPermissions)
+			:	hasAllPermissions(requiredPermissions);
+
+		if (!hasPermission) {
+			return (
+				<div className="flex items-center justify-center min-h-screen">
+					<div className="text-center">
+						<h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+						<p className="text-gray-600">
+							You don't have the required permissions to access this page.
+						</p>
+					</div>
+				</div>
+			);
+		}
+	}
+
+	return <>{children}</>;
 }
