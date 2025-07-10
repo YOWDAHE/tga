@@ -185,6 +185,16 @@ const create = async (
       source: 'Website',
     });
 
+    // Prepare image buffers for LinkedIn
+    const imageBuffers: Buffer[] = [];
+    if (req.files && Array.isArray(req.files)) {
+      for (const file of req.files) {
+        imageBuffers.push(file.buffer);
+      }
+    } else if (req.file) {
+      imageBuffers.push(req.file.buffer);
+    }
+
     // Send to LinkedIn
     const linkedinPostId = await sendNewsToLinkedIn({
       title,
@@ -193,7 +203,7 @@ const create = async (
       published_date: published_date ? new Date(published_date) : new Date(),
       created_by: created_by || 'admin',
       source: 'Website',
-    });
+    }, imageBuffers);
 
     const [created] = await db.insert(news).values({
       title,
@@ -307,9 +317,19 @@ const update = async (
       await editTelegramMessage(messageIds, updated);
     }
 
+    // Prepare image buffers for LinkedIn if new images are uploaded
+    const imageBuffers: Buffer[] = [];
+    if (req.files && Array.isArray(req.files)) {
+      for (const file of req.files) {
+        imageBuffers.push(file.buffer);
+      }
+    } else if (req.file) {
+      imageBuffers.push(req.file.buffer);
+    }
+
     // Edit LinkedIn post only if it was originally created by website
     if (oldNews[0]?.source === 'Website' && oldNews[0]?.linkedin_message_id) {
-      await editLinkedInPost(oldNews[0].linkedin_message_id as string, updated);
+      await editLinkedInPost(oldNews[0].linkedin_message_id as string, updated, imageBuffers);
     }
     
     await logAudit({
@@ -622,7 +642,74 @@ async function deleteFromTelegram(newsId: number): Promise<void> {
 }
 
 // LinkedIn posting functions
-async function sendNewsToLinkedIn(newsData: any): Promise<string | null> {
+async function uploadImageToLinkedIn(imageBuffer: Buffer): Promise<string | null> {
+  try {
+    const accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
+    const apiUrl = process.env.LINKEDIN_API;
+    const sub = process.env.LINKEDIN_SUB;
+
+    if (!accessToken || !apiUrl || !sub) {
+      console.log('LinkedIn credentials not configured');
+      return null;
+    }
+
+    // First, register the image upload
+    const registerResponse = await fetch(`${apiUrl}/assets?action=registerUpload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'X-Restli-Protocol-Version': '2.0.0'
+      },
+      body: JSON.stringify({
+        registerUploadRequest: {
+          recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
+          owner: `urn:li:person:${sub}`,
+          serviceRelationships: [
+            {
+              relationshipType: 'OWNER',
+              identifier: 'urn:li:userGeneratedContent'
+            }
+          ]
+        }
+      })
+    });
+
+    if (!registerResponse.ok) {
+      const errorText = await registerResponse.text();
+      console.error('LinkedIn register upload error:', registerResponse.status, errorText);
+      return null;
+    }
+
+    const registerResult = await registerResponse.json();
+    const uploadUrl = registerResult.value.uploadMechanism['com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest'].uploadUrl;
+    const asset = registerResult.value.asset;
+
+    // Upload the image buffer directly to LinkedIn
+    const uploadResponse = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/octet-stream'
+      },
+      body: imageBuffer
+    });
+
+    if (!uploadResponse.ok) {
+      const errorText = await uploadResponse.text();
+      console.error('LinkedIn image upload error:', uploadResponse.status, errorText);
+      return null;
+    }
+
+    console.log('Image uploaded to LinkedIn successfully:', asset);
+    return asset;
+  } catch (error) {
+    console.error('Error uploading image to LinkedIn:', error);
+    return null;
+  }
+}
+
+async function sendNewsToLinkedIn(newsData: any, imageBuffers?: Buffer[]): Promise<string | null> {
   try {
     const accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
     const sub = process.env.LINKEDIN_SUB;
@@ -633,22 +720,67 @@ async function sendNewsToLinkedIn(newsData: any): Promise<string | null> {
       return null;
     }
 
+    // Upload images if present
+    let mediaAssets: any[] = [];
+    if (imageBuffers && imageBuffers.length > 0) {
+      for (let i = 0; i < imageBuffers.length; i++) {
+        try {
+          const asset = await uploadImageToLinkedIn(imageBuffers[i]);
+          if (asset) {
+            mediaAssets.push({
+              status: 'READY',
+              description: {
+                text: newsData.title
+              },
+              media: asset,
+              title: {
+                text: newsData.title
+              }
+            });
+          } else {
+            console.error(`Failed to upload image ${i + 1}/${imageBuffers.length} to LinkedIn`);
+            return null;
+          }
+        } catch (error) {
+          console.error(`Error uploading image ${i + 1}/${imageBuffers.length} to LinkedIn:`, error);
+          return null;
+        }
+      }
+    }
+
+    // Escape markdown link syntax characters for LinkedIn
+    const escapeLinkedInText = (text: string): string => {
+      return text
+        .replace(/\[/g, '')
+        .replace(/\]/g, '')
+        .replace(/\(/g, '')
+        .replace(/\)/g, '');
+    };
+
+    const escapedTitle = escapeLinkedInText(newsData.title);
+    const escapedContent = escapeLinkedInText(newsData.content);
+
     // Create the post content
-    const postContent = {
+    const postContent: any = {
       author: `urn:li:person:${sub}`,
       lifecycleState: 'PUBLISHED',
       specificContent: {
         'com.linkedin.ugc.ShareContent': {
           shareCommentary: {
-            text: `${newsData.title}\n\n${newsData.content}`
+            text: `${escapedTitle}\n\n${escapedContent}`
           },
-          shareMediaCategory: 'NONE'
+          shareMediaCategory: mediaAssets.length > 0 ? 'IMAGE' : 'NONE'
         }
       },
       visibility: {
         'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
       }
     };
+
+    // Add media assets if available
+    if (mediaAssets.length > 0) {
+      postContent.specificContent['com.linkedin.ugc.ShareContent'].media = mediaAssets;
+    }
 
     const response = await fetch(`${apiUrl}/ugcPosts`, {
       method: 'POST',
@@ -666,17 +798,22 @@ async function sendNewsToLinkedIn(newsData: any): Promise<string | null> {
       return null;
     }
 
-    const result = await response.json();
-    console.log('News posted to LinkedIn successfully:', result.id);
-    return result.id;
+    const postId = response.headers.get('x-restli-id');
+    if (!postId) {
+      console.error('LinkedIn API did not return x-restli-id header');
+      return null;
+    }
+
+    console.log('News posted to LinkedIn successfully:', postId);
+    console.log('LinkedIn response headers:', Object.fromEntries(response.headers.entries()));
+    return postId;
   } catch (error) {
     console.error('Error posting to LinkedIn:', error);
-    // Don't throw error to avoid breaking the main news creation flow
     return null;
   }
 }
 
-async function editLinkedInPost(linkedinPostId: string, newsData: any): Promise<void> {
+async function editLinkedInPost(linkedinPostId: string, newsData: any, imageBuffers?: Buffer[]): Promise<void> {
   try {
     const accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
     const apiUrl = process.env.LINKEDIN_API;
@@ -686,14 +823,11 @@ async function editLinkedInPost(linkedinPostId: string, newsData: any): Promise<
       return;
     }
 
-    // First, delete the existing post
     await deleteFromLinkedIn(linkedinPostId);
 
-    // Then create a new post
-    await sendNewsToLinkedIn(newsData);
+    await sendNewsToLinkedIn(newsData, imageBuffers);
   } catch (error) {
     console.error('Error editing LinkedIn post:', error);
-    // Don't throw error to avoid breaking the main update flow
   }
 }
 
@@ -706,22 +840,62 @@ async function deleteFromLinkedIn(linkedinPostId: string): Promise<void> {
       console.log('LinkedIn credentials or post ID not configured');
       return;
     }
-
-    const response = await fetch(`${apiUrl}/ugcPosts/${linkedinPostId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'X-Restli-Protocol-Version': '2.0.0'
-      }
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('LinkedIn delete API error:', response.status, errorText);
-      return;
+    let formattedPostId = linkedinPostId;
+  
+    if (!linkedinPostId.startsWith('urn:li:')) {
+      formattedPostId = `urn:li:share:${linkedinPostId}`;
     }
 
-    console.log(`Deleted LinkedIn post ${linkedinPostId} successfully`);
+    const encodedPostId = formattedPostId.replace(/:/g, '%3A');
+    let deleteUrls: string[];
+    if (formattedPostId.startsWith('urn:li:share:')) {
+      const shareId = formattedPostId.replace('urn:li:share:', '');
+      const ugcPostId = `urn:li:ugcPost:${shareId}`;
+      const encodedUgcPostId = ugcPostId.replace(/:/g, '%3A');
+      
+      console.log('Share URN detected, will try both formats:', formattedPostId, 'and', ugcPostId);
+      
+      // Try both share and ugcPost formats
+      deleteUrls = [
+        `${apiUrl}/ugcPosts/${encodedPostId}`,
+        `${apiUrl}/ugcPosts/${encodedUgcPostId}`,
+        `${apiUrl}/ugcPosts/${encodeURIComponent(ugcPostId)}`
+      ];
+    } else {
+      // For ugcPost URNs, use the standard format
+      deleteUrls = [
+        `${apiUrl}/ugcPosts/${encodedPostId}`,
+        `${apiUrl}/ugcPosts/${encodeURIComponent(formattedPostId)}`
+      ];
+    }
+
+    let success = false;
+    for (const deleteUrl of deleteUrls) {
+      try {
+        const response = await fetch(deleteUrl, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'X-Restli-Protocol-Version': '2.0.0'
+          }
+        });
+
+        if (response.ok) {
+          console.log(`Deleted LinkedIn post successfully using URL: ${deleteUrl}`);
+          success = true;
+          break;
+        } else {
+          const errorText = await response.text();
+          console.log(`Failed to delete with URL ${deleteUrl}:`, response.status, errorText);
+        }
+      } catch (error) {
+        console.log(`Error with URL ${deleteUrl}:`, error);
+      }
+    }
+
+    if (!success) {
+      console.error('Failed to delete LinkedIn post with all URL formats');
+    }
   } catch (error) {
     console.error(`Error deleting LinkedIn post ${linkedinPostId}:`, error);
     // Don't throw error to avoid breaking the main deletion flow
