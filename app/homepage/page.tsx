@@ -19,8 +19,6 @@ export default async function HomepagePage() {
     );
   }
 
-  console.log(homepage);
-
   return (
     <Suspense fallback={<Skeleton height={400} />}>
       <HomepageManagement
@@ -29,6 +27,7 @@ export default async function HomepagePage() {
         initialPractices={homepage.practices}
         initialPartners={homepage.partners}
         initialContactInfo={homepage.contactUs}
+        initialNewsLinks={homepage.newsLinks || []}
       />
     </Suspense>
   );

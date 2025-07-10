@@ -1,17 +1,17 @@
 import { type MantineColorsTuple, createTheme } from "@mantine/core"
 
-// Custom color palette
+// Custom color palette based on hsl(174, 21%, 56%)
 const primaryColor: MantineColorsTuple = [
-  "#e3f2fd",
-  "#bbdefb",
-  "#90caf9",
-  "#64b5f6",
-  "#42a5f5",
-  "#2196f3",
-  "#1e88e5",
-  "#1976d2",
-  "#1565c0",
-  "#0d47a1",
+  "#f0f7f6", // 50 - very light
+  "#e1f0ee", // 100 - light
+  "#c8e3e0", // 200 - lighter
+  "#a8d1cd", // 300 - light
+  "#7db8b3", // 400 - medium light
+  "#6ba8a3", // 500 - base color (hsl(174, 21%, 56%))
+  "#5a9792", // 600 - medium dark
+  "#4a8580", // 700 - dark
+  "#3d7370", // 800 - darker
+  "#2f615e", // 900 - very dark
 ]
 
 const secondaryColor: MantineColorsTuple = [
@@ -100,16 +100,16 @@ export const theme = createTheme({
 // Color utilities for consistent usage across the app
 export const colors = {
   primary: {
-    50: "#e3f2fd",
-    100: "#bbdefb",
-    200: "#90caf9",
-    300: "#64b5f6",
-    400: "#42a5f5",
-    500: "#2196f3",
-    600: "#1e88e5",
-    700: "#1976d2",
-    800: "#1565c0",
-    900: "#0d47a1",
+    50: "#f0f7f6",
+    100: "#e1f0ee",
+    200: "#c8e3e0",
+    300: "#a8d1cd",
+    400: "#7db8b3",
+    500: "#6ba8a3", // hsl(174, 21%, 56%)
+    600: "#5a9792",
+    700: "#4a8580",
+    800: "#3d7370",
+    900: "#2f615e",
   },
   secondary: {
     50: "#f3e5f5",

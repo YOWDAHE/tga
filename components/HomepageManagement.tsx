@@ -39,7 +39,10 @@ import TextAlign from "@tiptap/extension-text-align";
 import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { updateHomepage, uploadHomepageImage } from "@/app/actions/homepage.actions";
+import {
+	updateHomepage,
+	uploadHomepageImage,
+} from "@/app/actions/homepage.actions";
 import { useRouter } from "next/navigation";
 
 interface LandingPageContent {
@@ -95,6 +98,15 @@ interface ContactInfo {
 	updatedAt?: string;
 }
 
+interface NewsLink {
+	id: number;
+	title: string;
+	description: string;
+	link: string;
+	createdAt?: string;
+	updatedAt?: string;
+}
+
 interface HomepageManagementProps {
 	initialContent?: LandingPageContent;
 	initialStats?: Stat[];
@@ -102,6 +114,7 @@ interface HomepageManagementProps {
 	initialPartners?: Partner[];
 	initialTestimonials?: Testimonial[];
 	initialContactInfo?: ContactInfo[];
+	initialNewsLinks?: NewsLink[];
 }
 
 const initialContent: LandingPageContent = {
@@ -166,6 +179,21 @@ const mockContactInfo: ContactInfo[] = [
 	{ id: 3, medium: "WhatsApp", phone_number: "+1 234 567 8901" },
 ];
 
+const mockNewsLinks: NewsLink[] = [
+	{
+		id: 1,
+		title: "Latest News Update",
+		description: "Watch our latest news coverage",
+		link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	},
+	{
+		id: 2,
+		title: "Company Overview",
+		description: "Learn more about our company",
+		link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	},
+];
+
 export default function HomepageManagement({
 	initialContent: defaultContent = initialContent,
 	initialStats = mockStats,
@@ -173,6 +201,7 @@ export default function HomepageManagement({
 	initialPartners = mockPartners,
 	initialTestimonials = mockTestimonials,
 	initialContactInfo = mockContactInfo,
+	initialNewsLinks = mockNewsLinks,
 }: HomepageManagementProps) {
 	const router = useRouter();
 	// State for last fetched landing page
@@ -185,6 +214,8 @@ export default function HomepageManagement({
 		useState<Partner[]>(initialPartners);
 	const [originalContactUs, setOriginalContactUs] =
 		useState<ContactInfo[]>(initialContactInfo);
+	const [originalNewsLinks, setOriginalNewsLinks] =
+		useState<NewsLink[]>(initialNewsLinks);
 	// State for current edits
 	const [content, setContent] = useState<LandingPageContent>(defaultContent);
 	const [stats, setStats] = useState<Stat[]>(initialStats);
@@ -194,7 +225,11 @@ export default function HomepageManagement({
 		useState<Testimonial[]>(initialTestimonials);
 	const [contactInfo, setContactInfo] =
 		useState<ContactInfo[]>(initialContactInfo);
+	const [newsLinks, setNewsLinks] = useState<NewsLink[]>(initialNewsLinks);
 	const [aboutUsContent, setAboutUsContent] = useState(content.about_us);
+
+	// Loading states
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	// Modal states
 	const [statModalOpened, { open: openStatModal, close: closeStatModal }] =
@@ -215,6 +250,10 @@ export default function HomepageManagement({
 		contactModalOpened,
 		{ open: openContactModal, close: closeContactModal },
 	] = useDisclosure(false);
+	const [
+		newsLinkModalOpened,
+		{ open: openNewsLinkModal, close: closeNewsLinkModal },
+	] = useDisclosure(false);
 
 	// Editing states
 	const [editingStat, setEditingStat] = useState<Stat | null>(null);
@@ -223,6 +262,7 @@ export default function HomepageManagement({
 	const [editingTestimonial, setEditingTestimonial] =
 		useState<Testimonial | null>(null);
 	const [editingContact, setEditingContact] = useState<ContactInfo | null>(null);
+	const [editingNewsLink, setEditingNewsLink] = useState<NewsLink | null>(null);
 
 	const heroForm = useForm({
 		initialValues: {
@@ -270,6 +310,14 @@ export default function HomepageManagement({
 		},
 	});
 
+	const newsLinkForm = useForm({
+		initialValues: {
+			title: "",
+			description: "",
+			link: "",
+		},
+	});
+
 	const aboutUsEditor = useEditor({
 		extensions: [
 			StarterKit,
@@ -287,6 +335,7 @@ export default function HomepageManagement({
 	});
 
 	const handleAboutUsSubmit = async () => {
+		setIsSubmitting(true);
 		try {
 			const updatedContent = {
 				...content,
@@ -315,17 +364,20 @@ export default function HomepageManagement({
 				message: error.message || "An unexpected error occurred",
 				color: "red",
 			});
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
 	const handleHeroSubmit = async (values: typeof heroForm.values) => {
+		setIsSubmitting(true);
 		try {
 			// Handle file uploads first if files are selected
 			let updatedContent = { ...content, hero_title: values.hero_title };
 
 			// Upload logo if a new file is selected
 			if (values.logo_url instanceof File) {
-				const logoResult = await uploadHomepageImage(values.logo_url, 'logo');
+				const logoResult = await uploadHomepageImage(values.logo_url, "logo");
 				if (logoResult.success) {
 					updatedContent.logo_url = logoResult.data.imageUrl;
 				} else {
@@ -340,7 +392,10 @@ export default function HomepageManagement({
 
 			// Upload hero image if a new file is selected
 			if (values.hero_image_url instanceof File) {
-				const heroResult = await uploadHomepageImage(values.hero_image_url, 'hero_image');
+				const heroResult = await uploadHomepageImage(
+					values.hero_image_url,
+					"hero_image"
+				);
 				if (heroResult.success) {
 					updatedContent.hero_image_url = heroResult.data.imageUrl;
 				} else {
@@ -380,8 +435,10 @@ export default function HomepageManagement({
 				message: error.message || "An unexpected error occurred",
 				color: "red",
 			});
+		} finally {
+			heroForm.reset();
+			setIsSubmitting(false);
 		}
-		heroForm.reset();
 	};
 
 	// Reusable function to update stats
@@ -392,7 +449,7 @@ export default function HomepageManagement({
 				const { createdAt, updatedAt, ...rest } = item as any;
 				return rest;
 			});
-			
+
 			const updatePayload = {
 				stats: sanitizedStats,
 			};
@@ -420,26 +477,31 @@ export default function HomepageManagement({
 		}
 	};
 
-	const handleStatSubmit = async (values: typeof statForm.values) => {
-		const updatedStats =
-			editingStat ?
-				stats.map((item) =>
-					item.id === editingStat.id ? { ...item, ...values } : item
-				)
-			:	[...stats, { ...values }];
-		
-		const success = await handleStatsUpdate(updatedStats as Stat[]);
-		if (success) {
-			notifications.show({
-				title: "Success",
-				message:
-					editingStat ? "Stat updated successfully" : "Stat added successfully",
-				color: "green",
-			});
+		const handleStatSubmit = async (values: typeof statForm.values) => {
+		setIsSubmitting(true);
+		try {
+			const updatedStats =
+				editingStat ?
+					stats.map((item) =>
+						item.id === editingStat.id ? { ...item, ...values } : item
+					)
+				:	[...stats, { ...values }];
+			
+			const success = await handleStatsUpdate(updatedStats as Stat[]);
+			if (success) {
+				notifications.show({
+					title: "Success",
+					message:
+						editingStat ? "Stat updated successfully" : "Stat added successfully",
+					color: "green",
+				});
+			}
+			closeStatModal();
+			setEditingStat(null);
+			statForm.reset();
+		} finally {
+			setIsSubmitting(false);
 		}
-		closeStatModal();
-		setEditingStat(null);
-		statForm.reset();
 	};
 
 	// Reusable function to update practices
@@ -450,7 +512,7 @@ export default function HomepageManagement({
 				const { createdAt, updatedAt, ...rest } = item as any;
 				return rest;
 			});
-			
+
 			const updatePayload = {
 				practices: sanitizedPractices,
 			};
@@ -478,31 +540,37 @@ export default function HomepageManagement({
 		}
 	};
 
-	const handlePracticeSubmit = async (values: typeof practiceForm.values) => {
-		const updatedPractices =
-			editingPractice ?
-				practices.map((item) =>
-					item.id === editingPractice.id ? { ...item, ...values } : item
-				)
-			:	[...practices, { ...values }];
-		
-		const success = await handlePracticesUpdate(updatedPractices as Practice[]);
-		if (success) {
-			notifications.show({
-				title: "Success",
-				message:
-					editingPractice ?
-						"Practice updated successfully"
-					:	"Practice added successfully",
-				color: "green",
-			});
+		const handlePracticeSubmit = async (values: typeof practiceForm.values) => {
+		setIsSubmitting(true);
+		try {
+			const updatedPractices =
+				editingPractice ?
+					practices.map((item) =>
+						item.id === editingPractice.id ? { ...item, ...values } : item
+					)
+				:	[...practices, { ...values }];
+			
+			const success = await handlePracticesUpdate(updatedPractices as Practice[]);
+			if (success) {
+				notifications.show({
+					title: "Success",
+					message:
+						editingPractice ?
+							"Practice updated successfully"
+						:	"Practice added successfully",
+					color: "green",
+				});
+			}
+			closePracticeModal();
+			setEditingPractice(null);
+			practiceForm.reset();
+		} finally {
+			setIsSubmitting(false);
 		}
-		closePracticeModal();
-		setEditingPractice(null);
-		practiceForm.reset();
 	};
 
-	const handlePartnerSubmit = async (values: typeof partnerForm.values) => {
+		const handlePartnerSubmit = async (values: typeof partnerForm.values) => {
+		setIsSubmitting(true);
 		try {
 			const partnerData = {
 				...values,
@@ -553,10 +621,12 @@ export default function HomepageManagement({
 				message: error.message || "An unexpected error occurred",
 				color: "red",
 			});
+		} finally {
+			closePartnerModal();
+			setEditingPartner(null);
+			partnerForm.reset();
+			setIsSubmitting(false);
 		}
-		closePartnerModal();
-		setEditingPartner(null);
-		partnerForm.reset();
 	};
 
 	const handleTestimonialSubmit = (values: typeof testimonialForm.values) => {
@@ -569,7 +639,7 @@ export default function HomepageManagement({
 		} else {
 			const newTestimonial: Testimonial = {
 				id: Date.now(),
-				...values
+				...values,
 			};
 			setTestimonials((prev) => [...prev, newTestimonial]);
 		}
@@ -594,13 +664,13 @@ export default function HomepageManagement({
 						item.id === editingContact.id ? { ...item, ...values } : item
 					)
 				:	[...originalContactUs, { ...values }];
-			
+
 			// Remove createdAt and updatedAt from the data being sent
 			const sanitizedContactInfo = updatedContactInfo.map((item) => {
 				const { createdAt, updatedAt, ...rest } = item as any;
 				return rest;
 			});
-			
+
 			const updatePayload = {
 				contactUs: sanitizedContactInfo,
 			};
@@ -662,26 +732,6 @@ export default function HomepageManagement({
 		openPartnerModal();
 	};
 
-	const handleEditTestimonial = (testimonial: Testimonial) => {
-		setEditingTestimonial(testimonial);
-		testimonialForm.setValues({
-			client: testimonial.client,
-			position: testimonial.position,
-			content: testimonial.content,
-		});
-		openTestimonialModal();
-	};
-
-	const handleEditContact = (contact: ContactInfo) => {
-		setEditingContact(contact);
-		contactForm.setValues({
-			medium: contact.medium,
-			email: contact.email || "",
-			phone_number: contact.phone_number || "",
-		});
-		openContactModal();
-	};
-
 	// Delete handlers
 	const handleDeleteStat = async (id: number) => {
 		const updatedStats = stats.filter((item) => item.id !== id);
@@ -739,25 +789,90 @@ export default function HomepageManagement({
 		}
 	};
 
-	const handleDeleteTestimonial = async (id: number) => {
+	// News Links handlers
+	const handleNewsLinksUpdate = async (updatedNewsLinks: NewsLink[]) => {
 		try {
-			const updatedTestimonials = testimonials.filter((item) => item.id !== id);
+			// Remove createdAt and updatedAt from the data being sent
+			const sanitizedNewsLinks = updatedNewsLinks.map((item) => {
+				const { createdAt, updatedAt, ...rest } = item as any;
+				return rest;
+			});
+
 			const updatePayload = {
-				testimonials: updatedTestimonials,
+				newsLinks: sanitizedNewsLinks,
 			};
 			const result = await updateHomepage(updatePayload);
 			if (result.success) {
-				setTestimonials(updatedTestimonials);
-				notifications.show({
-					title: "Success",
-					message: "Testimonial deleted successfully",
-					color: "red",
-				});
+				// Update local state immediately
+				setNewsLinks(updatedNewsLinks);
+				setOriginalNewsLinks(updatedNewsLinks);
+				return true;
 			} else {
 				notifications.show({
 					title: "Error",
-					message: result.error || "Failed to delete testimonial",
+					message: result.error || "Failed to update news links",
 					color: "red",
+				});
+				return false;
+			}
+		} catch (error: any) {
+			notifications.show({
+				title: "Error",
+				message: error.message || "An unexpected error occurred",
+				color: "red",
+			});
+			return false;
+		}
+	};
+
+		const handleNewsLinkSubmit = async (values: typeof newsLinkForm.values) => {
+		setIsSubmitting(true);
+		try {
+			const updatedNewsLinks =
+				editingNewsLink ?
+					newsLinks.map((item) =>
+						item.id === editingNewsLink.id ? { ...item, ...values } : item
+					)
+				:	[...newsLinks, { ...values }];
+			
+			const success = await handleNewsLinksUpdate(updatedNewsLinks as NewsLink[]);
+			if (success) {
+				notifications.show({
+					title: "Success",
+					message:
+						editingNewsLink ?
+							"News link updated successfully"
+						:	"News link added successfully",
+					color: "green",
+				});
+			}
+			closeNewsLinkModal();
+			setEditingNewsLink(null);
+			newsLinkForm.reset();
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	const handleEditNewsLink = (newsLink: NewsLink) => {
+		setEditingNewsLink(newsLink);
+		newsLinkForm.setValues({
+			title: newsLink.title,
+			description: newsLink.description,
+			link: newsLink.link,
+		});
+		openNewsLinkModal();
+	};
+
+	const handleDeleteNewsLink = async (id: number) => {
+		try {
+			const updatedNewsLinks = newsLinks.filter((item) => item.id !== id);
+			const success = await handleNewsLinksUpdate(updatedNewsLinks);
+			if (success) {
+				notifications.show({
+					title: "Success",
+					message: "News link deleted successfully",
+					color: "green",
 				});
 			}
 		} catch (error: any) {
@@ -769,36 +884,11 @@ export default function HomepageManagement({
 		}
 	};
 
-	const handleDeleteContact = async (id: number) => {
-		try {
-			const updatedContactInfo = contactInfo.filter((item) => item.id !== id);
-			const updatePayload = {
-				contactUs: updatedContactInfo,
-			};
-			const result = await updateHomepage(updatePayload);
-			if (result.success) {
-				// Update local state immediately
-				setContactInfo(updatedContactInfo);
-				setOriginalContactUs(updatedContactInfo);
-				notifications.show({
-					title: "Success",
-					message: "Contact info deleted successfully",
-					color: "red",
-				});
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to delete contact info",
-					color: "red",
-				});
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
-		}
+	// Helper function to extract YouTube video ID
+	const getYouTubeVideoId = (url: string) => {
+		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+		const match = url.match(regExp);
+		return match && match[2].length === 11 ? match[2] : null;
 	};
 
 	return (
@@ -815,6 +905,7 @@ export default function HomepageManagement({
 					"stats",
 					"practices",
 					"partners",
+					"news-links",
 					"contact",
 				]}
 			>
@@ -914,7 +1005,9 @@ export default function HomepageManagement({
 										{...heroForm.getInputProps("hero_title")}
 									/>
 
-									<Button type="submit">Update Hero Section</Button>
+									<Button type="submit" loading={isSubmitting}>
+										Update Hero Section
+									</Button>
 								</Stack>
 							</form>
 						</Paper>
@@ -966,7 +1059,9 @@ export default function HomepageManagement({
 									</RichTextEditor.Toolbar>
 									<RichTextEditor.Content />
 								</RichTextEditor>
-								<Button onClick={handleAboutUsSubmit}>Update About Us</Button>
+								<Button onClick={handleAboutUsSubmit} loading={isSubmitting}>
+									Update About Us
+								</Button>
 							</Stack>
 						</Paper>
 					</Accordion.Panel>
@@ -1144,6 +1239,75 @@ export default function HomepageManagement({
 					</Accordion.Panel>
 				</Accordion.Item>
 
+				{/* News Links Section */}
+				<Accordion.Item value="news-links">
+					<Accordion.Control>
+						<Title order={4}>News Links</Title>
+					</Accordion.Control>
+					<Accordion.Panel>
+						<Paper withBorder p="md">
+							<Group justify="space-between" mb="md">
+								<Text fw={500}>News Links</Text>
+								<Button
+									leftSection={<IconPlus size={16} />}
+									onClick={() => {
+										setEditingNewsLink(null);
+										newsLinkForm.reset();
+										openNewsLinkModal();
+									}}
+								>
+									Add News Link
+								</Button>
+							</Group>
+
+							<SimpleGrid cols={{ base: 1, md: 2 }}>
+								{newsLinks.map((newsLink) => (
+									<Paper key={newsLink.id} withBorder p="md">
+										<Group justify="space-between" mb="xs">
+											<div>
+												<Text fw={500}>{newsLink.title}</Text>
+												<Text size="sm" c="dimmed">
+													{newsLink.description}
+												</Text>
+											</div>
+											<Group gap="xs">
+												<ActionIcon
+													variant="light"
+													color="orange"
+													onClick={() => handleEditNewsLink(newsLink)}
+												>
+													<IconEdit size={16} />
+												</ActionIcon>
+												<ActionIcon
+													variant="light"
+													color="red"
+													onClick={() => handleDeleteNewsLink(newsLink.id)}
+												>
+													<IconTrash size={16} />
+												</ActionIcon>
+											</Group>
+										</Group>
+										{/* YouTube Preview */}
+										{getYouTubeVideoId(newsLink.link) && (
+											<div style={{ marginTop: 8 }}>
+												<iframe
+													width="100%"
+													height="300"
+													src={`https://www.youtube.com/embed/${getYouTubeVideoId(newsLink.link)}`}
+													title={newsLink.title}
+													frameBorder="0"
+													allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+													allowFullScreen
+												/>
+											</div>
+										)}
+									</Paper>
+								))}
+							</SimpleGrid>
+						</Paper>
+					</Accordion.Panel>
+				</Accordion.Item>
+
 				{/* Testimonials Section */}
 				{/* <Accordion.Item value="testimonials">
 					<Accordion.Control>
@@ -1277,10 +1441,12 @@ export default function HomepageManagement({
 							{...statForm.getInputProps("description")}
 						/>
 						<Group justify="flex-end">
-							<Button variant="light" onClick={closeStatModal}>
+							<Button variant="light" onClick={closeStatModal} disabled={isSubmitting}>
 								Cancel
 							</Button>
-							<Button type="submit">{editingStat ? "Update" : "Add"}</Button>
+							<Button type="submit" loading={isSubmitting}>
+								{editingStat ? "Update" : "Add"}
+							</Button>
 						</Group>
 					</Stack>
 				</form>
@@ -1307,10 +1473,12 @@ export default function HomepageManagement({
 							{...practiceForm.getInputProps("description")}
 						/>
 						<Group justify="flex-end">
-							<Button variant="light" onClick={closePracticeModal}>
+							<Button variant="light" onClick={closePracticeModal} disabled={isSubmitting}>
 								Cancel
 							</Button>
-							<Button type="submit">{editingPractice ? "Update" : "Add"}</Button>
+							<Button type="submit" loading={isSubmitting}>
+								{editingPractice ? "Update" : "Add"}
+							</Button>
 						</Group>
 					</Stack>
 				</form>
@@ -1343,10 +1511,12 @@ export default function HomepageManagement({
 							{...partnerForm.getInputProps("description")}
 						/>
 						<Group justify="flex-end">
-							<Button variant="light" onClick={closePartnerModal}>
+							<Button variant="light" onClick={closePartnerModal} disabled={isSubmitting}>
 								Cancel
 							</Button>
-							<Button type="submit">{editingPartner ? "Update" : "Add"}</Button>
+							<Button type="submit" loading={isSubmitting}>
+								{editingPartner ? "Update" : "Add"}
+							</Button>
 						</Group>
 					</Stack>
 				</form>
@@ -1416,6 +1586,44 @@ export default function HomepageManagement({
 								Cancel
 							</Button>
 							<Button type="submit">{editingContact ? "Update" : "Add"}</Button>
+						</Group>
+					</Stack>
+				</form>
+			</Modal>
+
+			<Modal
+				opened={newsLinkModalOpened}
+				onClose={closeNewsLinkModal}
+				title={editingNewsLink ? "Edit News Link" : "Add News Link"}
+			>
+				<form onSubmit={newsLinkForm.onSubmit(handleNewsLinkSubmit)}>
+					<Stack>
+						<TextInput
+							label="Title"
+							placeholder="Enter news link title"
+							required
+							{...newsLinkForm.getInputProps("title")}
+						/>
+						<Textarea
+							label="Description"
+							placeholder="Enter news link description"
+							rows={3}
+							required
+							{...newsLinkForm.getInputProps("description")}
+						/>
+						<TextInput
+							label="YouTube Link"
+							placeholder="Enter YouTube URL"
+							required
+							{...newsLinkForm.getInputProps("link")}
+						/>
+						<Group justify="flex-end">
+							<Button variant="light" onClick={closeNewsLinkModal} disabled={isSubmitting}>
+								Cancel
+							</Button>
+							<Button type="submit" loading={isSubmitting}>
+								{editingNewsLink ? "Update" : "Add"}
+							</Button>
 						</Group>
 					</Stack>
 				</form>

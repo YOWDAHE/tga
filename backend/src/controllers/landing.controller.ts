@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
-import { landing, stats, partners, practices, contactUsInfo } from '../db/schema';
+import { landing, stats, partners, practices, contactUsInfo, news_links } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
 import { v2 as cloudinary } from 'cloudinary';
@@ -23,6 +23,7 @@ const get = async (
     const partnersData = await db.select().from(partners);
     const practicesData = await db.select().from(practices);
     const contactUsData = await db.select().from(contactUsInfo);
+    const newsLinksData = await db.select().from(news_links);
 
     res.status(200).json({
       message: 'Landing page data fetched successfully',
@@ -34,6 +35,7 @@ const get = async (
         partners: partnersData,
         practices: practicesData,
         contactUs: contactUsData,
+        newsLinks: newsLinksData,
       },
     });
   } catch (error) {
@@ -54,7 +56,7 @@ const create = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { landing: landingData, stats: statsArr, partners: partnersArr, practices: practicesArr, contactUs: contactUsArr } = req.body;
+    const { landing: landingData, stats: statsArr, partners: partnersArr, practices: practicesArr, contactUs: contactUsArr, newsLinks: newsLinksArr } = req.body;
 
     const [createdLanding] = await db.insert(landing).values(landingData).returning();
     await logAudit({
@@ -133,6 +135,23 @@ const create = async (
       });
     }
 
+    let createdNewsLinks: any[] = [];
+
+    if (Array.isArray(newsLinksArr)) {
+      createdNewsLinks = await db.insert(news_links).values(newsLinksArr).returning();
+      await logAudit({
+        tableName: 'news_links',
+        action: 'INSERT',
+        description: 'Created news links',
+        oldData: null,
+        newData: createdNewsLinks,
+        user_id: req.user?.id,
+        changedBy: req.user?.username,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'] as string,
+      });
+    }
+
     res.status(201).json({
       message: 'Landing data created successfully',
       status: 'success',
@@ -163,7 +182,7 @@ const update = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { landing: landingData, stats: statsArr, partners: partnersArr, practices: practicesArr, contactUs: contactUsArr } = req.body;
+    const { landing: landingData, stats: statsArr, partners: partnersArr, practices: practicesArr, contactUs: contactUsArr, newsLinks: newsLinksArr } = req.body;
 
     let updatedLanding = null;
     if (landingData && landingData.id) {
@@ -258,6 +277,25 @@ const update = async (
       });
     }
 
+    let updatedNewsLinks: any[] = [];
+
+    if (newsLinksArr && Array.isArray(newsLinksArr)) {
+      const oldNewsLinks = await db.select().from(news_links);
+      await db.delete(news_links);
+      updatedNewsLinks = await db.insert(news_links).values(newsLinksArr).returning();
+      await logAudit({    
+        tableName: 'news_links',
+        action: 'UPDATE',
+        description: 'Updated news links',
+        oldData: oldNewsLinks,
+        newData: updatedNewsLinks,
+        user_id: req.user?.id,
+        changedBy: req.user?.username,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'] as string,
+      });
+    }
+
     res.status(200).json({
       message: 'Landing data updated successfully',
       status: 'success',
@@ -268,6 +306,7 @@ const update = async (
         partners: updatedPartners,
         practices: updatedPractices,
         contactUs: updatedContactUs,
+        newsLinks: updatedNewsLinks,
       },
     });
   } catch (error) {
@@ -293,11 +332,13 @@ const remove = async (
     const oldPartners = await db.select().from(partners);
     const oldPractices = await db.select().from(practices);
     const oldContactUs = await db.select().from(contactUsInfo);
+    const oldNewsLinks = await db.select().from(news_links);
     await db.delete(landing);
     await db.delete(stats);
     await db.delete(partners);
     await db.delete(practices);
     await db.delete(contactUsInfo);
+    await db.delete(news_links);
     await logAudit({
       tableName: 'landing',
       action: 'DELETE',
@@ -353,7 +394,17 @@ const remove = async (
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'] as string,
     });
-
+    await logAudit({
+      tableName: 'news_links',
+      action: 'DELETE',
+      description: 'Deleted news links',
+      oldData: oldNewsLinks,
+      newData: null,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
     res.status(200).json({
       message: 'Landing data removed successfully',
       status: 'success',
@@ -403,7 +454,7 @@ const uploadImage = async (
     // Upload file to Cloudinary
     const uploadResult = await new Promise<any>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { 
+        {
           folder: 'landing', 
           resource_type: 'auto',
           transformation: imageType === 'hero_image' ? [

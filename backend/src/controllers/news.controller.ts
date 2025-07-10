@@ -175,8 +175,8 @@ const create = async (
         throw error;
       }
     }
-    // Send to Telegram channel first to get message ID
-    const telegramMessageId = await sendNewsToTelegram({
+    // Send to Telegram channel first to get message IDs
+    const telegramMessageIds = await sendNewsToTelegram({
       title,
       content,
       visual_content,
@@ -192,7 +192,7 @@ const create = async (
       published_date: published_date ? new Date(published_date) : new Date(),
       created_by: created_by || 'admin',
       source: 'Website',
-      telegram_message_id: telegramMessageId,
+      telegram_message_id: telegramMessageIds,
     }).returning();
     
     await logAudit({
@@ -290,7 +290,10 @@ const update = async (
     // Edit Telegram message only if it was originally created by website
     // This prevents editing news that came from Telegram
     if (oldNews[0]?.source === 'Website' && oldNews[0]?.telegram_message_id) {
-      await editTelegramMessage(oldNews[0].telegram_message_id, updated);
+      const messageIds = Array.isArray(oldNews[0].telegram_message_id) 
+        ? oldNews[0].telegram_message_id as number[]
+        : [oldNews[0].telegram_message_id as number];
+      await editTelegramMessage(messageIds, updated);
     }
     
     await logAudit({
@@ -440,16 +443,33 @@ async function deleteMultipleFromCloudinary(images: any[]): Promise<void> {
   await Promise.allSettled(deletePromises);
 }
 
-async function sendNewsToTelegram(newsData: any): Promise<number | null> {
+// Helper function to convert markdown to HTML for Telegram
+function markdownToHtml(text: string): string {
+  // Convert markdown links to HTML links
+  let htmlText = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  
+  // Convert markdown bold to HTML bold
+  htmlText = htmlText.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  
+  // Convert markdown italic to HTML italic
+  htmlText = htmlText.replace(/\*([^*]+)\*/g, '<i>$1</i>');
+  
+  // Convert markdown underline to HTML underline
+  htmlText = htmlText.replace(/<u>([^<]+)<\/u>/g, '<u>$1</u>');
+  
+  return htmlText;
+}
+
+async function sendNewsToTelegram(newsData: any): Promise<number[]> {
   try {
     if (!token || !channelId) {
       console.log('Telegram bot token or channel ID not configured');
-      return null;
+      return [];
     }
 
-    const caption = `${newsData.title}\n\n${newsData.content}`;
+    const caption = `${markdownToHtml(newsData.title)}\n\n${markdownToHtml(newsData.content)}`;
     
-    let telegramMessageId: number | null = null;
+    let telegramMessageIds: number[] = [];
     
     if (newsData.visual_content && newsData.visual_content.length > 0) {
       if (newsData.visual_content.length === 1) {
@@ -461,7 +481,7 @@ async function sendNewsToTelegram(newsData: any): Promise<number | null> {
           caption: caption,
           parse_mode: 'HTML'
         });
-        telegramMessageId = result.message_id;
+        telegramMessageIds = [result.message_id];
       } else {
         // Send multiple photos as media group
         const media = newsData.visual_content.map((imageData: any, index: number) => ({
@@ -472,8 +492,9 @@ async function sendNewsToTelegram(newsData: any): Promise<number | null> {
         }));
         
         const result = await bot.sendMediaGroup(channelId, media);
-        // For media groups, we store the first message ID
-        telegramMessageId = result[0]?.message_id || null;
+        console.log('Telegram media group result:', result);
+        // For media groups, we store all message IDs
+        telegramMessageIds = result.map((msg: any) => msg.message_id);
       }
     } else {
       // Send text only
@@ -481,57 +502,64 @@ async function sendNewsToTelegram(newsData: any): Promise<number | null> {
         parse_mode: 'HTML'
       });
       console.log(`Telegram message ID: ${result}`);
-      telegramMessageId = result.message_id;
+      telegramMessageIds = [result.message_id];
     }
     
     console.log('News sent to Telegram successfully');
-    return telegramMessageId;
+    return telegramMessageIds;
   } catch (error) {
     console.error('Error sending news to Telegram:', error);
     // Don't throw error to avoid breaking the main news creation flow
-    return null;
+    return [];
   }
 }
 
-async function editTelegramMessage(messageId: number, newsData: any): Promise<void> {
+async function editTelegramMessage(messageIds: number[], newsData: any): Promise<void> {
   try {
     if (!token || !channelId) {
       console.log('Telegram bot token or channel ID not configured');
       return;
     }
 
-    const caption = `${newsData.title}\n\n${newsData.content}`;
+    const caption = `${markdownToHtml(newsData.title)}\n\n${markdownToHtml(newsData.content)}`;
+    
+    // For editing, we can only edit the caption of the first message in a media group
+    const firstMessageId = messageIds[0];
+    if (!firstMessageId) {
+      console.log('No message IDs to edit');
+      return;
+    }
     
     if (newsData.visual_content && newsData.visual_content.length > 0) {
       if (newsData.visual_content.length === 1) {
         // Edit photo with new caption
         await bot.editMessageCaption(caption, {
           chat_id: channelId,
-          message_id: messageId,
+          message_id: firstMessageId,
           parse_mode: 'HTML'
         });
-        console.log(`Edited Telegram message ${messageId} with new caption`);
+        console.log(`Edited Telegram message ${firstMessageId} with new caption`);
       } else {
         // For multiple images, we can only edit the caption of the first image
         // Note: Telegram doesn't support editing media groups, so we'll edit the caption only
         await bot.editMessageCaption(caption, {
           chat_id: channelId,
-          message_id: messageId,
+          message_id: firstMessageId,
           parse_mode: 'HTML'
         });
-        console.log(`Edited Telegram message ${messageId} caption (media group)`);
+        console.log(`Edited Telegram message ${firstMessageId} caption (media group)`);
       }
     } else {
       // Edit text message
       await bot.editMessageText(caption, {
         chat_id: channelId,
-        message_id: messageId,
+        message_id: firstMessageId,
         parse_mode: 'HTML'
       });
-      console.log(`Edited Telegram message ${messageId} with new text`);
+      console.log(`Edited Telegram message ${firstMessageId} with new text`);
     }
   } catch (error) {
-    console.error(`Error editing Telegram message ${messageId}:`, error);
+    console.error(`Error editing Telegram messages:`, error);
     // Don't throw error to avoid breaking the main update flow
   }
 }
@@ -543,23 +571,31 @@ async function deleteFromTelegram(newsId: number): Promise<void> {
       return;
     }
 
-    // Get the news item to find the telegram_message_id
+    // Get the news item to find the telegram_message_ids
     const newsItem = await db.select().from(news).where(eq(news.id, newsId));
     if (newsItem.length === 0) {
       console.log(`News item not found for ID: ${newsId}`);
       return;
     }
 
-    const telegramMessageId = newsItem[0].telegram_message_id;
-    if (!telegramMessageId) {
-      console.log(`No Telegram message ID found for news ID: ${newsId}`);
+    const telegramMessageIds = newsItem[0].telegram_message_id;
+    if (!telegramMessageIds || !Array.isArray(telegramMessageIds) || telegramMessageIds.length === 0) {
+      console.log(`No Telegram message IDs found for news ID: ${newsId}`);
       return;
     }
 
-    await bot.deleteMessage(channelId, telegramMessageId);
-    console.log(`Deleted Telegram message ${telegramMessageId} for news ID ${newsId}`);
+    // Delete all messages in the array
+    for (const messageId of telegramMessageIds) {
+      try {
+        await bot.deleteMessage(channelId, messageId);
+        console.log(`Deleted Telegram message ${messageId} for news ID ${newsId}`);
+      } catch (error) {
+        console.error(`Error deleting Telegram message ${messageId}:`, error);
+        // Continue with other messages even if one fails
+      }
+    }
   } catch (error) {
-    console.error(`Error deleting Telegram message for news ID ${newsId}:`, error);
+    console.error(`Error deleting Telegram messages for news ID ${newsId}:`, error);
     // Don't throw error to avoid breaking the main deletion flow
   }
 }

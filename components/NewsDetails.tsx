@@ -20,6 +20,7 @@ import {
   Avatar,
   Divider,
   Image,
+  SimpleGrid,
 } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
@@ -272,20 +273,20 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
               {news.visual_content && news.visual_content.length > 0 && (
                 <div>
                   <Text size="sm" fw={500} mb="xs">Visual Content:</Text>
-                  <Group>
+                  <SimpleGrid cols={2}>
                     {news.visual_content.map((imageData, index) => (
                       <Image 
                         key={index}
                         src={getImageUrl(imageData)} 
                         alt={`News visual content ${index + 1}`} 
                         radius="md" 
-                        width={200}
-                        height={150}
+                        width='100%'
+                        height='100%'
                         fit="cover"
                         fallbackSrc="/placeholder.svg?height=150&width=200"
                       />
                     ))}
-                  </Group>
+                  </SimpleGrid>
                 </div>
               )}
 
