@@ -13,6 +13,9 @@ interface EnvConfig {
   DATABASE_USERNAME?: string;
   DATABASE_PASSWORD?: string;
   DATABASE_NAME?: string;
+  LINKEDIN_ACCESS_TOKEN?: string;
+  LINKEDIN_SUB?: string;
+  LINKEDIN_API?: string;
 }
 
 const envFile = `.env.${process.env.NODE_ENV || 'development'}.local`;
@@ -35,5 +38,8 @@ export const envConfig: EnvConfig = ({
   DATABASE_USERNAME: process.env.DATABASE_USERNAME,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
   DATABASE_NAME: process.env.DATABASE_NAME,
+  LINKEDIN_ACCESS_TOKEN: process.env.LINKEDIN_ACCESS_TOKEN,
+  LINKEDIN_SUB: process.env.LINKEDIN_SUB,
+  LINKEDIN_API: process.env.LINKEDIN_API,
 } = process.env as EnvConfig);
       

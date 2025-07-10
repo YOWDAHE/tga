@@ -185,6 +185,16 @@ const create = async (
       source: 'Website',
     });
 
+    // Send to LinkedIn
+    const linkedinPostId = await sendNewsToLinkedIn({
+      title,
+      content,
+      visual_content,
+      published_date: published_date ? new Date(published_date) : new Date(),
+      created_by: created_by || 'admin',
+      source: 'Website',
+    });
+
     const [created] = await db.insert(news).values({
       title,
       content,
@@ -193,6 +203,7 @@ const create = async (
       created_by: created_by || 'admin',
       source: 'Website',
       telegram_message_id: telegramMessageIds,
+      linkedin_message_id: linkedinPostId,
     }).returning();
     
     await logAudit({
@@ -295,6 +306,11 @@ const update = async (
         : [oldNews[0].telegram_message_id as number];
       await editTelegramMessage(messageIds, updated);
     }
+
+    // Edit LinkedIn post only if it was originally created by website
+    if (oldNews[0]?.source === 'Website' && oldNews[0]?.linkedin_message_id) {
+      await editLinkedInPost(oldNews[0].linkedin_message_id as string, updated);
+    }
     
     await logAudit({
       tableName: 'news',
@@ -351,6 +367,11 @@ const remove = async (
     // Delete from Telegram if it was originally created by website
     if (oldNews[0].source === 'Website') {
       await deleteFromTelegram(id);
+    }
+
+    // Delete from LinkedIn if it was originally created by website
+    if (oldNews[0].source === 'Website' && oldNews[0].linkedin_message_id) {
+      await deleteFromLinkedIn(oldNews[0].linkedin_message_id as string);
     }
 
     const [deleted] = await db.delete(news).where(eq(news.id, id)).returning();
@@ -596,6 +617,113 @@ async function deleteFromTelegram(newsId: number): Promise<void> {
     }
   } catch (error) {
     console.error(`Error deleting Telegram messages for news ID ${newsId}:`, error);
+    // Don't throw error to avoid breaking the main deletion flow
+  }
+}
+
+// LinkedIn posting functions
+async function sendNewsToLinkedIn(newsData: any): Promise<string | null> {
+  try {
+    const accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
+    const sub = process.env.LINKEDIN_SUB;
+    const apiUrl = process.env.LINKEDIN_API;
+
+    if (!accessToken || !sub || !apiUrl) {
+      console.log('LinkedIn credentials not configured');
+      return null;
+    }
+
+    // Create the post content
+    const postContent = {
+      author: `urn:li:person:${sub}`,
+      lifecycleState: 'PUBLISHED',
+      specificContent: {
+        'com.linkedin.ugc.ShareContent': {
+          shareCommentary: {
+            text: `${newsData.title}\n\n${newsData.content}`
+          },
+          shareMediaCategory: 'NONE'
+        }
+      },
+      visibility: {
+        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
+      }
+    };
+
+    const response = await fetch(`${apiUrl}/ugcPosts`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'X-Restli-Protocol-Version': '2.0.0'
+      },
+      body: JSON.stringify(postContent)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('LinkedIn API error:', response.status, errorText);
+      return null;
+    }
+
+    const result = await response.json();
+    console.log('News posted to LinkedIn successfully:', result.id);
+    return result.id;
+  } catch (error) {
+    console.error('Error posting to LinkedIn:', error);
+    // Don't throw error to avoid breaking the main news creation flow
+    return null;
+  }
+}
+
+async function editLinkedInPost(linkedinPostId: string, newsData: any): Promise<void> {
+  try {
+    const accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
+    const apiUrl = process.env.LINKEDIN_API;
+
+    if (!accessToken || !apiUrl || !linkedinPostId) {
+      console.log('LinkedIn credentials or post ID not configured');
+      return;
+    }
+
+    // First, delete the existing post
+    await deleteFromLinkedIn(linkedinPostId);
+
+    // Then create a new post
+    await sendNewsToLinkedIn(newsData);
+  } catch (error) {
+    console.error('Error editing LinkedIn post:', error);
+    // Don't throw error to avoid breaking the main update flow
+  }
+}
+
+async function deleteFromLinkedIn(linkedinPostId: string): Promise<void> {
+  try {
+    const accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
+    const apiUrl = process.env.LINKEDIN_API;
+
+    if (!accessToken || !apiUrl || !linkedinPostId) {
+      console.log('LinkedIn credentials or post ID not configured');
+      return;
+    }
+
+    const response = await fetch(`${apiUrl}/ugcPosts/${linkedinPostId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'X-Restli-Protocol-Version': '2.0.0'
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('LinkedIn delete API error:', response.status, errorText);
+      return;
+    }
+
+    console.log(`Deleted LinkedIn post ${linkedinPostId} successfully`);
+  } catch (error) {
+    console.error(`Error deleting LinkedIn post ${linkedinPostId}:`, error);
     // Don't throw error to avoid breaking the main deletion flow
   }
 }

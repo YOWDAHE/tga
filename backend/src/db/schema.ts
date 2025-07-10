@@ -37,8 +37,8 @@ export const news = pgTable('news', {
     view_count: integer('view_count').default(0).notNull(),
     source_id: varchar('source_id', { length: 255 }),
     message_id: varchar('message_id', { length: 255 }),
-    telegram_message_id: jsonb('telegram_message_id'), // Array of message IDs (even for single images)
-    linkedin_message_id: integer('linkedin_message_id'),
+    telegram_message_id: jsonb('telegram_message_id'), // Array of message IDs
+    linkedin_message_id: varchar('linkedin_message_id', { length: 255 }),
     twitter_message_id: integer('twitter_message_id'),
     published_date: timestamp('published_date', { withTimezone: true }),
     created_by: varchar('created_by', { length: 100 }),
