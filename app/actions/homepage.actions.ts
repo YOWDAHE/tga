@@ -1,4 +1,4 @@
-import { get, put } from '@/lib/axiosWrapper';
+import { get, post, put } from '@/lib/axiosWrapper';
 
 export async function updateHomepage(updateData: any) {
     try {
@@ -28,6 +28,20 @@ export async function uploadHomepageImage(file: File, imageType: 'hero_image' | 
         }
 
         return { success: true, data: data.data };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function uploadPartnerImage(file: File) {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await post('/landing/upload-partner', formData);
+
+        if (!res.data) throw new Error(res.data.error || 'Failed to upload partner image');
+        return { success: true, data: res.data };
     } catch (error: any) {
         return { success: false, error: error.message };
     }

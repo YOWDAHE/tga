@@ -4,6 +4,9 @@ import { landing, stats, partners, practices, contactUsInfo, news_links } from '
 import { eq } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
 import { v2 as cloudinary } from 'cloudinary';
+import * as fs from 'fs';
+import * as path from 'path';
+import { promisify } from 'util';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -533,4 +536,178 @@ const uploadImage = async (
   }
 };
 
-export default { get, create, update, remove, uploadImage };
+// UPLOAD PARTNER IMAGE TO SERVER
+const uploadPartnerImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        message: "File is required",
+        status: 'error',
+        error: "Validation error",
+        data: null,
+      });
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      res.status(400).json({
+        message: "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed",
+        status: 'error',
+        error: "Validation error",
+        data: null,
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    // const maxSize = 5 * 1024 * 1024; // 5MB
+    // if (req.file.size > maxSize) {
+    //   res.status(400).json({
+    //     message: "File size too large. Maximum size is 5MB",
+    //     status: 'error',
+    //     error: "Validation error",
+    //     data: null,
+    //   });
+    //   return;
+    // }
+
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = path.join(process.cwd(), 'backend', 'uploads', 'partners');
+    console.log(uploadsDir);
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    } else {
+      console.log('uploadsDir already exists');
+    }
+
+    // Generate unique filename
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileExtension = path.extname(req.file.originalname);
+    const filename = `partner_${timestamp}_${randomString}${fileExtension}`;
+    const filePath = path.join(uploadsDir, filename);
+
+    // Write file to server
+    const writeFile = promisify(fs.writeFile);
+    try {
+      await writeFile(filePath, req.file.buffer);
+    } catch (err) {
+      res.status(500).json({
+        message: "Failed to save file to server",
+        status: 'error',
+        error: err instanceof Error ? err.message : err,
+        data: null,
+      });
+      return;
+    }
+
+    // Generate public URL for serving the image
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+    const publicUrl = `${backendUrl}/uploads/partners/${filename}`;
+
+    res.status(200).json({
+      message: "Partner image uploaded successfully",
+      status: 'success',
+      error: null,
+      data: {
+        imageUrl: publicUrl,
+        filename: filename,
+        originalName: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to upload partner image",
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+// SERVE UPLOADED FILES
+const serveUploadedFile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { folder, filename } = req.params;
+    
+    // Validate folder to prevent directory traversal
+    const allowedFolders = ['partners'];
+    if (!allowedFolders.includes(folder)) {
+      res.status(400).json({
+        message: "Invalid folder",
+        status: 'error',
+        error: "Validation error",
+        data: null,
+      });
+      return;
+    }
+
+    const filePath = path.join(process.cwd(), 'uploads', folder, filename);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({
+        message: "File not found",
+        status: 'error',
+        error: "Not found",
+        data: null,
+      });
+      return;
+    }
+
+    // Get file stats
+    const stats = fs.statSync(filePath);
+    
+    // Detect content type based on file extension
+    const ext = path.extname(filename).toLowerCase();
+    let contentType = 'image/jpeg'; // default
+    
+    switch (ext) {
+      case '.png':
+        contentType = 'image/png';
+        break;
+      case '.gif':
+        contentType = 'image/gif';
+        break;
+      case '.webp':
+        contentType = 'image/webp';
+        break;
+      case '.jpg':
+      case '.jpeg':
+        contentType = 'image/jpeg';
+        break;
+    }
+    
+    // Set appropriate headers
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Length', stats.size);
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+    
+    // Stream the file
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to serve file",
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+export default { get, create, update, remove, uploadImage, uploadPartnerImage, serveUploadedFile };

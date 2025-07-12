@@ -10,5 +10,7 @@ landingRouter.post('/', landingController.create);
 landingRouter.put('/', landingController.update);
 landingRouter.delete('/:id', landingController.remove);
 landingRouter.post('/upload', upload.single('file'), landingController.uploadImage);
+landingRouter.post('/upload-partner', upload.single('file'), landingController.uploadPartnerImage);
+landingRouter.get('/uploads/:folder/:filename', landingController.serveUploadedFile);
 
 export default landingRouter;

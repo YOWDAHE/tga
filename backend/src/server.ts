@@ -1,6 +1,8 @@
 import { envConfig } from './configs/env.config.js';
 import next from 'next';
 import configureExpress from './configs/express.config.js';
+import path from 'path';
+import express from 'express';
 import uploadsRouter from './routes/uploads.route.js';
 import categoryRouter from './routes/category.route.js';
 import searchRouter from './routes/search.route.js';
@@ -42,6 +44,13 @@ app.prepare().then(() => {
   server.use('/api/profile', profileRouter);
   server.use('/api/audit-logs', authenticateJWT, authorizePermissions('USER_CRUD'), auditRouter);
   server.use('/api/dashboard', authenticateJWT, dashboardRouter);
+
+  // Serve uploaded files statically
+  server.use('/uploads', (req, res, next) => {
+    // Add cache headers for images
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+    next();
+  }, express.static(path.join(process.cwd(), 'backend', 'uploads')));
 
   // Catch-all handler for Next.js pages
   server.all('*splat', (req, res) => {

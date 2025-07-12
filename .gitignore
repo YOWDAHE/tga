@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# uploaded files (keep directory structure)
+backend/uploads/*/
+!backend/uploads/*/.gitkeep

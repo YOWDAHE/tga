@@ -196,14 +196,14 @@ const create = async (
     }
 
     // Send to LinkedIn
-    const linkedinPostId = await sendNewsToLinkedIn({
-      title,
-      content,
-      visual_content,
-      published_date: published_date ? new Date(published_date) : new Date(),
-      created_by: created_by || 'admin',
-      source: 'Website',
-    }, imageBuffers);
+    // const linkedinPostId = await sendNewsToLinkedIn({
+    //   title,
+    //   content,
+    //   visual_content,
+    //   published_date: published_date ? new Date(published_date) : new Date(),
+    //   created_by: created_by || 'admin',
+    //   source: 'Website',
+    // }, imageBuffers);
 
     const [created] = await db.insert(news).values({
       title,
@@ -213,7 +213,7 @@ const create = async (
       created_by: created_by || 'admin',
       source: 'Website',
       telegram_message_id: telegramMessageIds,
-      linkedin_message_id: linkedinPostId,
+      // linkedin_message_id: linkedinPostId,
     }).returning();
     
     await logAudit({

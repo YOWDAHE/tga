@@ -3,6 +3,7 @@
 import { useState } from "react";
 import "@mantine/core/styles.css";
 import "@mantine/tiptap/styles.css";
+import Image from "next/image";
 import {
 	Title,
 	Button,
@@ -13,7 +14,6 @@ import {
 	Stack,
 	Group,
 	FileInput,
-	Image,
 	Grid,
 	Accordion,
 	ActionIcon,
@@ -42,8 +42,10 @@ import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import {
 	updateHomepage,
 	uploadHomepageImage,
+	uploadPartnerImage,
 } from "@/app/actions/homepage.actions";
 import { useRouter } from "next/navigation";
+import { title } from "process";
 
 interface LandingPageContent {
 	id?: number;
@@ -227,6 +229,8 @@ export default function HomepageManagement({
 		useState<ContactInfo[]>(initialContactInfo);
 	const [newsLinks, setNewsLinks] = useState<NewsLink[]>(initialNewsLinks);
 	const [aboutUsContent, setAboutUsContent] = useState(content.about_us);
+	const [practiceDescriptionContent, setPracticeDescriptionContent] =
+		useState("");
 
 	// Loading states
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -282,7 +286,6 @@ export default function HomepageManagement({
 	const practiceForm = useForm({
 		initialValues: {
 			title: "",
-			description: "",
 		},
 	});
 
@@ -331,6 +334,22 @@ export default function HomepageManagement({
 		content: aboutUsContent,
 		onUpdate: ({ editor }) => {
 			setAboutUsContent(editor.getHTML());
+		},
+	});
+
+	const practiceDescriptionEditor = useEditor({
+		extensions: [
+			StarterKit,
+			Underline,
+			Link,
+			Superscript,
+			SubScript,
+			Highlight,
+			TextAlign.configure({ types: ["heading", "paragraph"] }),
+		],
+		content: practiceDescriptionContent,
+		onUpdate: ({ editor }) => {
+			setPracticeDescriptionContent(editor.getHTML());
 		},
 	});
 
@@ -477,7 +496,7 @@ export default function HomepageManagement({
 		}
 	};
 
-		const handleStatSubmit = async (values: typeof statForm.values) => {
+	const handleStatSubmit = async (values: typeof statForm.values) => {
 		setIsSubmitting(true);
 		try {
 			const updatedStats =
@@ -486,7 +505,7 @@ export default function HomepageManagement({
 						item.id === editingStat.id ? { ...item, ...values } : item
 					)
 				:	[...stats, { ...values }];
-			
+
 			const success = await handleStatsUpdate(updatedStats as Stat[]);
 			if (success) {
 				notifications.show({
@@ -540,16 +559,33 @@ export default function HomepageManagement({
 		}
 	};
 
-		const handlePracticeSubmit = async (values: typeof practiceForm.values) => {
+	const handlePracticeSubmit = async (values: typeof practiceForm.values) => {
 		setIsSubmitting(true);
 		try {
+			// Validate that description content is not empty
+			if (!practiceDescriptionContent.trim()) {
+				notifications.show({
+					title: "Error",
+					message: "Practice description is required",
+					color: "red",
+				});
+				return;
+			}
+
+			// Use the rich text editor content for description
+			const practiceData = {
+				// ...values,
+				title: values.title.toUpperCase(),
+				description: practiceDescriptionContent,
+			};
+
 			const updatedPractices =
 				editingPractice ?
 					practices.map((item) =>
-						item.id === editingPractice.id ? { ...item, ...values } : item
+						item.id === editingPractice.id ? { ...item, ...practiceData } : item
 					)
-				:	[...practices, { ...values }];
-			
+				:	[...practices, { ...practiceData }];
+
 			const success = await handlePracticesUpdate(updatedPractices as Practice[]);
 			if (success) {
 				notifications.show({
@@ -564,34 +600,52 @@ export default function HomepageManagement({
 			closePracticeModal();
 			setEditingPractice(null);
 			practiceForm.reset();
+			setPracticeDescriptionContent("");
+			practiceDescriptionEditor?.commands.setContent("");
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
-		const handlePartnerSubmit = async (values: typeof partnerForm.values) => {
+	const handlePartnerSubmit = async (values: typeof partnerForm.values) => {
 		setIsSubmitting(true);
 		try {
+			console.log(values);
+			let logoUrl = editingPartner?.logo_url || "";
+
+			// Upload new image if provided
+			if (values.logo_url instanceof File) {
+				const uploadResult = await uploadPartnerImage(values.logo_url);
+				if (uploadResult.success) {
+					logoUrl = uploadResult.data.imageUrl;
+				} else {
+					notifications.show({
+						title: "Error",
+						message: uploadResult.error || "Failed to upload partner logo",
+						color: "red",
+					});
+					return;
+				}
+			}
+
 			const partnerData = {
 				...values,
-				logo_url:
-					values.logo_url ?
-						URL.createObjectURL(values.logo_url)
-					:	editingPartner?.logo_url || "",
+				logo_url: logoUrl,
 			};
+
 			const updatedPartners =
 				editingPartner ?
 					originalPartners.map((item) =>
 						item.id === editingPartner.id ? { ...item, ...partnerData } : item
 					)
 				:	[...originalPartners, { ...partnerData }];
-			
+
 			// Remove createdAt and updatedAt from the data being sent
 			const sanitizedPartners = updatedPartners.map((item) => {
 				const { createdAt, updatedAt, ...rest } = item as any;
 				return rest;
 			});
-			
+
 			const updatePayload = {
 				partners: sanitizedPartners,
 			};
@@ -717,8 +771,10 @@ export default function HomepageManagement({
 		setEditingPractice(practice);
 		practiceForm.setValues({
 			title: practice.title,
-			description: practice.description,
 		});
+		// Set the rich text editor content
+		setPracticeDescriptionContent(practice.description);
+		practiceDescriptionEditor?.commands.setContent(practice.description);
 		openPracticeModal();
 	};
 
@@ -825,7 +881,7 @@ export default function HomepageManagement({
 		}
 	};
 
-		const handleNewsLinkSubmit = async (values: typeof newsLinkForm.values) => {
+	const handleNewsLinkSubmit = async (values: typeof newsLinkForm.values) => {
 		setIsSubmitting(true);
 		try {
 			const updatedNewsLinks =
@@ -834,7 +890,7 @@ export default function HomepageManagement({
 						item.id === editingNewsLink.id ? { ...item, ...values } : item
 					)
 				:	[...newsLinks, { ...values }];
-			
+
 			const success = await handleNewsLinksUpdate(updatedNewsLinks as NewsLink[]);
 			if (success) {
 				notifications.show({
@@ -891,6 +947,19 @@ export default function HomepageManagement({
 		return match && match[2].length === 11 ? match[2] : null;
 	};
 
+	// Helper function to get full image URL
+	const getImageUrl = (imagePath: string) => {
+		if (!imagePath) return "/placeholder.svg";
+
+		// If it's already a full URL (starts with http), return as is
+		if (imagePath.startsWith("http")) {
+			return imagePath;
+		}
+
+		// For other cases, return as is (like placeholder images)
+		return imagePath;
+	};
+
 	return (
 		<div style={{ padding: "24px" }}>
 			<Title order={2} mb="lg">
@@ -944,11 +1013,11 @@ export default function HomepageManagement({
 														}}
 													>
 														<Image
-															src={content.logo_url}
+															src={getImageUrl(content.logo_url)}
 															alt="Logo"
-															h={100}
-															w="auto"
-															fit="contain"
+															height={100}
+															width={100}
+															objectFit="contain"
 														/>
 													</div>
 												:	<Group justify="center" align="center" style={{ height: 100 }}>
@@ -983,11 +1052,11 @@ export default function HomepageManagement({
 														}}
 													>
 														<Image
-															src={content.hero_image_url}
+															src={getImageUrl(content.hero_image_url)}
 															alt="Hero Image"
-															h={100}
-															w="auto"
-															fit="contain"
+															height={100}
+															width={100}
+															objectFit="contain"
 														/>
 													</div>
 												:	<Group justify="center" align="center" style={{ height: 100 }}>
@@ -1165,9 +1234,11 @@ export default function HomepageManagement({
 												</ActionIcon>
 											</Group>
 										</Group>
-										<Text size="sm" c="dimmed">
-											{practice.description}
-										</Text>
+										<Text
+											size="sm"
+											c="dimmed"
+											dangerouslySetInnerHTML={{ __html: practice.description }}
+										/>
 									</Paper>
 								))}
 							</SimpleGrid>
@@ -1202,11 +1273,15 @@ export default function HomepageManagement({
 										<Group justify="space-between" mb="xs">
 											<Group>
 												<Image
-													src={partner.logo_url || "/placeholder.svg"}
+													src={partner.logo_url}
 													alt={partner.name}
-													h={40}
-													w={80}
-													fit="contain"
+													height={80}
+													width={80}
+													objectFit="contain"
+													style={{
+														objectFit: "contain",
+														objectPosition: "center",
+													}}
 												/>
 												<div>
 													<Text fw={500}>{partner.name}</Text>
@@ -1465,15 +1540,63 @@ export default function HomepageManagement({
 							required
 							{...practiceForm.getInputProps("title")}
 						/>
-						<Textarea
-							label="Description"
-							placeholder="Enter practice description"
-							rows={3}
-							required
-							{...practiceForm.getInputProps("description")}
-						/>
+						<Text size="sm" fw={500} mb={8}>
+							Description
+						</Text>
+						<RichTextEditor editor={practiceDescriptionEditor}>
+							<RichTextEditor.Toolbar sticky stickyOffset={60}>
+								<RichTextEditor.ControlsGroup>
+									<RichTextEditor.Bold />
+									<RichTextEditor.Italic />
+									<RichTextEditor.Underline />
+									<RichTextEditor.Strikethrough />
+									<RichTextEditor.Highlight />
+								</RichTextEditor.ControlsGroup>
+
+								<RichTextEditor.ControlsGroup>
+									<RichTextEditor.H1 />
+									<RichTextEditor.H2 />
+									<RichTextEditor.H3 />
+									<RichTextEditor.H4 />
+								</RichTextEditor.ControlsGroup>
+
+								<RichTextEditor.ControlsGroup>
+									<RichTextEditor.BulletList />
+									<RichTextEditor.OrderedList />
+									<RichTextEditor.Hr />
+									<RichTextEditor.Blockquote />
+								</RichTextEditor.ControlsGroup>
+
+								<RichTextEditor.ControlsGroup>
+									<RichTextEditor.Link />
+									<RichTextEditor.Unlink />
+								</RichTextEditor.ControlsGroup>
+
+								<RichTextEditor.ControlsGroup>
+									<RichTextEditor.AlignLeft />
+									<RichTextEditor.AlignCenter />
+									<RichTextEditor.AlignRight />
+									<RichTextEditor.AlignJustify />
+								</RichTextEditor.ControlsGroup>
+
+								<RichTextEditor.ControlsGroup>
+									<RichTextEditor.Superscript />
+									<RichTextEditor.Subscript />
+								</RichTextEditor.ControlsGroup>
+							</RichTextEditor.Toolbar>
+
+							<RichTextEditor.Content />
+						</RichTextEditor>
 						<Group justify="flex-end">
-							<Button variant="light" onClick={closePracticeModal} disabled={isSubmitting}>
+							<Button
+								variant="light"
+								onClick={() => {
+									closePracticeModal();
+									setPracticeDescriptionContent("");
+									practiceDescriptionEditor?.commands.setContent("");
+								}}
+								disabled={isSubmitting}
+							>
 								Cancel
 							</Button>
 							<Button type="submit" loading={isSubmitting}>
@@ -1511,7 +1634,11 @@ export default function HomepageManagement({
 							{...partnerForm.getInputProps("description")}
 						/>
 						<Group justify="flex-end">
-							<Button variant="light" onClick={closePartnerModal} disabled={isSubmitting}>
+							<Button
+								variant="light"
+								onClick={closePartnerModal}
+								disabled={isSubmitting}
+							>
 								Cancel
 							</Button>
 							<Button type="submit" loading={isSubmitting}>
@@ -1618,7 +1745,11 @@ export default function HomepageManagement({
 							{...newsLinkForm.getInputProps("link")}
 						/>
 						<Group justify="flex-end">
-							<Button variant="light" onClick={closeNewsLinkModal} disabled={isSubmitting}>
+							<Button
+								variant="light"
+								onClick={closeNewsLinkModal}
+								disabled={isSubmitting}
+							>
 								Cancel
 							</Button>
 							<Button type="submit" loading={isSubmitting}>
