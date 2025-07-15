@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
 	commentService,
-	type Comment as CommentType,
+	type Comment,
 } from "@/lib/commentService";
+import CommentLikeDisplay from "./CommentLikeDisplay";
 import {
 	Title,
 	Button,
@@ -63,21 +64,6 @@ interface NewsItem {
 	read_minutes?: number;
 }
 
-interface Comment {
-	id: number;
-	news_id: number;
-	user_name: string;
-	content: string;
-	likes: number;
-	dislikes: number;
-	visible: boolean;
-	edited: boolean;
-	flagged: boolean;
-	flagged_reason?: string;
-	createdAt: string;
-	updatedAt: string;
-}
-
 interface NewsDetailsProps {
 	news: NewsItem;
 }
@@ -108,6 +94,7 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 		const fetchComments = async () => {
 			try {
 				setLoading(true);
+				// Admin view - no username needed for like status
 				const result = await commentService.getCommentsByNewsId(news.id);
 				if (result.success && result.data) {
 					setComments(result.data);
@@ -619,16 +606,7 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 													</Text>
 												</Table.Td>
 												<Table.Td>
-													<Group gap="xs">
-														<Group gap={4}>
-															<IconThumbUp size={14} color="green" />
-															<Text size="xs">{comment.likes}</Text>
-														</Group>
-														<Group gap={4}>
-															<IconThumbDown size={14} color="red" />
-															<Text size="xs">{comment.dislikes}</Text>
-														</Group>
-													</Group>
+													<CommentLikeDisplay comment={comment} />
 												</Table.Td>
 												<Table.Td>{getStatusBadge(comment)}</Table.Td>
 												<Table.Td>

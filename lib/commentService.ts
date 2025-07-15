@@ -8,8 +8,12 @@ export interface Comment {
     news_id: number;
     user_name: string;
     content: string;
-    likes: number;
-    dislikes: number;
+    likes: string[]; // Array of usernames who liked
+    dislikes: string[]; // Array of usernames who disliked
+    likes_count: number; // Number of likes
+    dislikes_count: number; // Number of dislikes
+    liked: boolean; // Whether current user liked this comment
+    disliked: boolean; // Whether current user disliked this comment
     visible: boolean;
     edited: boolean;
     flagged: boolean;
@@ -25,10 +29,15 @@ export interface CreateCommentData {
 }
 
 export const commentService = {
-    // Fetch comments for a specific news article
-    async getCommentsByNewsId(newsId: number): Promise<{ success: boolean; data?: Comment[]; error?: string }> {
+    // Fetch comments for a specific news article with optional username
+    async getCommentsByNewsId(newsId: number, username?: string): Promise<{ success: boolean; data?: Comment[]; error?: string }> {
         try {
-            const response = await axios.get(`${API_BASE_URL}/public/comments/news/${newsId}`);
+            const url = new URL(`${API_BASE_URL}/public/comments/news/${newsId}`);
+            if (username) {
+                url.searchParams.set('username', username);
+            }
+            
+            const response = await axios.get(url.toString());
             return {
                 success: true,
                 data: response.data.data
@@ -55,6 +64,26 @@ export const commentService = {
             return {
                 success: false,
                 error: error?.response?.data?.error || error?.message || 'Failed to create comment'
+            };
+        }
+    },
+
+    // Toggle like/dislike on a comment
+    async toggleLike(commentId: number, username: string, action: 'like' | 'dislike'): Promise<{ success: boolean; data?: Comment; error?: string }> {
+        try {
+            const response = await axios.patch(`${API_BASE_URL}/public/comments/${commentId}/toggle-like`, {
+                username,
+                action
+            });
+            return {
+                success: true,
+                data: response.data.data
+            };
+        } catch (error: any) {
+            console.error('Error toggling like:', error);
+            return {
+                success: false,
+                error: error?.response?.data?.error || error?.message || 'Failed to toggle like'
             };
         }
     },
