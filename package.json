@@ -107,6 +107,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "telegram": "^2.26.22",
+    "twitter-api-v2": "^1.24.0",
     "vaul": "^0.9.6",
     "winston": "^3.17.0",
     "zod": "^3.25.67"

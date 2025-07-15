@@ -499,7 +499,7 @@ function DocumentsManagement({
 										<Table.Td>
 											<Group gap="sm">
 												<IconFileText size={20} color="red" />
-												<Text fw={500}>{item.title}</Text>
+												<Text fw={500} truncate w={200}>{item.title}</Text>
 											</Group>
 										</Table.Td>
 										<Table.Td>
