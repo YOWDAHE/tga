@@ -24,8 +24,22 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const { searchParams } = new URL(request.url);
+    const page = searchParams.get('page');
+    const limit = searchParams.get('limit');
+    const search = searchParams.get('search');
+
+    // Build query string
+    const queryParams = new URLSearchParams();
+    if (page) queryParams.append('page', page);
+    if (limit) queryParams.append('limit', limit);
+    if (search) queryParams.append('search', search);
+
+    const queryString = queryParams.toString();
+    const url = `/category${queryString ? `?${queryString}` : ''}`;
+
     console.log("Fetching categories from backend:", BACKEND_URL);
-    const res = await get(`/category`, {
+    const res = await get(url, {
       headers: {
         Authorization: `Bearer ${tokens.accessToken}`,
       },
@@ -37,5 +51,35 @@ export async function GET(request: NextRequest) {
       error: error?.response?.data?.message || error?.message || "Failed to fetch categories",
     }, { status: 500 });
   }
+}
+
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json();
+        const parsed = categorySchema.safeParse(body);
+        if (!parsed.success) {
+            return NextResponse.json({
+                success: false,
+                error: parsed.error.errors.map(e => e.message).join(", "),
+            }, { status: 400 });
+        }
+        const tokens = await getTokenCookie(req);
+        if (!tokens || !tokens.accessToken) {
+            return NextResponse.json({
+                success: false,
+                error: "Access token is missing.",
+            }, { status: 401 });
+        }
+        const res = await axios.post(`${BACKEND_URL}/category`, parsed.data, {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${tokens.accessToken}` },
+        });
+        return NextResponse.json({ success: true, data: res.data.data });
+    } catch (error: any) {
+        return NextResponse.json({
+            success: false,
+            error: error?.response?.data?.message || error?.message || "Failed to create category",
+        }, { status: 500 });
+    }
 }
 

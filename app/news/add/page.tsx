@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Skeleton } from "@mantine/core";
 import { fetchNewsById } from "@/app/actionsServers/news.server.actions";
+import { getCategories } from "@/app/actionsServers/archive.server.actions";
 import { notFound } from "next/navigation";
 import NewsForm from "@/components/NewsForm";
 
@@ -13,6 +14,18 @@ interface NewsAddPageProps {
 export default async function NewsAddPage({ searchParams }: NewsAddPageProps) {
   const editId = searchParams.edit;
   let newsToEdit = null;
+  let categories = [];
+
+  // Fetch categories
+  try {
+    const categoriesRes = await getCategories();
+    console.log("categoriesRes", categoriesRes);
+    if (categoriesRes.success) {
+      categories = categoriesRes.data || [];
+    }
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
 
   if (editId) {
     try {
@@ -28,7 +41,7 @@ export default async function NewsAddPage({ searchParams }: NewsAddPageProps) {
 
   return (
     <Suspense fallback={<Skeleton height={400} />}>
-      <NewsForm newsToEdit={newsToEdit} />
+      <NewsForm newsToEdit={newsToEdit} categories={categories} />
     </Suspense>
   );
 } 

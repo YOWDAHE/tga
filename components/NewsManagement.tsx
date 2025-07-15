@@ -79,6 +79,7 @@ export default function NewsManagement({
       <Table.Thead>
         <Table.Tr>
           <Table.Th>Title</Table.Th>
+          <Table.Th>Category</Table.Th>
           <Table.Th>Source</Table.Th>
           <Table.Th>Created By</Table.Th>
           <Table.Th>Published Date</Table.Th>
@@ -90,6 +91,9 @@ export default function NewsManagement({
           <Table.Tr key={index}>
             <Table.Td>
               <Skeleton height={20} width={200} />
+            </Table.Td>
+            <Table.Td>
+              <Skeleton height={24} width={100} radius="xl" />
             </Table.Td>
             <Table.Td>
               <Skeleton height={24} width={100} radius="xl" />
@@ -312,6 +316,7 @@ export default function NewsManagement({
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Title</Table.Th>
+                  <Table.Th>Category</Table.Th>
                   <Table.Th>Source</Table.Th>
                   <Table.Th>Created By</Table.Th>
                   <Table.Th>Published Date</Table.Th>
@@ -323,6 +328,15 @@ export default function NewsManagement({
                   <Table.Tr key={item.id}>
                     <Table.Td>
                       <Text fw={500}>{item.title}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      {item.category ? (
+                        <Badge variant="light" color="purple">
+                          {item.category.name}
+                        </Badge>
+                      ) : (
+                        <Text size="sm" c="dimmed">No category</Text>
+                      )}
                     </Table.Td>
                     <Table.Td>
                       <Badge variant="light">{item.source || "N/A"}</Badge>

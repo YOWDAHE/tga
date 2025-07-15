@@ -35,7 +35,7 @@ export async function createCategory(input: CategoryInput) {
         return { success: false, error: parsed.error.errors.map(e => e.message).join(", ") };
     }
     try {
-        const res = await post("/categories", parsed.data);
+        const res = await post("/category", parsed.data);
         return { success: true, data: res.data.data };
     } catch (error: any) {
         return { success: false, error: error?.response?.data?.message || error?.message };
@@ -59,7 +59,7 @@ export async function updateCategory(input: CategoryInput) {
 // Delete a category
 export async function deleteCategory(id: number) {
     try {
-        await del(`/categories/${id}`);
+        await del(`/category/${id}`);
         return { success: true };
     } catch (error: any) {
         return { success: false, error: error?.response?.data?.message || error?.message };

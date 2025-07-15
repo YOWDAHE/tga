@@ -29,6 +29,8 @@ export interface News {
     visual_content: (string | { public_id: string; secure_url: string })[] | null;
     content: string;
     hashtags: string | null;
+    category_id?: number | null;
+    category?: Category | null;
     source: string | null;
     source_id: string | null;
     message_id: string | null;

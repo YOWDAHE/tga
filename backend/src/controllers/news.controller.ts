@@ -73,8 +73,8 @@ const get = async (
 
     // Execute the main query with ordering and pagination
     const dataQuery = whereCondition
-      ? db.select({ news: news }).from(news).leftJoin(categories, eq(news.category_id, categories.id)).where(whereCondition)
-      : db.select({ news: news }).from(news).leftJoin(categories, eq(news.category_id, categories.id));
+      ? db.select({ news: news, category: categories }).from(news).leftJoin(categories, eq(news.category_id, categories.id)).where(whereCondition)
+      : db.select({ news: news, category: categories }).from(news).leftJoin(categories, eq(news.category_id, categories.id));
 
     // Dynamic sorting based on sortField
     let sortedQuery;
@@ -96,8 +96,11 @@ const get = async (
       .limit(pageSize)
       .offset((pageNum - 1) * pageSize);
 
-    // Extract just the news data from the joined result
-    const newsData = data.map(item => item.news);
+    // Combine news data with category information
+    const newsData = data.map(item => ({
+      ...item.news,
+      category: item.category
+    }));
 
     res.status(200).json({
       message: 'News fetched successfully',
@@ -130,7 +133,14 @@ const getById = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const data = await db.select().from(news).where(eq(news.id, id));
+    const data = await db
+      .select({
+        news: news,
+        category: categories
+      })
+      .from(news)
+      .leftJoin(categories, eq(news.category_id, categories.id))
+      .where(eq(news.id, id));
 
     if (data.length === 0) {
       res.status(404).json({
@@ -141,11 +151,18 @@ const getById = async (
       });
       return;
     }
+
+    // Combine news data with category information
+    const newsData = {
+      ...data[0].news,
+      category: data[0].category
+    };
+
     res.status(200).json({
       message: 'News fetched successfully',
       status: 'success',
       error: null,
-      data: data[0],
+      data: newsData,
     });
   } catch (error) {
     res.status(500).json({
@@ -242,7 +259,7 @@ const create = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { title, content, published_date, created_by, hashtags, featured, read_minutes } = req.body;
+    const { title, content, published_date, created_by, hashtags, featured, read_minutes, category_id } = req.body;
     console.log('Create news - req.files:', req.files);
     console.log('Create news - req.file:', req.file);
     console.log('Create news - req.body:', req.body);
@@ -305,6 +322,7 @@ const create = async (
       content,
       visual_content,
       hashtags,
+      category_id: category_id ? Number(category_id) : null,
       featured,
       read_minutes,
       published_date: published_date ? new Date(published_date) : new Date(),
@@ -349,7 +367,7 @@ const update = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const { title, content, published_date, created_by, hashtags, featured, read_minutes } = req.body;
+    const { title, content, published_date, created_by, hashtags, featured, read_minutes, category_id } = req.body;
     let visual_content: any[] | null = null;
     if (req.files && Array.isArray(req.files)) {
       visual_content = [];
@@ -391,6 +409,7 @@ const update = async (
         content,
         visual_content,
         hashtags,
+        category_id: category_id ? Number(category_id) : null,
         featured,
         read_minutes,
         published_date: published_date ? new Date(published_date) : undefined,

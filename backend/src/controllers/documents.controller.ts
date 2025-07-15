@@ -255,4 +255,162 @@ const remove = async (
   }
 };
 
-export default { get, getById, update, remove };
+// Public GET all documents with pagination and search (no auth required)
+const getPublic = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 6;
+    const search = req.query.search as string;
+    const category_id = req.query.category_id ? parseInt(req.query.category_id as string) : undefined;
+    const offset = (page - 1) * limit;
+
+    // Build where conditions
+    let whereConditions = [];
+    if (search) {
+      whereConditions.push(
+        sql`${documentsTable.title} ILIKE ${`%${search}%`} OR ${documentsTable.filename} ILIKE ${`%${search}%`} OR ${documentsTable.author} ILIKE ${`%${search}%`} OR ${documentsTable.content_text} ILIKE ${`%${search}%`}`
+      );
+    }
+    if (category_id) {
+      whereConditions.push(eq(documentsTable.category_id, category_id));
+    }
+
+    // Get total count for pagination
+    let countQuery;
+    if (whereConditions.length > 0) {
+      countQuery = db.select({ count: sql<number>`count(*)` }).from(documentsTable).where(
+        whereConditions.length === 1 ? whereConditions[0] : sql`${whereConditions.join(' AND ')}`
+      );
+    } else {
+      countQuery = db.select({ count: sql<number>`count(*)` }).from(documentsTable);
+    }
+
+    const [{ count }] = await countQuery;
+    const totalPages = Math.ceil(count / limit);
+
+    // Get paginated data
+    let data;
+    if (whereConditions.length > 0) {
+      data = await db.select()
+        .from(documentsTable)
+        .where(
+          whereConditions.length === 1 ? whereConditions[0] : sql`${whereConditions.join(' AND ')}`
+        )
+        .orderBy(desc(documentsTable.createdAt))
+        .limit(limit)
+        .offset(offset);
+    } else {
+      data = await db.select()
+        .from(documentsTable)
+        .orderBy(desc(documentsTable.createdAt))
+        .limit(limit)
+        .offset(offset);
+    }
+
+    res.status(200).json({
+      message: 'Documents fetched successfully',
+      status: 'success',
+      error: null,
+      data: {
+        documents: data,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: count,
+          itemsPerPage: limit,
+        },
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch documents',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+// Public GET top viewed documents (no auth required)
+const getTopViewedPublic = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 5;
+    
+    const topViewed = await db
+      .select()
+      .from(documentsTable)
+      .orderBy(desc(documentsTable.view_count))
+      .limit(limit);
+
+    res.status(200).json({
+      message: `Top ${limit} most viewed documents`,
+      status: 'success',
+      error: null,
+      data: topViewed,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch top viewed documents',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+// Public GET document by ID (no auth required, but increments view count)
+const getByIdPublic = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const data = await db.select().from(documentsTable).where(eq(documentsTable.id, id));
+    if (data.length === 0) {
+      res.status(404).json({
+        message: 'Document not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+    
+    // Increment view count
+    await db.update(documentsTable)
+      .set({
+        view_count: sql`${documentsTable.view_count} + 1`,
+      })
+      .where(eq(documentsTable.id, id))
+
+    updateTopViewedCache();
+
+    res.status(200).json({
+      message: 'Document fetched successfully',
+      status: 'success',
+      error: null,
+      data: data[0],
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch document',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+export default { get, getById, update, remove, getPublic, getTopViewedPublic, getByIdPublic };

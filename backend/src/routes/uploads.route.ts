@@ -10,5 +10,7 @@ uploadsRouter.get('/:id', uploadsController.getById);
 uploadsRouter.post('/', upload.single('file'), uploadsController.create);
 uploadsRouter.put('/:id', uploadsController.update);
 uploadsRouter.delete('/:id', uploadsController.remove);
+uploadsRouter.get('/documents/:filename', uploadsController.serveDocument);
+uploadsRouter.post('/migrate-cloudinary', uploadsController.migrateCloudinaryDocuments);
 
 export default uploadsRouter;

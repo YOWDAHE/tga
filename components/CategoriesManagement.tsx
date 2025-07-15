@@ -1,13 +1,14 @@
 "use client"
 
-import { useState } from "react"
-import { Title, Button, Table, Group, ActionIcon, Modal, TextInput, Textarea, Paper, Text, Stack, Loader } from "@mantine/core"
+import { useState, useEffect } from "react"
+import { Title, Button, Table, Group, ActionIcon, Modal, TextInput, Textarea, Paper, Text, Stack, Loader, Pagination, TextInput as MantineTextInput, Alert, Skeleton } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { useDisclosure } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
-import { IconEdit, IconTrash, IconPlus } from "@tabler/icons-react"
+import { IconEdit, IconTrash, IconPlus, IconSearch, IconAlertCircle, IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 import { createCategory, updateCategory, deleteCategory } from "@/app/actions/category.actions"
 import DeleteConfirmationModal from "./DeleteConfirmationModal"
+import { useRouter, useSearchParams } from "next/navigation"
 
 interface Category {
   id: number
@@ -17,11 +18,63 @@ interface Category {
   updatedAt: string | Date
 }
 
-type Props = {
-  categories: Category[]
+interface PaginationInfo {
+  currentPage: number
+  totalPages: number
+  totalCount: number
+  limit: number
 }
 
-export default function CategoriesManagement({ categories: initialCategories }: Props) {
+type Props = {
+  categories: Category[]
+  pagination: PaginationInfo | null
+  currentPage: number
+  searchQuery: string
+  error?: string | null
+}
+
+// Skeleton component for loading state
+const CategoriesTableSkeleton = () => (
+  <Table>
+    <Table.Thead>
+      <Table.Tr>
+        <Table.Th>Name</Table.Th>
+        <Table.Th>Description</Table.Th>
+        <Table.Th>Created Date</Table.Th>
+        <Table.Th>Last Updated</Table.Th>
+        <Table.Th>Actions</Table.Th>
+      </Table.Tr>
+    </Table.Thead>
+    <Table.Tbody>
+      {Array.from({ length: 10 }).map((_, index) => (
+        <Table.Tr key={index}>
+          <Table.Td>
+            <Skeleton height={20} width={120} />
+          </Table.Td>
+          <Table.Td>
+            <Skeleton height={20} width={200} />
+          </Table.Td>
+          <Table.Td>
+            <Skeleton height={20} width={100} />
+          </Table.Td>
+          <Table.Td>
+            <Skeleton height={20} width={100} />
+          </Table.Td>
+          <Table.Td>
+            <Group gap="xs">
+              <Skeleton height={32} width={32} radius="sm" />
+              <Skeleton height={32} width={32} radius="sm" />
+            </Group>
+          </Table.Td>
+        </Table.Tr>
+      ))}
+    </Table.Tbody>
+  </Table>
+);
+
+export default function CategoriesManagement({ categories: initialCategories, pagination: initialPagination, currentPage, searchQuery: initialSearchQuery, error }: Props) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [categories, setCategories] = useState<Category[]>(
     initialCategories.map((cat) => ({
       ...cat,
@@ -29,11 +82,42 @@ export default function CategoriesManagement({ categories: initialCategories }: 
       updatedAt: typeof cat.updatedAt === "string" ? new Date(cat.updatedAt) : cat.updatedAt,
     }))
   )
+  const [pagination, setPagination] = useState<PaginationInfo | null>(initialPagination)
+  const [searchInputValue, setSearchInputValue] = useState(initialSearchQuery)
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const [opened, { open, close }] = useDisclosure(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false)
   const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string } | null>(null)
+
+  // Update local state when props change
+  useEffect(() => {
+    setCategories(
+      initialCategories.map((cat) => ({
+        ...cat,
+        createdAt: typeof cat.createdAt === "string" ? new Date(cat.createdAt) : cat.createdAt,
+        updatedAt: typeof cat.updatedAt === "string" ? new Date(cat.updatedAt) : cat.updatedAt,
+      }))
+    );
+    setPagination(initialPagination);
+    setIsLoading(false); // Stop loading when new data arrives
+  }, [initialCategories, initialPagination]);
+
+  // Update search input value when URL changes
+  useEffect(() => {
+    setSearchInputValue(initialSearchQuery);
+  }, [initialSearchQuery]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+    };
+  }, [searchTimeout]);
 
   const form = useForm({
     initialValues: {
@@ -43,7 +127,7 @@ export default function CategoriesManagement({ categories: initialCategories }: 
   })
 
   const handleSubmit = async (values: typeof form.values) => {
-    setIsLoading(true)
+    setIsSubmitting(true)
     try {
       if (editingCategory) {
         // Update
@@ -75,7 +159,7 @@ export default function CategoriesManagement({ categories: initialCategories }: 
       }
       handleClose()
     } finally {
-      setIsLoading(false)
+      setIsSubmitting(false)
     }
   }
 
@@ -122,6 +206,58 @@ export default function CategoriesManagement({ categories: initialCategories }: 
     open()
   }
 
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= (pagination?.totalPages || 1)) {
+      setIsLoading(true); // Start loading when page changes
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('page', page.toString())
+      router.push(`/categories?${params.toString()}`)
+    }
+  }
+
+  // Debounced search function
+  const debouncedSearch = (query: string) => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout)
+    }
+
+    const timeout = setTimeout(() => {
+      setIsLoading(true); // Start loading when search triggers
+      const params = new URLSearchParams(searchParams.toString())
+      if (query.trim()) {
+        params.set('search', query.trim())
+      } else {
+        params.delete('search')
+      }
+      params.delete('page') // Reset to first page when searching
+      router.push(`/categories?${params.toString()}`)
+    }, 500) // 500ms delay
+
+    setSearchTimeout(timeout)
+  }
+
+  const handleSearchInput = (query: string) => {
+    setSearchInputValue(query)
+    debouncedSearch(query)
+  }
+
+  const handleSearchKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout)
+      }
+      setIsLoading(true); // Start loading when search triggers
+      const params = new URLSearchParams(searchParams.toString())
+      if (searchInputValue.trim()) {
+        params.set('search', searchInputValue.trim())
+      } else {
+        params.delete('search')
+      }
+      params.delete('page') // Reset to first page when searching
+      router.push(`/categories?${params.toString()}`)
+    }
+  }
+
   const formatDate = (date: string | Date) => {
     if (typeof date === "string") {
       return new Date(date).toLocaleDateString()
@@ -129,13 +265,109 @@ export default function CategoriesManagement({ categories: initialCategories }: 
     return date.toLocaleDateString()
   }
 
+  // Show loading skeleton
+  if (isLoading) {
+    return (
+      <div style={{ padding: "24px" }}>
+        <Group justify="space-between" mb="lg">
+          <Title order={2}>Categories Management</Title>
+          <Button leftSection={<IconPlus size={16} />} disabled>
+            Add Category
+          </Button>
+        </Group>
+
+        {/* Search Bar Skeleton */}
+        <Paper withBorder p="md" mb="lg">
+          <Group>
+            <Skeleton height={36} width="100%" />
+          </Group>
+        </Paper>
+
+        <Paper withBorder>
+          <CategoriesTableSkeleton />
+        </Paper>
+
+        {/* Pagination Skeleton */}
+        <Group justify="center" mt="lg">
+          <Skeleton height={36} width={200} />
+          <Skeleton height={20} width={150} />
+        </Group>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div style={{ padding: "24px" }}>
+        <Group justify="space-between" mb="lg">
+          <Title order={2}>Categories Management</Title>
+          <Button leftSection={<IconPlus size={16} />} onClick={handleCreate}>
+            Add Category
+          </Button>
+        </Group>
+
+        <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="lg">
+          {error}
+        </Alert>
+
+        <Paper withBorder>
+          <Table striped highlightOnHover>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Name</Table.Th>
+                <Table.Th>Description</Table.Th>
+                <Table.Th>Created Date</Table.Th>
+                <Table.Th>Last Updated</Table.Th>
+                <Table.Th>Actions</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              <Table.Tr>
+                <Table.Td colSpan={5}>
+                  <Text ta="center" c="dimmed" py="xl">
+                    No categories available
+                  </Text>
+                </Table.Td>
+              </Table.Tr>
+            </Table.Tbody>
+          </Table>
+        </Paper>
+      </div>
+    )
+  }
+
+  // Show empty state
   if (!categories || categories.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full m-20">
-        <Title order={2}>No Categories Available</Title>
-        <Button leftSection={<IconPlus size={16} />} onClick={handleCreate} mt="md">
-          Add Category
-        </Button>
+      <div style={{ padding: "24px" }}>
+        <Group justify="space-between" mb="lg">
+          <Title order={2}>Categories Management</Title>
+          <Button leftSection={<IconPlus size={16} />} onClick={handleCreate}>
+            Add Category
+          </Button>
+        </Group>
+
+        {/* Search Bar */}
+        <Paper withBorder p="md" mb="lg">
+          <Group>
+            <MantineTextInput
+              placeholder="Search categories..."
+              value={searchInputValue}
+              onChange={(event) => handleSearchInput(event.currentTarget.value)}
+              onKeyPress={handleSearchKeyPress}
+              leftSection={<IconSearch size={16} />}
+              style={{ flex: 1 }}
+            />
+          </Group>
+        </Paper>
+
+        <div className="flex flex-col items-center justify-center h-full m-20">
+          <Title order={2}>No Categories Available</Title>
+          <Button leftSection={<IconPlus size={16} />} onClick={handleCreate} mt="md">
+            Add Category
+          </Button>
+        </div>
       </div>
     )
   }
@@ -148,6 +380,20 @@ export default function CategoriesManagement({ categories: initialCategories }: 
           Add Category
         </Button>
       </Group>
+
+      {/* Search Bar */}
+      <Paper withBorder p="md" mb="lg">
+        <Group>
+          <MantineTextInput
+            placeholder="Search categories..."
+            value={searchInputValue}
+            onChange={(event) => handleSearchInput(event.currentTarget.value)}
+            onKeyPress={handleSearchKeyPress}
+            leftSection={<IconSearch size={16} />}
+            style={{ flex: 1 }}
+          />
+        </Group>
+      </Paper>
 
       <Paper withBorder>
         <Table striped highlightOnHover>
@@ -197,6 +443,92 @@ export default function CategoriesManagement({ categories: initialCategories }: 
         </Table>
       </Paper>
 
+      {/* Pagination */}
+      {pagination && pagination.totalPages > 1 && (
+        <Group justify="end" mt="lg">
+          <Button
+            variant="light"
+            onClick={() => handlePageChange(pagination.currentPage - 1)}
+            disabled={pagination.currentPage <= 1 || isLoading}
+            leftSection={isLoading ? <Loader size="xs" /> : <IconChevronLeft size={16} />}
+          >
+            Previous
+          </Button>
+
+          <Group gap="xs">
+            {/* Show first page */}
+            {pagination.currentPage > 3 && (
+              <Button
+                variant="light"
+                size="sm"
+                onClick={() => handlePageChange(1)}
+              >
+                1
+              </Button>
+            )}
+
+            {/* Show ellipsis if needed */}
+            {pagination.currentPage > 4 && (
+              <Text size="sm" c="dimmed">
+                ...
+              </Text>
+            )}
+
+            {/* Show pages around current page */}
+            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+              .filter(
+                (page) =>
+                  page >= Math.max(1, pagination.currentPage - 1) &&
+                  page <= Math.min(pagination.totalPages, pagination.currentPage + 1)
+              )
+              .map((page) => (
+                <Button
+                  key={page}
+                  variant={page === pagination.currentPage ? "filled" : "light"}
+                  size="sm"
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </Button>
+              ))}
+
+            {/* Show ellipsis if needed */}
+            {pagination.currentPage < pagination.totalPages - 3 && (
+              <Text size="sm" c="dimmed">
+                ...
+              </Text>
+            )}
+
+            {/* Show last page */}
+            {pagination.currentPage < pagination.totalPages - 2 && (
+              <Button
+                variant="light"
+                size="sm"
+                onClick={() => handlePageChange(pagination.totalPages)}
+              >
+                {pagination.totalPages}
+              </Button>
+            )}
+          </Group>
+
+          <Button
+            variant="light"
+            onClick={() => handlePageChange(pagination.currentPage + 1)}
+            disabled={pagination.currentPage >= pagination.totalPages || isLoading}
+            rightSection={isLoading ? <Loader size="xs" /> : <IconChevronRight size={16} />}
+          >
+            Next
+          </Button>
+        </Group>
+      )}
+
+      {/* Page Info */}
+      {pagination && (
+        <Text size="sm" c="dimmed" ta="center" mt="md">
+          Showing {((pagination.currentPage - 1) * pagination.limit) + 1} to {Math.min(pagination.currentPage * pagination.limit, pagination.totalCount)} of {pagination.totalCount} categories
+        </Text>
+      )}
+
       {/* Create/Edit Modal */}
       <Modal
         opened={opened}
@@ -222,11 +554,11 @@ export default function CategoriesManagement({ categories: initialCategories }: 
             />
 
             <Group justify="flex-end">
-              <Button variant="light" onClick={handleClose} disabled={isLoading}>
+              <Button variant="light" onClick={handleClose} disabled={isSubmitting}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading} leftSection={isLoading ? <Loader size="xs" /> : null}>
-                {isLoading ? "Updating..." : editingCategory ? "Update" : "Create"}
+              <Button type="submit" disabled={isSubmitting} leftSection={isSubmitting ? <Loader size="xs" /> : null}>
+                {isSubmitting ? "Updating..." : editingCategory ? "Update" : "Create"}
               </Button>
             </Group>
           </Stack>
@@ -241,7 +573,7 @@ export default function CategoriesManagement({ categories: initialCategories }: 
         title="Delete Category"
         itemName={categoryToDelete?.name}
         itemType="category"
-        loading={isLoading}
+        loading={isSubmitting}
       />
     </div>
   )

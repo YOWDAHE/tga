@@ -18,7 +18,7 @@ export async function GET(
         const filename = pathSegments[1];
 
         // Validate folder to prevent directory traversal
-        const allowedFolders = ['partners'];
+        const allowedFolders = ['partners', 'documents'];
         if (!allowedFolders.includes(folder)) {
             return NextResponse.json(
                 { error: 'Invalid folder' },
@@ -28,9 +28,15 @@ export async function GET(
 
         // Forward the request to the backend
         const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
-        const response = await fetch(`${backendUrl}/api/landing/uploads/${folder}/${filename}`);
+        let response;
+        
+        if (folder === 'partners') {
+            response = await fetch(`${backendUrl}/api/landing/uploads/${folder}/${filename}`);
+        } else if (folder === 'documents') {
+            response = await fetch(`${backendUrl}/api/uploads/documents/${filename}`);
+        }
 
-        if (!response.ok) {
+        if (!response || !response.ok) {
             return NextResponse.json(
                 { error: 'File not found' },
                 { status: 404 }
@@ -39,8 +45,9 @@ export async function GET(
 
         // Get the file content and headers
         const fileBuffer = await response.arrayBuffer();
-        const contentType = response.headers.get('content-type') || 'image/jpeg';
+        const contentType = response.headers.get('content-type') || 'application/pdf';
         const contentLength = response.headers.get('content-length');
+        const contentDisposition = response.headers.get('content-disposition');
 
         // Create response with the file content
         const fileResponse = new NextResponse(fileBuffer, {
@@ -48,7 +55,7 @@ export async function GET(
             headers: {
                 'Content-Type': contentType,
                 'Content-Length': contentLength || '',
-                'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
+                'Content-Disposition': contentDisposition || '',
             },
         });
 

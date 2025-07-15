@@ -48,10 +48,11 @@ export async function fetchDocument(id: string) {
 export async function getCategories() {
     try {
         const res = await get("/category");
+        console.log("res", res.data);
 
         // Transform the data to match the expected format for Mantine Select
         // Filter out categories with invalid or missing IDs
-        const transformedData = res.data.data
+        const transformedData = res.data.data.categories
             .filter((category: any) => category.id != null && category.id !== undefined && category.name)
             .map((category: any) => ({
                 value: category.id.toString(),

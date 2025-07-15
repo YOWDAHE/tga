@@ -4,6 +4,9 @@ import { categories } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import type { category_create } from '../models/category.model';
 import { logAudit } from './audit.controller';
+import { documents } from '../db/schema';
+import { news } from '../db/schema';
+import { like, or } from 'drizzle-orm';
 
 const get = async (
   req: Request,
@@ -11,12 +14,41 @@ const get = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const data = await db.select().from(categories);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = req.query.search as string;
+    const offset = (page - 1) * limit;
+
+    let whereClause = undefined;
+
+    if (search) {
+      whereClause = or(
+        like(categories.name, `%${search}%`),
+        like(categories.description || '', `%${search}%`)
+      );
+    }
+
+    // Get total count for pagination
+    const totalCategories = await db.select().from(categories).where(whereClause);
+    const totalCount = totalCategories.length;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Get paginated results
+    const data = await db.select().from(categories).where(whereClause).limit(limit).offset(offset);
+
     res.status(200).json({
       message: 'Categories fetched successfully',
       status: 'success',
       error: null,
-      data,
+      data: {
+        categories: data,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalCount,
+          limit,
+        },
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -167,9 +199,10 @@ const remove = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const oldCategory = await db.select().from(categories).where(eq(categories.id, id));
-    const [deleted] = await db.delete(categories).where(eq(categories.id, id)).returning();
-    if (!deleted) {
+    
+    // Check if category exists
+    const [existingCategory] = await db.select().from(categories).where(eq(categories.id, id));
+    if (!existingCategory) {
       res.status(404).json({
         message: 'Category not found',
         status: 'error',
@@ -178,17 +211,46 @@ const remove = async (
       });
       return;
     }
+
+    // Check if category is being used by documents
+    const documentsUsingCategory = await db.select().from(documents).where(eq(documents.category_id, id));
+    if (documentsUsingCategory.length > 0) {
+      res.status(400).json({
+        message: `Cannot delete category. It is being used by ${documentsUsingCategory.length} document(s).`,
+        status: 'error',
+        error: 'Foreign key constraint',
+        data: {
+          documentsCount: documentsUsingCategory.length,
+          documentIds: documentsUsingCategory.map(doc => doc.id)
+        },
+      });
+      return;
+    }
+
+    // Check if category is being used by news (optional check since it's nullable)
+    const newsUsingCategory = await db.select().from(news).where(eq(news.category_id, id));
+    if (newsUsingCategory.length > 0) {
+      // For news, we can set category_id to null instead of preventing deletion
+      await db.update(news)
+        .set({ category_id: null, updatedAt: new Date() })
+        .where(eq(news.category_id, id));
+    }
+
+    // Delete the category
+    const [deleted] = await db.delete(categories).where(eq(categories.id, id)).returning();
+    
     await logAudit({
       tableName: 'categories',
       action: 'DELETE',
       description: 'Deleted category',
-      oldData: oldCategory[0] || null,
+      oldData: existingCategory,
       newData: null,
       user_id: req.user?.id,
       changedBy: req.user?.username,
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'] as string,
     });
+
     res.status(200).json({
       message: 'Category deleted successfully',
       status: 'success',

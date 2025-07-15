@@ -7,6 +7,7 @@ import uploadsRouter from './routes/uploads.route.js';
 import categoryRouter from './routes/category.route.js';
 import searchRouter from './routes/search.route.js';
 import publicSearchRouter from './routes/public-search.route.js';
+import publicDocumentsRouter from './routes/public-documents.route.js';
 import telegramRouter from './routes/telegram.route.js';
 import newsRouter from './routes/news.route.js';
 import landingRouter from './routes/landing.route.js';
@@ -37,6 +38,7 @@ app.prepare().then(() => {
   server.use('/api/category', categoryRouter);
   server.use('/api/search', searchRouter);
   server.use('/api/public/search', publicSearchRouter);
+  server.use('/api/public/documents', publicDocumentsRouter);
   server.use('/api/telegram', telegramRouter);
   server.use('/api/news', newsRouter);
   server.use('/api/landing', landingRouter);
@@ -49,12 +51,17 @@ app.prepare().then(() => {
   server.use('/api/audit-logs', authenticateJWT, authorizePermissions('USER_CRUD'), auditRouter);
   server.use('/api/dashboard', authenticateJWT, dashboardRouter);
 
-  // Serve uploaded files statically
+  // Serve uploaded files statically with cache headers
   server.use('/uploads', (req, res, next) => {
-    // Add cache headers for images
     res.setHeader('Cache-Control', 'public, max-age=31536000');
     next();
   }, express.static(path.join(process.cwd(), 'backend', 'uploads')));
+
+  // Serve documents directory specifically
+  server.use('/uploads/documents', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/pdf');
+    next();
+  }, express.static(path.join(process.cwd(), 'backend', 'uploads', 'documents')));
 
   // Catch-all handler for Next.js pages
   server.all('*splat', (req, res) => {

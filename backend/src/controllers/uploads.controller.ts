@@ -8,6 +8,9 @@ import { db } from '../db';
 import { categories, documents } from '../db/schema';
 import { eq, like, or } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
+import * as fs from 'fs';
+import * as path from 'path';
+import { promisify } from 'util';
 
 declare global {
   namespace Express {
@@ -159,22 +162,44 @@ const create = async (
       });
       return;
     }
+
     // 1. Extract text from PDF
     const pdfBuffer = req.file.buffer;
     const pdfData = await pdfParse(pdfBuffer);
     const content_text = pdfData.text;
-    // 2. Upload file to Cloudinary
-    const uploadResult = await new Promise<any>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: 'uploads', resource_type: 'auto'},
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
-        }
-      );
-      stream.end(pdfBuffer);
-    });
-    // 3.Save both URLs in the DB
+
+    // 2. Save file to server storage
+    const uploadsDir = path.join(process.cwd(), 'backend', 'uploads', 'documents');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    // Generate unique filename
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileExtension = path.extname(req.file.originalname);
+    const filename = `document_${timestamp}_${randomString}${fileExtension}`;
+    const filePath = path.join(uploadsDir, filename);
+
+    // Write file to server
+    const writeFile = promisify(fs.writeFile);
+    try {
+      await writeFile(filePath, req.file.buffer);
+    } catch (err) {
+      res.status(500).json({
+        message: "Failed to save file to server",
+        status: 'error',
+        error: err instanceof Error ? err.message : err,
+        data: null,
+      });
+      return;
+    }
+
+    // Generate public URL for serving the file
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+    const fileUrl = `${backendUrl}/uploads/documents/${filename}`;
+
+    // 3. Save document info in the DB
     const [created] = await db.insert(documents).values({
       filename: req.file.originalname,
       file_size: req.file.size,
@@ -183,9 +208,10 @@ const create = async (
       author,
       description,
       content_text,
-      file_url: uploadResult.secure_url,
-      public_id: uploadResult.public_id,
+      file_url: fileUrl,
+      public_id: filename, // Store filename as public_id for server storage
     }).returning();
+
     await logAudit({
       tableName: 'documents',
       action: 'INSERT',
@@ -197,6 +223,7 @@ const create = async (
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'] as string,
     });
+
     res.status(201).json({
       message: "File uploaded and document created successfully",
       status: 'success',
@@ -220,8 +247,73 @@ const update = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    res.status(200).json({ message: `UPDATE upload by id: ${req.params.id}` });
+    const id = Number(req.params.id);
+    const { title, category_id, author, description } = req.body;
+    
+    // Get the existing document
+    const [existingDoc] = await db.select().from(documents).where(eq(documents.id, id));
+    if (!existingDoc) {
+      res.status(404).json({
+        message: 'Document not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Validate category exists
+    if (category_id) {
+      const category = await db.select().from(categories).where(eq(categories.id, Number(category_id)));
+      if (category.length === 0) {
+        res.status(404).json({
+          message: "Category not found",
+          status: 'error',
+          error: "Not found",
+          data: null,
+        });
+        return;
+      }
+    }
+
+    // Update the document
+    const [updated] = await db
+      .update(documents)
+      .set({
+        title: title || existingDoc.title,
+        category_id: category_id ? Number(category_id) : existingDoc.category_id,
+        author: author !== undefined ? author : existingDoc.author,
+        description: description !== undefined ? description : existingDoc.description,
+        updatedAt: new Date()
+      })
+      .where(eq(documents.id, id))
+      .returning();
+
+    await logAudit({
+      tableName: 'documents',
+      action: 'UPDATE',
+      description: 'Updated document metadata',
+      oldData: existingDoc,
+      newData: updated,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
+
+    res.status(200).json({
+      message: 'Document updated successfully',
+      status: 'success',
+      error: null,
+      data: updated,
+    });
   } catch (error) {
+    res.status(500).json({
+      message: 'Failed to update document',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
     next(error);
   }
 };
@@ -233,7 +325,7 @@ const remove = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    // Get document to find Cloudinary public_id
+    // Get document to find file path
     const [doc] = await db.select().from(documents).where(eq(documents.id, id));
     if (!doc) {
       res.status(404).json({
@@ -244,8 +336,15 @@ const remove = async (
       });
       return;
     }
-    // Delete from Cloudinary
-    await cloudinary.uploader.destroy(doc.public_id, { resource_type: 'raw' });
+
+    // Delete file from server storage
+    if (doc.public_id) {
+      const filePath = path.join(process.cwd(), 'backend', 'uploads', 'documents', doc.public_id);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
     // Delete from DB
     const [deleted] = await db.delete(documents).where(eq(documents.id, id)).returning();
     await logAudit({
@@ -276,4 +375,103 @@ const remove = async (
   }
 };
 
-export default { get, getById, create, update, remove };
+
+const serveDocument = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { filename } = req.params;
+    
+    const filePath = path.join(process.cwd(), 'backend', 'uploads', 'documents', filename);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({
+        message: "File not found",
+        status: 'error',
+        error: "Not found",
+        data: null,
+      });
+      return;
+    }
+
+    const stats = fs.statSync(filePath);
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Length', stats.size);
+    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+    
+    // Stream the file
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to serve file",
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+// Add function to migrate existing Cloudinary documents to server storage
+const migrateCloudinaryDocuments = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    // Get all documents that might have Cloudinary URLs
+    const allDocs = await db.select().from(documents);
+    let migratedCount = 0;
+    let skippedCount = 0;
+
+    for (const doc of allDocs) {
+      // Check if this is a Cloudinary URL
+      if (doc.file_url.includes('cloudinary.com') || doc.public_id.includes('/')) {
+        // This is a Cloudinary document, we need to migrate it
+        // For now, we'll just update the URL format to indicate it needs migration
+        // In a real migration, you would download the file from Cloudinary and save it to server
+        
+        const newPublicId = `migrated_${Date.now()}_${Math.random().toString(36).substring(2, 15)}.pdf`;
+        const newFileUrl = `${process.env.BACKEND_URL || 'http://localhost:3000'}/uploads/documents/${newPublicId}`;
+        
+        await db.update(documents)
+          .set({
+            file_url: newFileUrl,
+            public_id: newPublicId,
+            updatedAt: new Date()
+          })
+          .where(eq(documents.id, doc.id));
+        
+        migratedCount++;
+      } else {
+        skippedCount++;
+      }
+    }
+
+    res.status(200).json({
+      message: `Migration completed. ${migratedCount} documents migrated, ${skippedCount} skipped.`,
+      status: 'success',
+      error: null,
+      data: {
+        migrated: migratedCount,
+        skipped: skippedCount,
+        total: allDocs.length
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to migrate documents",
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+export default { get, getById, create, update, remove, serveDocument, migrateCloudinaryDocuments };

@@ -47,7 +47,7 @@ export async function PUT(
         const body = await request.json();
         const tokens = request.cookies ? await getTokenCookie(request) : null;
         
-        const res = await axios.put(`${BACKEND_URL}/documents/${params.id}`, body, {
+        const res = await axios.put(`${BACKEND_URL}/uploads/${params.id}`, body, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${tokens?.accessToken}`,

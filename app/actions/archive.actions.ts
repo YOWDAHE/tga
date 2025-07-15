@@ -68,7 +68,7 @@ export async function updateDocument(input: DocumentUpdate) {
         return { success: false, error: parsed.error.errors.map(e => e.message).join(", ") };
     }
     try {
-        const res = await put(`/documents/${input.id}`, parsed.data);
+        const res = await put(`/archives/${input.id}`, parsed.data);
         return { success: true, data: res.data.data };
     } catch (error: any) {
         return { success: false, error: error?.response?.data?.message || error?.message };

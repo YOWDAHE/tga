@@ -19,6 +19,7 @@ import {
 	Divider,
 	Switch,
 	NumberInput,
+	Select,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -44,9 +45,10 @@ export interface NewsExtended extends News {
 
 interface NewsFormProps {
 	newsToEdit?: NewsExtended | null;
+	categories?: Array<{ value: string; label: string }>;
 }
 
-export default function NewsForm({ newsToEdit }: NewsFormProps) {
+export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps) {
 	const [content, setContent] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [visualFiles, setVisualFiles] = useState<File[]>([]);
@@ -63,6 +65,7 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 		initialValues: {
 			title: "",
 			content: "",
+			category_id: "",
 			published_date: new Date(),
 			visual_content: [] as File[],
 			hashtags: "",
@@ -77,6 +80,7 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 			form.setValues({
 				title: newsToEdit.title,
 				content: newsToEdit.content,
+				category_id: newsToEdit.category_id ? newsToEdit.category_id.toString() : "",
 				published_date:
 					newsToEdit.published_date ?
 						new Date(newsToEdit.published_date)
@@ -169,6 +173,7 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 			const submitData = {
 				...values,
 				content,
+				category_id: values.category_id ? parseInt(values.category_id) : null,
 				hashtags: values.hashtags,
 				featured: values.featured,
 				read_minutes: values.read_minutes,
@@ -243,6 +248,12 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 							placeholder="Enter news title"
 							required
 							{...form.getInputProps("title")}
+						/>
+						<Select
+							label="Category"
+							placeholder="Select category"
+							data={categories}
+							{...form.getInputProps("category_id")}
 						/>
 						<TextInput
 							label="Hashtags"

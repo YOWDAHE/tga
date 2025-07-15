@@ -54,6 +54,8 @@ interface NewsItem {
 	content: string;
 	visual_content?: (string | { public_id: string; secure_url: string })[] | null;
 	hashtags?: string;
+	category_id?: number | null;
+	category?: { id: number; name: string; description: string | null } | null;
 	source?: string;
 	published_date?: string;
 	created_by?: string;
@@ -350,6 +352,11 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 										<Badge variant="light" color="blue">
 											{news.source || "System"}
 										</Badge>
+										{news.category && (
+											<Badge variant="light" color="purple">
+												{news.category.name}
+											</Badge>
+										)}
 										{news.view_count && (
 											<Badge variant="light" color="green">
 												{news.view_count} views

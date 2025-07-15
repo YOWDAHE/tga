@@ -19,10 +19,11 @@ export const documents = pgTable('documents', {
     author: varchar('author', { length: 100 }),
     content_text: text('content_text'),
     file_size: integer('file_size').notNull(), // size in bytes
-    file_url: varchar('file_url', { length: 500 }).notNull(),      // secure_url from Cloudinary
+    file_url: varchar('file_url', { length: 500 }).notNull(),      // URL to server-stored file
     description: text('description'),
-    public_id: varchar('public_id', { length: 255 }).notNull(),    // public_id from Cloudinary
+    public_id: varchar('public_id', { length: 255 }).notNull(),    // filename for server storage
     view_count: integer('view_count').default(0).notNull(),
+    download_count: integer('download_count').default(0).notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
