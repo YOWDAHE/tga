@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import {
 	Title,
 	Button,
@@ -17,19 +17,33 @@ import {
 	Flex,
 	Box,
 	Divider,
+	Switch,
+	NumberInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { DateTimePicker } from "@mantine/dates";
-import { IconUpload, IconArrowLeft, IconX, IconPhoto, IconTrash } from "@tabler/icons-react";
+import {
+	IconUpload,
+	IconArrowLeft,
+	IconX,
+	IconPhoto,
+	IconTrash,
+} from "@tabler/icons-react";
 import SimpleRichTextEditor from "./SimpleRichTextEditor";
 import { useRouter } from "next/navigation";
 import { createNews, updateNews } from "@/app/actions/news.actions";
 import { News } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 
+// If News type is imported from '@/types', extend it here for local use
+export interface NewsExtended extends News {
+	featured?: boolean;
+	read_minutes?: number;
+}
+
 interface NewsFormProps {
-	newsToEdit?: News | null;
+	newsToEdit?: NewsExtended | null;
 }
 
 export default function NewsForm({ newsToEdit }: NewsFormProps) {
@@ -38,7 +52,10 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 	const [visualFiles, setVisualFiles] = useState<File[]>([]);
 	const [existingImages, setExistingImages] = useState<string[]>([]);
 	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-	const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(null);
+	const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(
+		null
+	);
+	const [loadingImages, setLoadingImages] = useTransition();
 	const router = useRouter();
 	const { user } = useAuth();
 
@@ -48,6 +65,9 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 			content: "",
 			published_date: new Date(),
 			visual_content: [] as File[],
+			hashtags: "",
+			featured: false,
+			read_minutes: 1,
 		},
 	});
 
@@ -62,6 +82,9 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 						new Date(newsToEdit.published_date)
 					:	new Date(),
 				visual_content: [],
+				hashtags: newsToEdit.hashtags || "",
+				featured: newsToEdit.featured || false,
+				read_minutes: newsToEdit.read_minutes || 1,
 			});
 			setContent(newsToEdit.content);
 
@@ -70,11 +93,9 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 				setExistingImages(
 					newsToEdit.visual_content
 						.map((img) =>
-							typeof img === "string"
-								? img
-								: (img && typeof img === "object" && "secure_url" in img)
-									? img.secure_url
-									: ""
+							typeof img === "string" ? img
+							: img && typeof img === "object" && "secure_url" in img ? img.secure_url
+							: ""
 						)
 						.filter(Boolean)
 				);
@@ -85,13 +106,15 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 	// Cleanup preview URLs on unmount
 	useEffect(() => {
 		return () => {
-			imagePreviews.forEach(url => URL.revokeObjectURL(url));
+			imagePreviews.forEach((url) => URL.revokeObjectURL(url));
 		};
 	}, [imagePreviews]);
 
 	// Helper function to get image URL from either string or object
-	const getImageUrl = (imageData: string | { public_id: string; secure_url: string }): string => {
-		if (typeof imageData === 'string') {
+	const getImageUrl = (
+		imageData: string | { public_id: string; secure_url: string }
+	): string => {
+		if (typeof imageData === "string") {
 			return imageData;
 		}
 		return imageData.secure_url;
@@ -105,10 +128,10 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 			const updatedFiles = [...visualFiles, ...newFiles];
 			setVisualFiles(updatedFiles);
 			form.setFieldValue("visual_content", updatedFiles);
-			
+
 			// Create preview URLs for new files and add to existing previews
-			const newPreviews = newFiles.map(file => URL.createObjectURL(file));
-			setImagePreviews(prev => [...prev, ...newPreviews]);
+			const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+			setImagePreviews((prev) => [...prev, ...newPreviews]);
 		} else {
 			setVisualFiles([]);
 			setImagePreviews([]);
@@ -116,7 +139,7 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 		}
 		// Reset the input value to allow selecting the same file again
 		if (fileInputRef) {
-			fileInputRef.value = '';
+			fileInputRef.value = "";
 		}
 	};
 
@@ -127,7 +150,7 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 	const removeNewImage = (index: number) => {
 		const newFiles = visualFiles.filter((_, i) => i !== index);
 		const newPreviews = imagePreviews.filter((_, i) => i !== index);
-		
+
 		setVisualFiles(newFiles);
 		setImagePreviews(newPreviews);
 		form.setFieldValue("visual_content", newFiles);
@@ -146,14 +169,20 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 			const submitData = {
 				...values,
 				content,
+				hashtags: values.hashtags,
+				featured: values.featured,
+				read_minutes: values.read_minutes,
 				source: "Website",
 				created_by: user?.username || "admin",
 				visual_content: visualFiles.length > 0 ? visualFiles : existingImages,
 			};
-			
-			console.log('NewsForm - visualFiles:', visualFiles);
-			console.log('NewsForm - existingImages:', existingImages);
-			console.log('NewsForm - submitData.visual_content:', submitData.visual_content);
+
+			console.log("NewsForm - visualFiles:", visualFiles);
+			console.log("NewsForm - existingImages:", existingImages);
+			console.log(
+				"NewsForm - submitData.visual_content:",
+				submitData.visual_content
+			);
 
 			if (newsToEdit) {
 				console.log("submitData", submitData);
@@ -215,18 +244,33 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 							required
 							{...form.getInputProps("title")}
 						/>
-
+						<TextInput
+							label="Hashtags"
+							placeholder="Enter hashtags, separated by commas (e.g. news,update,breaking)"
+							{...form.getInputProps("hashtags")}
+						/>
+						<Switch
+							label="Featured Article?"
+							{...form.getInputProps("featured", { type: "checkbox" })}
+						/>
+						<NumberInput
+							label="Estimated Read Minutes"
+							min={1}
+							max={120}
+							{...form.getInputProps("read_minutes")}
+						/>
+						{/* 
 						<DateTimePicker
 							label="Published Date"
 							placeholder="Select date and time"
 							{...form.getInputProps("published_date")}
-						/>
+						/> */}
 
 						<Box>
 							<Text size="sm" fw={500} mb="xs">
 								Visual Content
 							</Text>
-							
+
 							{/* Hidden file input */}
 							<input
 								ref={setFileInputRef}
@@ -234,9 +278,9 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 								accept="image/*,video/*"
 								multiple
 								onChange={handleFileChange}
-								style={{ display: 'none' }}
+								style={{ display: "none" }}
 							/>
-							
+
 							{/* Add Image Button */}
 							<Button
 								onClick={handleAddImage}
@@ -246,7 +290,7 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 							>
 								Add Image
 							</Button>
-							
+
 							{/* New Image Previews */}
 							{imagePreviews.length > 0 && (
 								<Box mb="md">
@@ -293,7 +337,7 @@ export default function NewsForm({ newsToEdit }: NewsFormProps) {
 												</Box>
 												<Box p="xs">
 													<Text size="xs" c="dimmed" ta="center">
-														{visualFiles[index]?.name || 'Image'}
+														{visualFiles[index]?.name || "Image"}
 													</Text>
 												</Box>
 											</Card>

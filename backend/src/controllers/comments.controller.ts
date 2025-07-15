@@ -93,6 +93,50 @@ const getById = async (
   }
 };
 
+const getByNewsId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const news_id = Number(req.params.news_id);
+    const { username } = req.query; // Get username from query params
+    
+    const data = await db.select().from(comments).where(eq(comments.news_id, news_id));
+    
+    // Transform the data to include like/dislike counts and user status
+    const transformedData = data.map(comment => {
+      const likes = Array.isArray(comment.likes) ? comment.likes : [];
+      const dislikes = Array.isArray(comment.dislikes) ? comment.dislikes : [];
+      
+      return {
+        ...comment,
+        likes_count: likes.length,
+        dislikes_count: dislikes.length,
+        liked: username ? likes.includes(username as string) : false,
+        disliked: username ? dislikes.includes(username as string) : false,
+        // likes,
+        // dislikes
+      };
+    });
+
+    res.status(200).json({
+      message: 'Comments fetched successfully',
+      status: 'success',
+      error: null,
+      data: transformedData,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch comments',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
 const create = async (
   req: Request,
   res: Response,
@@ -100,7 +144,7 @@ const create = async (
 ): Promise<void> => {
   try {
     const { news_id, user_name, content } = req.body;
-    if (!news_id || !user_name || !content) {
+    if (!news_id || !content) {
       res.status(400).json({
         message: 'news_id, user_name, and content are required',
         status: 'error',
@@ -261,4 +305,232 @@ const remove = async (
   }
 };
 
-export default { get, getById, create, update, remove };
+const toggleFlag = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const { reason } = req.body;
+    
+    const oldComment = await db.select().from(comments).where(eq(comments.id, id));
+    if (oldComment.length === 0) {
+      res.status(404).json({
+        message: 'Comment not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    const currentFlagged = oldComment[0].flagged;
+    const [updated] = await db
+      .update(comments)
+      .set({
+        flagged: !currentFlagged,
+        flagged_reason: !currentFlagged ? (reason || 'Flagged by admin') : null,
+        updatedAt: new Date(),
+      })
+      .where(eq(comments.id, id))
+      .returning();
+
+    await logAudit({
+      tableName: 'comments',
+      action: 'UPDATE',
+      description: currentFlagged ? 'Unflagged comment' : 'Flagged comment',
+      oldData: oldComment[0],
+      newData: updated,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
+
+    res.status(200).json({
+      message: `Comment ${currentFlagged ? 'unflagged' : 'flagged'} successfully`,
+      status: 'success',
+      error: null,
+      data: updated,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to toggle comment flag',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+const toggleVisibility = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const { reason } = req.body;
+    
+    const oldComment = await db.select().from(comments).where(eq(comments.id, id));
+    if (oldComment.length === 0) {
+      res.status(404).json({
+        message: 'Comment not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    const currentVisible = oldComment[0].visible;
+    const [updated] = await db
+      .update(comments)
+      .set({
+        visible: !currentVisible,
+        updatedAt: new Date(),
+      })
+      .where(eq(comments.id, id))
+      .returning();
+
+    await logAudit({
+      tableName: 'comments',
+      action: 'UPDATE',
+      description: currentVisible ? 'Hidden comment' : 'Showed comment',
+      oldData: oldComment[0],
+      newData: updated,
+      user_id: req.user?.id,
+      changedBy: req.user?.username,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
+
+    res.status(200).json({
+      message: `Comment ${currentVisible ? 'hidden' : 'shown'} successfully`,
+      status: 'success',
+      error: null,
+      data: updated,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to toggle comment visibility',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+const toggleLike = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const { username, action } = req.body; // action can be 'like' or 'dislike'
+    
+    if (!username) {
+      res.status(400).json({
+        message: 'Username is required',
+        status: 'error',
+        error: 'Validation error',
+        data: null,
+      });
+      return;
+    }
+
+    if (!['like', 'dislike'].includes(action)) {
+      res.status(400).json({
+        message: 'Action must be either "like" or "dislike"',
+        status: 'error',
+        error: 'Validation error',
+        data: null,
+      });
+      return;
+    }
+    
+    const oldComment = await db.select().from(comments).where(eq(comments.id, id));
+    if (oldComment.length === 0) {
+      res.status(404).json({
+        message: 'Comment not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    const comment = oldComment[0];
+    const likes = Array.isArray(comment.likes) ? comment.likes : [];
+    const dislikes = Array.isArray(comment.dislikes) ? comment.dislikes : [];
+    
+    let newLikes = [...likes];
+    let newDislikes = [...dislikes];
+    
+    if (action === 'like') {
+      // If user already liked, remove the like
+      if (likes.includes(username)) {
+        newLikes = likes.filter(name => name !== username);
+      } else {
+        // Add like and remove from dislikes if present
+        if (!likes.includes(username)) {
+          newLikes.push(username);
+        }
+        newDislikes = dislikes.filter(name => name !== username);
+      }
+    } else if (action === 'dislike') {
+      // If user already disliked, remove the dislike
+      if (dislikes.includes(username)) {
+        newDislikes = dislikes.filter(name => name !== username);
+      } else {
+        // Add dislike and remove from likes if present
+        if (!dislikes.includes(username)) {
+          newDislikes.push(username);
+        }
+        newLikes = likes.filter(name => name !== username);
+      }
+    }
+
+    const [updated] = await db
+      .update(comments)
+      .set({
+        likes: newLikes,
+        dislikes: newDislikes,
+        updatedAt: new Date(),
+      })
+      .where(eq(comments.id, id))
+      .returning();
+
+    // Transform the response to include counts and user status
+    const transformedComment = {
+      ...updated,
+      likes_count: newLikes.length,
+      dislikes_count: newDislikes.length,
+      liked: newLikes.includes(username),
+      disliked: newDislikes.includes(username),
+      likes: newLikes,
+      dislikes: newDislikes
+    };
+
+    res.status(200).json({
+      message: `Comment ${action} toggled successfully`,
+      status: 'success',
+      error: null,
+      data: transformedComment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to toggle like',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+export default { get, getById, getByNewsId, create, update, remove, toggleFlag, toggleVisibility, toggleLike };

@@ -815,7 +815,100 @@ export default function HomepageManagement({
 		}
 	};
 
-	
+	// News Links handlers
+	const handleNewsLinksUpdate = async (updatedNewsLinks: NewsLink[]) => {
+		try {
+			// Remove createdAt and updatedAt from the data being sent
+			const sanitizedNewsLinks = updatedNewsLinks.map((item) => {
+				const { createdAt, updatedAt, ...rest } = item as any;
+				return rest;
+			});
+
+			const updatePayload = {
+				newsLinks: sanitizedNewsLinks,
+			};
+			const result = await updateHomepage(updatePayload);
+			if (result.success) {
+				// Update local state immediately
+				setNewsLinks(updatedNewsLinks);
+				setOriginalNewsLinks(updatedNewsLinks);
+				return true;
+			} else {
+				notifications.show({
+					title: "Error",
+					message: result.error || "Failed to update news links",
+					color: "red",
+				});
+				return false;
+			}
+		} catch (error: any) {
+			notifications.show({
+				title: "Error",
+				message: error.message || "An unexpected error occurred",
+				color: "red",
+			});
+			return false;
+		}
+	};
+
+	const handleNewsLinkSubmit = async (values: typeof newsLinkForm.values) => {
+		setIsSubmitting(true);
+		try {
+			const updatedNewsLinks =
+				editingNewsLink ?
+					newsLinks.map((item) =>
+						item.id === editingNewsLink.id ? { ...item, ...values } : item
+					)
+				:	[...newsLinks, { ...values }];
+
+			const success = await handleNewsLinksUpdate(updatedNewsLinks as NewsLink[]);
+			if (success) {
+				notifications.show({
+					title: "Success",
+					message:
+						editingNewsLink ?
+							"News link updated successfully"
+						:	"News link added successfully",
+					color: "green",
+				});
+			}
+			closeNewsLinkModal();
+			setEditingNewsLink(null);
+			newsLinkForm.reset();
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	const handleEditNewsLink = (newsLink: NewsLink) => {
+		setEditingNewsLink(newsLink);
+		newsLinkForm.setValues({
+			title: newsLink.title,
+			description: newsLink.description,
+			link: newsLink.link,
+		});
+		openNewsLinkModal();
+	};
+
+	const handleDeleteNewsLink = async (id: number) => {
+		try {
+			const updatedNewsLinks = newsLinks.filter((item) => item.id !== id);
+			const success = await handleNewsLinksUpdate(updatedNewsLinks);
+			if (success) {
+				notifications.show({
+					title: "Success",
+					message: "News link deleted successfully",
+					color: "green",
+				});
+			}
+		} catch (error: any) {
+			notifications.show({
+				title: "Error",
+				message: error.message || "An unexpected error occurred",
+				color: "red",
+			});
+		}
+	};
 
 	// Helper function to extract YouTube video ID
 	const getYouTubeVideoId = (url: string) => {
@@ -1191,7 +1284,74 @@ export default function HomepageManagement({
 					</Accordion.Panel>
 				</Accordion.Item>
 
+				{/* News Links Section */}
+				<Accordion.Item value="news-links">
+					<Accordion.Control>
+						<Title order={4}>News Links</Title>
+					</Accordion.Control>
+					<Accordion.Panel>
+						<Paper withBorder p="md">
+							<Group justify="space-between" mb="md">
+								<Text fw={500}>News Links</Text>
+								<Button
+									leftSection={<IconPlus size={16} />}
+									onClick={() => {
+										setEditingNewsLink(null);
+										newsLinkForm.reset();
+										openNewsLinkModal();
+									}}
+								>
+									Add News Link
+								</Button>
+							</Group>
 
+							<SimpleGrid cols={{ base: 1, md: 2 }}>
+								{newsLinks.map((newsLink) => (
+									<Paper key={newsLink.id} withBorder p="md">
+										<Group justify="space-between" mb="xs">
+											<div>
+												<Text fw={500}>{newsLink.title}</Text>
+												<Text size="sm" c="dimmed">
+													{newsLink.description}
+												</Text>
+											</div>
+											<Group gap="xs">
+												<ActionIcon
+													variant="light"
+													color="orange"
+													onClick={() => handleEditNewsLink(newsLink)}
+												>
+													<IconEdit size={16} />
+												</ActionIcon>
+												<ActionIcon
+													variant="light"
+													color="red"
+													onClick={() => handleDeleteNewsLink(newsLink.id)}
+												>
+													<IconTrash size={16} />
+												</ActionIcon>
+											</Group>
+										</Group>
+										{/* YouTube Preview */}
+										{getYouTubeVideoId(newsLink.link) && (
+											<div style={{ marginTop: 8 }}>
+												<iframe
+													width="100%"
+													height="300"
+													src={`https://www.youtube.com/embed/${getYouTubeVideoId(newsLink.link)}`}
+													title={newsLink.title}
+													frameBorder="0"
+													allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+													allowFullScreen
+												/>
+											</div>
+										)}
+									</Paper>
+								))}
+							</SimpleGrid>
+						</Paper>
+					</Accordion.Panel>
+				</Accordion.Item>
 
 				{/* Testimonials Section */}
 				{/* <Accordion.Item value="testimonials">
@@ -1528,6 +1688,47 @@ export default function HomepageManagement({
 				</form>
 			</Modal>
 
+			<Modal
+				opened={newsLinkModalOpened}
+				onClose={closeNewsLinkModal}
+				title={editingNewsLink ? "Edit News Link" : "Add News Link"}
+			>
+				<form onSubmit={newsLinkForm.onSubmit(handleNewsLinkSubmit)}>
+					<Stack>
+						<TextInput
+							label="Title"
+							placeholder="Enter news link title"
+							required
+							{...newsLinkForm.getInputProps("title")}
+						/>
+						<Textarea
+							label="Description"
+							placeholder="Enter news link description"
+							rows={3}
+							required
+							{...newsLinkForm.getInputProps("description")}
+						/>
+						<TextInput
+							label="YouTube Link"
+							placeholder="Enter YouTube URL"
+							required
+							{...newsLinkForm.getInputProps("link")}
+						/>
+						<Group justify="flex-end">
+							<Button
+								variant="light"
+								onClick={closeNewsLinkModal}
+								disabled={isSubmitting}
+							>
+								Cancel
+							</Button>
+							<Button type="submit" loading={isSubmitting}>
+								{editingNewsLink ? "Update" : "Add"}
+							</Button>
+						</Group>
+					</Stack>
+				</form>
+			</Modal>
 		</div>
 	);
 }

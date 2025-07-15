@@ -123,6 +123,28 @@ export async function put<T = any>(
   }
 }
 
+// PATCH wrapper
+export async function patch<T = any>(
+  url: string,
+  data?: any,
+  config?: AxiosRequestConfig
+): Promise<AxiosResponse<T>> {
+  try {
+    // Set Content-Type based on data type
+    const headers: any = {};
+    if (data instanceof FormData) {
+      // Let browser set Content-Type for FormData
+      delete headers['Content-Type'];
+    } else {
+      headers['Content-Type'] = 'application/json';
+    }
+    
+    return await api.patch<T>(url, data, { ...config, headers });
+  } catch (error: any) {
+    throw formatAxiosError(error);
+  }
+}
+
 // DELETE wrapper
 export async function del<T = any>(
   url: string,

@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
 import { news } from '../db/schema';
+import { news_links } from '../db/schema';
+import { categories } from '../db/schema';
 import { v2 as cloudinary } from 'cloudinary';
-import { eq, desc, asc, count, like, or } from 'drizzle-orm';
+import { eq, desc, asc, count, like, or, and } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
 import TelegramBot from 'node-telegram-bot-api';
 
@@ -32,6 +34,7 @@ const get = async (
       sortBy = 'createdAt',
       order = 'desc',
       q = '',
+      category = '',
     } = req.query as Record<string, string>;
 
     const pageNum = Math.max(Number(page), 1);
@@ -40,28 +43,39 @@ const get = async (
     const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
 
     // Build search condition
-    let whereCondition = undefined;
+    let whereConditions = [];
+    
     if (q && q.trim()) {
       const searchTerm = `%${q.trim()}%`;
-      whereCondition = or(
+      whereConditions.push(or(
         like(news.title, searchTerm),
         like(news.content, searchTerm),
         like(news.created_by, searchTerm),
-        like(news.source, searchTerm)
-      );
+        like(news.source, searchTerm),
+        like(news.hashtags, searchTerm),
+        like(categories.name, searchTerm)
+      ));
     }
+    
+    // Add category filter if provided
+    if (category && category.trim()) {
+      const categoryTerm = `%${category.trim()}%`;
+      whereConditions.push(like(categories.name, categoryTerm));
+    }
+    
+    const whereCondition = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
     // Get total count for pagination
-    const totalCountQuery = whereCondition 
-      ? db.select({ count: count() }).from(news).where(whereCondition)
-      : db.select({ count: count() }).from(news);
+    const totalCountQuery = whereCondition
+      ? db.select({ count: count() }).from(news).leftJoin(categories, eq(news.category_id, categories.id)).where(whereCondition)
+      : db.select({ count: count() }).from(news).leftJoin(categories, eq(news.category_id, categories.id));
     const totalCount = await totalCountQuery;
 
     // Execute the main query with ordering and pagination
     const dataQuery = whereCondition
-      ? db.select().from(news).where(whereCondition)
-      : db.select().from(news);
-    
+      ? db.select({ news: news }).from(news).leftJoin(categories, eq(news.category_id, categories.id)).where(whereCondition)
+      : db.select({ news: news }).from(news).leftJoin(categories, eq(news.category_id, categories.id));
+
     // Dynamic sorting based on sortField
     let sortedQuery;
     if (sortField === 'createdAt') {
@@ -76,18 +90,21 @@ const get = async (
       // Default fallback
       sortedQuery = desc(news.createdAt);
     }
-    
+
     const data = await dataQuery
       .orderBy(sortedQuery)
       .limit(pageSize)
       .offset((pageNum - 1) * pageSize);
+
+    // Extract just the news data from the joined result
+    const newsData = data.map(item => item.news);
 
     res.status(200).json({
       message: 'News fetched successfully',
       status: 'success',
       error: null,
       data: {
-        news: data,
+        news: newsData,
         pagination: {
           currentPage: pageNum,
           totalPages: Math.ceil(totalCount[0].count / pageSize),
@@ -109,11 +126,12 @@ const get = async (
 const getById = async (
   req: Request,
   res: Response,
-  next: NextFunction, 
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
     const data = await db.select().from(news).where(eq(news.id, id));
+
     if (data.length === 0) {
       res.status(404).json({
         message: 'News not found',
@@ -140,6 +158,83 @@ const getById = async (
   }
 };
 
+const publicGetById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const data = await db.select().from(news).where(eq(news.id, id));
+
+    await db.update(news).set({
+      view_count: data[0].view_count + 1
+    }).where(eq(news.id, id));
+
+    if (data.length === 0) {
+      res.status(404).json({
+        message: 'News not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+    res.status(200).json({
+      message: 'News fetched successfully',
+      status: 'success',
+      error: null,
+      data: data[0],
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch news',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+const publicNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    // Featured: top 5 featured
+    const featured = await db.select().from(news)
+      .where(eq(news.featured, true))
+      .orderBy(desc(news.createdAt))
+      .limit(5);
+    // Latest: top 5 by createdAt
+    const latest = await db.select().from(news)
+      .orderBy(desc(news.createdAt))
+      .limit(5);
+    // Trending: top 5 by view_count
+    const trending = await db.select().from(news)
+      .orderBy(desc(news.view_count))
+      .limit(5);
+    // Others: all news_links
+    const newsLinks = await db.select().from(news_links).orderBy(desc(news_links.createdAt)).limit(4);
+    res.status(200).json({
+      message: 'Public news fetched successfully',
+      status: 'success',
+      error: null,
+      data: { featured, latest, trending, others: newsLinks },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch public news',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
 
 const create = async (
   req: Request,
@@ -147,11 +242,11 @@ const create = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { title, content, published_date, created_by } = req.body;
+    const { title, content, published_date, created_by, hashtags, featured, read_minutes } = req.body;
     console.log('Create news - req.files:', req.files);
     console.log('Create news - req.file:', req.file);
     console.log('Create news - req.body:', req.body);
-    
+
     let visual_content: any[] | null = null;
     if (req.files && Array.isArray(req.files)) {
       visual_content = [];
@@ -209,13 +304,16 @@ const create = async (
       title,
       content,
       visual_content,
+      hashtags,
+      featured,
+      read_minutes,
       published_date: published_date ? new Date(published_date) : new Date(),
       created_by: created_by || 'admin',
       source: 'Website',
       telegram_message_id: telegramMessageIds,
       // linkedin_message_id: linkedinPostId,
     }).returning();
-    
+
     await logAudit({
       tableName: 'news',
       action: 'INSERT',
@@ -251,7 +349,7 @@ const update = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const { title, content, published_date, created_by } = req.body;
+    const { title, content, published_date, created_by, hashtags, featured, read_minutes } = req.body;
     let visual_content: any[] | null = null;
     if (req.files && Array.isArray(req.files)) {
       visual_content = [];
@@ -274,7 +372,7 @@ const update = async (
       }
     }
     const oldNews = await db.select().from(news).where(eq(news.id, id));
-    
+
     // Delete old images from Cloudinary if new images are being uploaded or if images are being removed
     if (oldNews[0]?.visual_content && Array.isArray(oldNews[0].visual_content)) {
       if (visual_content && visual_content.length > 0) {
@@ -285,13 +383,16 @@ const update = async (
         await deleteMultipleFromCloudinary(oldNews[0].visual_content);
       }
     }
-    
+
     const [updated] = await db
       .update(news)
       .set({
         title,
         content,
         visual_content,
+        hashtags,
+        featured,
+        read_minutes,
         published_date: published_date ? new Date(published_date) : undefined,
         created_by,
         updatedAt: new Date(),
@@ -307,11 +408,11 @@ const update = async (
       });
       return;
     }
-    
+
     // Edit Telegram message only if it was originally created by website
     // This prevents editing news that came from Telegram
     if (oldNews[0]?.source === 'Website' && oldNews[0]?.telegram_message_id) {
-      const messageIds = Array.isArray(oldNews[0].telegram_message_id) 
+      const messageIds = Array.isArray(oldNews[0].telegram_message_id)
         ? oldNews[0].telegram_message_id as number[]
         : [oldNews[0].telegram_message_id as number];
       await editTelegramMessage(messageIds, updated);
@@ -331,7 +432,7 @@ const update = async (
     if (oldNews[0]?.source === 'Website' && oldNews[0]?.linkedin_message_id) {
       await editLinkedInPost(oldNews[0].linkedin_message_id as string, updated, imageBuffers);
     }
-    
+
     await logAudit({
       tableName: 'news',
       action: 'UPDATE',
@@ -368,7 +469,7 @@ const remove = async (
   try {
     const id = Number(req.params.id);
     const oldNews = await db.select().from(news).where(eq(news.id, id));
-    
+
     if (oldNews.length === 0) {
       res.status(404).json({
         message: 'News not found',
@@ -395,7 +496,7 @@ const remove = async (
     }
 
     const [deleted] = await db.delete(news).where(eq(news.id, id)).returning();
-    
+
     await logAudit({
       tableName: 'news',
       action: 'DELETE',
@@ -427,9 +528,9 @@ const remove = async (
 async function uploadToCloudinary(buffer: Buffer): Promise<{ public_id: string; secure_url: string }> {
   return await new Promise<{ public_id: string; secure_url: string }>((resolve, reject) => {
     console.log('Starting Cloudinary upload, buffer size:', buffer.length);
-    
+
     const uploadStream = cloudinary.uploader.upload_stream(
-      { 
+      {
         folder: 'news',
         timeout: 60000, // 60 seconds timeout
         resource_type: 'auto'
@@ -450,7 +551,7 @@ async function uploadToCloudinary(buffer: Buffer): Promise<{ public_id: string; 
         });
       }
     );
-    
+
     uploadStream.end(buffer);
   });
 }
@@ -458,7 +559,7 @@ async function uploadToCloudinary(buffer: Buffer): Promise<{ public_id: string; 
 async function deleteFromCloudinary(imageData: string | { public_id: string; secure_url: string }): Promise<void> {
   try {
     let publicId: string;
-    
+
     if (typeof imageData === 'string') {
       // Handle legacy string URLs
       const urlParts = imageData.split('/');
@@ -468,7 +569,7 @@ async function deleteFromCloudinary(imageData: string | { public_id: string; sec
       // Handle new object structure
       publicId = imageData.public_id;
     }
-    
+
     await cloudinary.uploader.destroy(publicId);
     console.log(`Deleted image from Cloudinary: ${publicId}`);
   } catch (error) {
@@ -479,7 +580,7 @@ async function deleteFromCloudinary(imageData: string | { public_id: string; sec
 
 async function deleteMultipleFromCloudinary(images: any[]): Promise<void> {
   if (!images || images.length === 0) return;
-  
+
   const deletePromises = images.map(image => deleteFromCloudinary(image));
   await Promise.allSettled(deletePromises);
 }
@@ -488,17 +589,28 @@ async function deleteMultipleFromCloudinary(images: any[]): Promise<void> {
 function markdownToHtml(text: string): string {
   // Convert markdown links to HTML links
   let htmlText = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-  
+
   // Convert markdown bold to HTML bold
   htmlText = htmlText.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
-  
+
   // Convert markdown italic to HTML italic
   htmlText = htmlText.replace(/\*([^*]+)\*/g, '<i>$1</i>');
-  
+
   // Convert markdown underline to HTML underline
   htmlText = htmlText.replace(/<u>([^<]+)<\/u>/g, '<u>$1</u>');
-  
+
   return htmlText;
+}
+
+// Helper to split text into chunks of maxLength
+function splitText(text: string, maxLength: number): string[] {
+  const result = [];
+  let i = 0;
+  while (i < text.length) {
+    result.push(text.slice(i, i + maxLength));
+    i += maxLength;
+  }
+  return result;
 }
 
 async function sendNewsToTelegram(newsData: any): Promise<number[]> {
@@ -508,15 +620,19 @@ async function sendNewsToTelegram(newsData: any): Promise<number[]> {
       return [];
     }
 
-    const caption = `${markdownToHtml(newsData.title)}\n\n${markdownToHtml(newsData.content)}`;
-    
+    const MAX_CAPTION = 1024;
+    const MAX_MESSAGE = 4096;
+    const fullText = `${markdownToHtml(newsData.title)}\n\n${markdownToHtml(newsData.content)}`;
+    const caption = fullText.slice(0, MAX_CAPTION);
+    const rest = fullText.slice(MAX_CAPTION);
+
     let telegramMessageIds: number[] = [];
-    
+
     if (newsData.visual_content && newsData.visual_content.length > 0) {
       if (newsData.visual_content.length === 1) {
         // Send single photo with caption
-        const imageUrl = typeof newsData.visual_content[0] === 'string' 
-          ? newsData.visual_content[0] 
+        const imageUrl = typeof newsData.visual_content[0] === 'string'
+          ? newsData.visual_content[0]
           : newsData.visual_content[0].secure_url;
         const result = await bot.sendPhoto(channelId, imageUrl, {
           caption: caption,
@@ -531,26 +647,30 @@ async function sendNewsToTelegram(newsData: any): Promise<number[]> {
           caption: index === 0 ? caption : undefined, // Only first photo gets caption
           parse_mode: 'HTML'
         }));
-        
         const result = await bot.sendMediaGroup(channelId, media);
-        console.log('Telegram media group result:', result);
-        // For media groups, we store all message IDs
         telegramMessageIds = result.map((msg: any) => msg.message_id);
       }
     } else {
-      // Send text only
-      const result = await bot.sendMessage(channelId, caption, {
-        parse_mode: 'HTML'
-      });
-      console.log(`Telegram message ID: ${result}`);
-      telegramMessageIds = [result.message_id];
+      // Send text only (no image)
+      const chunks = splitText(fullText, MAX_MESSAGE);
+      for (const chunk of chunks) {
+        const result = await bot.sendMessage(channelId, chunk, { parse_mode: 'HTML' });
+        telegramMessageIds.push(result.message_id);
+      }
     }
-    
+
+    // Send the rest of the text (if any) as additional messages
+    if (rest.length > 0) {
+      const chunks = splitText(rest, MAX_MESSAGE);
+      for (const chunk of chunks) {
+        await bot.sendMessage(channelId, chunk, { parse_mode: 'HTML' });
+      }
+    }
+
     console.log('News sent to Telegram successfully');
     return telegramMessageIds;
   } catch (error) {
     console.error('Error sending news to Telegram:', error);
-    // Don't throw error to avoid breaking the main news creation flow
     return [];
   }
 }
@@ -563,14 +683,14 @@ async function editTelegramMessage(messageIds: number[], newsData: any): Promise
     }
 
     const caption = `${markdownToHtml(newsData.title)}\n\n${markdownToHtml(newsData.content)}`;
-    
+
     // For editing, we can only edit the caption of the first message in a media group
     const firstMessageId = messageIds[0];
     if (!firstMessageId) {
       console.log('No message IDs to edit');
       return;
     }
-    
+
     if (newsData.visual_content && newsData.visual_content.length > 0) {
       if (newsData.visual_content.length === 1) {
         // Edit photo with new caption
@@ -841,7 +961,7 @@ async function deleteFromLinkedIn(linkedinPostId: string): Promise<void> {
       return;
     }
     let formattedPostId = linkedinPostId;
-  
+
     if (!linkedinPostId.startsWith('urn:li:')) {
       formattedPostId = `urn:li:share:${linkedinPostId}`;
     }
@@ -852,9 +972,9 @@ async function deleteFromLinkedIn(linkedinPostId: string): Promise<void> {
       const shareId = formattedPostId.replace('urn:li:share:', '');
       const ugcPostId = `urn:li:ugcPost:${shareId}`;
       const encodedUgcPostId = ugcPostId.replace(/:/g, '%3A');
-      
+
       console.log('Share URN detected, will try both formats:', formattedPostId, 'and', ugcPostId);
-      
+
       // Try both share and ugcPost formats
       deleteUrls = [
         `${apiUrl}/ugcPosts/${encodedPostId}`,
@@ -902,4 +1022,4 @@ async function deleteFromLinkedIn(linkedinPostId: string): Promise<void> {
   }
 }
 
-export default { get, getById, create, update, remove };
+export default { get, getById, create, update, remove, publicNews, publicGetById };

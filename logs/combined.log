@@ -2075,3 +2075,1013 @@
 {"level":"info","message":"::1 - - [12/Jul/2025:12:22:50 +0000] \"POST /api/landing/upload-partner HTTP/1.1\" 200 309 \"-\" \"axios/1.10.0\""}
 {"level":"info","message":"::1 - - [12/Jul/2025:12:22:54 +0000] \"PUT /api/landing HTTP/1.1\" 200 616 \"-\" \"axios/1.10.0\""}
 {"level":"info","message":"::1 - - [12/Jul/2025:12:22:54 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"-\" \"node\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:23:24 +0000] \"POST /api/landing/upload-partner HTTP/1.1\" 200 309 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:23:26 +0000] \"PUT /api/landing HTTP/1.1\" 200 835 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:23:27 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"-\" \"node\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:23:47 +0000] \"POST /api/landing/upload-partner HTTP/1.1\" 200 309 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:23:49 +0000] \"PUT /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:23:49 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"-\" \"node\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:24:17 +0000] \"POST /api/landing/upload-partner HTTP/1.1\" 200 309 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:24:21 +0000] \"PUT /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:24:21 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"-\" \"node\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:24:52 +0000] \"POST /api/landing/upload-partner HTTP/1.1\" 200 309 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:24:56 +0000] \"PUT /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:24:56 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"-\" \"node\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:50:25 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:53:21 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:53:23 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:53:38 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:53:38 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:53:39 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:57:04 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:57:30 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:12:57:40 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:09:47 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:13:58 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:14:02 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:20:02 +0000] \"PUT /api/landing HTTP/1.1\" 500 562 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:21:56 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:21:57 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:22:31 +0000] \"PUT /api/landing HTTP/1.1\" 200 374 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:22:57 +0000] \"PUT /api/landing HTTP/1.1\" 200 585 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:23:52 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:39:22 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:40:14 +0000] \"POST /api/news HTTP/1.1\" 201 499 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:40:17 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:40:55 +0000] \"GET /api/news?page=1&limit=6&q=news&sortBy=createdAt&order=desc HTTP/1.1\" 200 571 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:41:00 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:41:05 +0000] \"GET /api/news/45 HTTP/1.1\" 200 499 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:13:56:47 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:10:32 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:44:00 +0000] \"GET /landing HTTP/1.1\" 404 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:44:00 +0000] \"GET /landing HTTP/1.1\" 404 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:44:39 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:44:45 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:45:01 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:46:25 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:46:51 +0000] \"GET /api/landing HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:46:55 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:48:04 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:48:08 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:49:37 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:50:42 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:51:03 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:51:19 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:51:25 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:14:51:54 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:30:15 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:31:04 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:31:10 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:31:16 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:33:17 +0000] \"GET /api/landing HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:19 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:19 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:19 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:19 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:24 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:24 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:28 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:28 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:32 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:36 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:36 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:40 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:40 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:44 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:48 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:48 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:52 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:34:52 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:36:50 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:36:50 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:36:50 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:36:50 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:36:55 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:36:55 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:36:59 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:36:59 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:03 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:07 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:07 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:11 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:11 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:15 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:19 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:19 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:23 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:23 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:27 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:31 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:31 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:35 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:35 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:39 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:43 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:43 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:43 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:47 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:47 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:51 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:55 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:55 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:59 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:37:59 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:03 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:07 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:07 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:11 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:11 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:11 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:11 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:11 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:11 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:16 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:16 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:20 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:20 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:24 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:28 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:28 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:32 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:32 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:36 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:40 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:40 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:44 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:44 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:48 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:52 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:52 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:56 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:38:56 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:00 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:04 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:04 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:08 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:08 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:12 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:16 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:16 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:20 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:20 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:24 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:28 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:28 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:32 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:32 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:36 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:40 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:40 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:44 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:44 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:45 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:48 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:52 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:52 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:56 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:39:56 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:00 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:04 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:04 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:08 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:08 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:12 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:16 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:16 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:18 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:18 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:20 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:20 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:22 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:24 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:28 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:28 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:32 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:32 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:36 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:39 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 429 67 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:40 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:40 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:44 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:44 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:48 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:52 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:16:40:52 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 429 67 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:06:57 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:09:57 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:10:58 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:11:48 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:18:19 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:18:28 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:18:28 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:18:28 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:18:28 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:18:32 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:18:36 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:18:36 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:01 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::ffff:127.0.0.1 - - [12/Jul/2025:17:23:01 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::ffff:127.0.0.1 - - [12/Jul/2025:17:23:04 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:04 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:06 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:08 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:12 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:16 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:16 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:20 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:24 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:25 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:28 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:28 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:32 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:49 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:23:58 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:24:04 +0000] \"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1\" 404 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:17:24:04 +0000] \"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1\" 404 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:13:10 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:13:16 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:13:19 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:13:19 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:13:23 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:13:27 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:13:31 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:13:31 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:13:35 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:14:58 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:15:04 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:15:07 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:15:07 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:15:11 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:15:15 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:15:19 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:15:19 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:15:23 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:15:27 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"http://localhost:3002/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:19:51 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:19:59 +0000] \"GET /uploads/partners/partner_1752322970484_4ju9a5vnihb.jpg HTTP/1.1\" 200 47313 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:19:59 +0000] \"GET /uploads/partners/partner_1752323027041_fg1m26dy8as.jpg HTTP/1.1\" 200 39088 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:19:59 +0000] \"GET /uploads/partners/partner_1752323004299_2p9z3b1o6qy.jpg HTTP/1.1\" 200 26421 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:19:59 +0000] \"GET /uploads/partners/partner_1752323057636_f20corypjmh.jpg HTTP/1.1\" 200 33106 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:19:59 +0000] \"GET /uploads/partners/partner_1752323092981_bgnvgwoafbj.jpg HTTP/1.1\" 200 29248 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:19:59 +0000] \"GET /uploads/partners/partner_1752322338968_awwvsu8d3b4.jpg HTTP/1.1\" 200 289586 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:35:42 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:35:43 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:38:04 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:38:12 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:38:50 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:39:05 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:39:32 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:39:38 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:40:48 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:43:36 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:44:32 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:44:36 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:44:56 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:46:31 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:47:16 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:49:19 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:49:31 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:59:54 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:59:54 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:18:59:55 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:00:11 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:00:51 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:01:00 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:02:15 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:02:20 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:03:41 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:04:31 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:04:49 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:06:04 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:06:36 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:06:48 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:07:21 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:08:40 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:08:57 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:09:13 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:09:54 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:09:58 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:10:22 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:12:58 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:14:30 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:15:14 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:15:32 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:16:18 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:19:47 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:20:18 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:22:00 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:22:09 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:22:11 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:25:56 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:26:53 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:28:06 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [12/Jul/2025:19:29:51 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:16:11:19 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:16:11:42 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:16:11:58 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:16:16:24 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:16:17:27 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:16:17:46 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:16:17:53 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:16:18:10 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:16:23:37 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 500 475 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:17:37:49 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 500 127 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:17:37:49 +0000] \"GET /api/auth/me HTTP/1.1\" 401 413 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:17:38:03 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:17:38:16 +0000] \"POST /api/auth/signin HTTP/1.1\" 500 392 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:17:38:22 +0000] \"POST /api/auth/signin HTTP/1.1\" 500 392 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:17:38:40 +0000] \"POST /api/auth/signin HTTP/1.1\" 200 1017 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:17:39:31 +0000] \"GET /api/dashboard HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:17:40:14 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:17:40:40 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 500 475 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:06:57 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:07:03 +0000] \"GET /api/news/45 HTTP/1.1\" 200 536 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:36:15 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:43:35 +0000] \"POST /api/news HTTP/1.1\" 201 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:43:42 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:44:16 +0000] \"GET /api/news/46 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:54:06 +0000] \"GET /api/news/46 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:56:32 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:56:35 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:56:53 +0000] \"DELETE /api/news/46 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:57:58 +0000] \"POST /api/news HTTP/1.1\" 201 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:18:57:59 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:19:03:53 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:19:24:26 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:19:25:56 +0000] \"GET /api/news/public HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:19:25:58 +0000] \"GET /api/news/public HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:20:50:59 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:20:51:01 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:20:56:53 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:02:29 +0000] \"GET /api/news/ HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:05:00 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:09:29 +0000] \"GET /api/news/ HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:09:36 +0000] \"GET /api/news/ HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:10:16 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:12:00 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:12:05 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:12:06 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:15:59 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:20:45 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:25:41 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:27:36 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:28:13 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:28:14 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:29:49 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:29:49 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:31:58 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:31:58 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:39:59 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:39:59 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:41:11 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:41:12 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:48:20 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:48:21 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:48:21 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:48:21 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:48:22 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:48:22 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:48:34 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:48:34 +0000] \"GET /api/news/category HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:49:31 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:49:31 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:49:31 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:03 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:03 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:03 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:10 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:10 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:10 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:15 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:15 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:15 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:28 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:28 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:55:29 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:56:00 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:56:00 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:56:01 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:58:23 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:58:24 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:58:24 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:58:41 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:58:42 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:58:42 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:59:25 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:59:26 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:59:26 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:59:31 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:59:32 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:21:59:32 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:04 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:05 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:05 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:05 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:05 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:06 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:06 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:06 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:07 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:21 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:21 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:03:22 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:04:00 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:04:13 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=3 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:04:29 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=2 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:04:35 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:04:40 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=3 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:05:45 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:05:45 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:05:46 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:05:54 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:05:54 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:05:55 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:05:58 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:06:07 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=3 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:08:16 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:08:35 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=3 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:08:59 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:09:00 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:09:00 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:09:06 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:09:13 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=3 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:10:27 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:10:28 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:10:28 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:10:44 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=3 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:10:51 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=2 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:10:53 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=3 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:10:55 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=2 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:10:57 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=1 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:11:09 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&q=hash HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:11:29 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&q=New HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:12:22 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:12:23 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:12:23 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:13:00 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:13:01 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:13:01 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:13:24 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:13:25 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:13:25 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:01 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:01 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:01 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:16 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:16 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:17 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:26 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&q=New HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:47 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:47 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [13/Jul/2025:22:14:48 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:06:03:11 +0000] \"GET /api/landing HTTP/1.1\" - - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:06:03:11 +0000] \"GET /api/landing HTTP/1.1\" - - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:09:47:52 +0000] \"GET / HTTP/1.1\" 200 19 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:09:47:52 +0000] \"GET /favicon.ico HTTP/1.1\" 404 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:09:50:21 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:09:50:37 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:09:50:37 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:09:50:38 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:20 +0000] \"GET /api/news?page=1&limit=6&sortBy=published_date&order=desc&category=3 HTTP/1.1\" 200 151 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:21 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:21 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:21 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:21 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:21 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:21 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:21 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:22 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:06:22 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:52 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:52 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:52 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:52 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:53 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:53 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:54 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:55 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:56 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:59 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:08:59 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:00 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:09 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:10 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:10 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:18 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:18 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:19 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:41 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:43 +0000] \"GET /api/dashboard HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:09:50 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:10:01 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:12:32 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:12:32 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:12:33 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:18:27 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:18:27 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:18:28 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:18:54 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:18:54 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:18:54 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:19:52 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:19:52 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:19:53 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:20:28 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:20:28 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:10:20:29 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:18:56 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:18:56 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:18:57 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:19:39 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:19:39 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:19:40 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:20:43 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:20:44 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:20:44 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:21:01 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:21:01 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:21:01 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:21:57 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:21:58 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:22:02 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:23:34 +0000] \"GET /api/news/public HTTP/1.1\" 500 537 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:23:38 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:23:43 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:23:56 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:24:15 +0000] \"GET /api/news/public HTTP/1.1\" 500 537 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:25:14 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:25:44 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:25:44 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:25:44 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:26:33 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:26:33 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:26:33 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:26:33 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:26:34 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:26:34 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:26:56 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:26:56 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:26:57 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:09 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:09 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:10 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:18 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:18 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:19 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:22 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:22 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:23 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:33 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:33 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:34 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:56 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:57 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:30:57 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:31:21 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:31:21 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:31:22 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:05 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:05 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:06 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:13 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:13 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:13 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:19 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:19 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:20 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:24 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:24 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:32:25 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:36:21 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:37:06 +0000] \"GET /api/dashboard HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:37:31 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:37:32 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:37:32 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:42:15 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:42:15 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:42:16 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:42:45 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:42:45 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:42:45 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:43:41 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:43:41 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:43:42 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:43:56 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:43:57 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:43:57 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:44:05 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:44:06 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:44:06 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:44:28 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:44:28 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:44:29 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:44:52 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:44:52 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:44:53 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:45:14 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:45:14 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:45:15 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:45:31 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:45:31 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:45:31 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:49:25 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:49:25 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:49:26 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:52:08 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:52:31 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:54:28 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:55:09 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:55:13 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:55:28 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:59:48 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:11:59:49 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:01:49 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:02:20 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:02:20 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:03:35 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:03:35 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:03:37 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:03:38 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:30 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:30 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:34 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 429 67 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:35 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:36 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:18:37 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:37 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:45 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:48 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 429 67 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:48 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:48 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:48 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:48 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:48 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:48 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:49 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:50 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:50 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:21:50 +0000] \"GET /api/public/comments/news/47 HTTP/1.1\" 500 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:22:55 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::ffff:127.0.0.1 - - [14/Jul/2025:12:23:56 +0000] \"GET /api/comments/public/news/47 HTTP/1.1\" 404 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:23:56 +0000] \"GET /_next/static/chunks/webpack.js?v=1752495836525 HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::ffff:127.0.0.1 - - [14/Jul/2025:12:23:56 +0000] \"GET /_next/static/css/app/layout.css?v=1752495836525 HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:23:56 +0000] \"GET /_next/static/chunks/app-pages-internals.js HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:23:56 +0000] \"GET /_next/static/chunks/main-app.js?v=1752495836525 HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:23:56 +0000] \"GET /_next/static/chunks/app/layout.js HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:24:29 +0000] \"GET /api/comments/public/47 HTTP/1.1\" 200 85 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:25:17 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:25:18 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:25:19 +0000] \"GET /api/comments/public/47 HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:25:20 +0000] \"GET /api/comments/public/47 HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:26:45 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:26:46 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:26:46 +0000] \"GET /api/comments/public/47 HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:26:46 +0000] \"GET /api/comments/public/47 HTTP/1.1\" 401 112 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:29:26 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:29:27 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:29:29 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:29:29 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:29:58 +0000] \"POST /api/public/comments HTTP/1.1\" 201 343 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:35:26 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:35:26 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:35:27 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:35:27 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:53:12 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:53:13 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:53:14 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:12:53:14 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:00:46 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:00:47 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:00:49 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:00:49 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:01:55 +0000] \"PATCH /api/api/comments/1/toggle-visibility HTTP/1.1\" 404 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:03:28 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:03:30 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:03:31 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:03:32 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:03:51 +0000] \"PATCH /api/comments/1/toggle-visibility HTTP/1.1\" 200 343 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:03:56 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:03:57 +0000] \"GET /api/auth/me HTTP/1.1\" 200 381 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:03:57 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 347 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:03:58 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 347 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:12:14 +0000] \"GET /api/users?page=1&limit=6 HTTP/1.1\" 200 825 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:12:14 +0000] \"GET /api/audit-logs?page=1&limit=6 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:13:21 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:13:31 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:13:32 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 347 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:13:32 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 347 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:13:43 +0000] \"PATCH /api/comments/1/toggle-visibility HTTP/1.1\" 200 341 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:13:53 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:13:53 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:13:54 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:00 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:00 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:00 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:00 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:00 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:01 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:01 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:01 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:01 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:02 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:02 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:03 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:03 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:03 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:03 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:03 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:04 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:04 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:26 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:26 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:27 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:35 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:35 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:23:36 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:13:25:24 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:45:11 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:45:11 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:45:11 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:46:39 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:46:48 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:46:48 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:46:49 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:49:57 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:50:17 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:51:07 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:15:52:14 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:00:01 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:00:02 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:00:02 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:00:44 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:02:51 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:02:52 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:02:52 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:03:02 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:03:07 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:03:42 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:07:10 +0000] \"GET /api/search?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:07:11 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:07:21 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:07:26 +0000] \"GET /api/news/47 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:07:27 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:07:27 +0000] \"GET /api/public/comments/47 HTTP/1.1\" 200 346 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:08:27 +0000] \"GET /api/landing HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:12:03 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:12:03 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:12:05 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:13:00 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:13:01 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:13:01 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:33:37 +0000] \"POST /api/news HTTP/1.1\" 201 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:33:40 +0000] \"GET /api/news?page=1&limit=6&sortBy=createdAt&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:34:41 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:34:41 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:34:43 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:52:09 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:52:10 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:52:12 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:52:24 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:52:25 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:52:26 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:57:15 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:57:16 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:57:16 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:59:04 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:59:04 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:16:59:06 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:00:04 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:00:04 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:00:07 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:02:48 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:02:48 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:02:49 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:02:50 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:02:51 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:02:51 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:02:54 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:08:55 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:08:57 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:09:07 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:09:19 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:11:43 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:12:27 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:12:33 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:15:32 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:16:11 +0000] \"GET /api/news/public HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:16:13 +0000] \"GET /api/category HTTP/1.1\" 200 489 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:16:14 +0000] \"GET /api/news?page=1&limit=10&sortBy=published_date&order=desc HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:16:44 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:16:46 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:17:01 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:17:52 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:18:26 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:19:13 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:14 +0000] \"GET /api/public/search/ HTTP/1.1\" 308 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:19 +0000] \"GET /api/public/search HTTP/1.1\" 404 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:19 +0000] \"GET /_next/static/chunks/webpack.js?v=1752515238987 HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:19 +0000] \"GET /_next/static/css/app/layout.css?v=1752515238987 HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:19 +0000] \"GET /_next/static/chunks/app-pages-internals.js HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:19 +0000] \"GET /_next/static/chunks/main-app.js?v=1752515238987 HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:19 +0000] \"GET /_next/static/chunks/app/layout.js HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:37 +0000] \"GET /api/public/search HTTP/1.1\" 404 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:37 +0000] \"GET /_next/static/chunks/webpack.js?v=1752515257213 HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:37 +0000] \"GET /_next/static/css/app/layout.css?v=1752515257213 HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:37 +0000] \"GET /_next/static/chunks/app-pages-internals.js HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:37 +0000] \"GET /_next/static/chunks/main-app.js?v=1752515257213 HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:47:37 +0000] \"GET /_next/static/chunks/app/layout.js HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:48:09 +0000] \"GET /api/public/search/news HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:48:40 +0000] \"GET /api/public/search/news?q=Investment HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:56:34 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:56:36 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:57:41 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:57:42 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:57:49 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:57:50 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:58:48 +0000] \"GET /api/news/public/48 HTTP/1.1\" 500 473 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:58:57 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:17:58:59 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:01:03 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:01:10 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:01:10 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:01:32 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:02:10 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:02:12 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:02:15 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:02:17 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:02:58 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:03:02 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:03:36 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:03:37 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:04:24 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:04:28 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:04:33 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:04:45 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:04:48 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:04:50 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:04:51 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:05:17 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:07:42 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:07:45 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:08:06 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:08:06 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:09:30 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:09:33 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:10:06 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:10:11 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:11:22 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:11:23 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:11:54 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:11:57 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:12:49 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:12:52 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:13:01 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:13:02 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:13:44 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:13:45 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:14:15 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:14:18 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:29:53 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:29:54 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:29:59 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:30:03 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:30:03 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:30:39 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:30:40 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:30:40 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:35:25 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:35:26 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:35:27 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:36:26 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:36:27 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:36:27 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:36:33 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:36:34 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:36:35 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:37:27 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:37:28 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:37:28 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:38:24 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:38:25 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:38:25 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:44:43 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:44:47 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:44:47 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:44:53 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:44:54 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:44:55 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:47:16 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:47:17 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:47:17 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:48:24 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:48:24 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:48:25 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:48:38 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:48:42 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:48:42 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:49:16 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:49:27 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:49:28 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:51:29 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:51:30 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:51:30 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:51:36 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:51:39 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:51:40 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:54:49 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:54:51 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:54:53 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:55:16 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:55:18 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:55:19 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:56:41 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:56:45 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:56:45 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:56:47 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:56:47 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:56:48 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:56:51 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:56:55 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:56:56 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:59:12 +0000] \"GET /api/news/public/48 HTTP/1.1\" 500 473 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:59:13 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:59:15 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:18:59:15 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:00:47 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:00:49 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:00:50 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 85 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:01:20 +0000] \"POST /api/public/comments/ HTTP/1.1\" 201 345 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:01:21 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:01:22 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:01:23 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 348 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:02:25 +0000] \"GET /api/news/public/48 HTTP/1.1\" 500 473 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:03:00 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:03:00 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:03:01 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 348 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:03:01 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:03:05 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [14/Jul/2025:19:03:05 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 348 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:05:10:47 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:05:10:47 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:05:10:47 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 348 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:05:12:08 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:05:12:08 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:05:12:08 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 348 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:05:12:23 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:05:12:24 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:05:12:24 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 348 \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:06:01:08 +0000] \"GET /api/news/public/48 HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:06:01:09 +0000] \"GET /api/public/search/news?q=EthiopianLaw HTTP/1.1\" 200 - \"-\" \"axios/1.10.0\""}
+{"level":"info","message":"::1 - - [15/Jul/2025:06:01:09 +0000] \"GET /api/public/comments/48 HTTP/1.1\" 200 325 \"-\" \"axios/1.10.0\""}

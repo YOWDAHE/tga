@@ -20,6 +20,7 @@ const get = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
+  console.log('get landing data');
   try {
     const landingData = await db.select().from(landing).limit(1);
     const statsData = await db.select().from(stats);
@@ -141,7 +142,9 @@ const create = async (
     let createdNewsLinks: any[] = [];
 
     if (Array.isArray(newsLinksArr)) {
-      createdNewsLinks = await db.insert(news_links).values(newsLinksArr).returning();
+      // Remove id field from news links data to let database auto-generate
+      const sanitizedNewsLinks = newsLinksArr.map(({ id, ...rest }) => rest);
+      createdNewsLinks = await db.insert(news_links).values(sanitizedNewsLinks).returning();
       await logAudit({
         tableName: 'news_links',
         action: 'INSERT',
@@ -285,7 +288,11 @@ const update = async (
     if (newsLinksArr && Array.isArray(newsLinksArr)) {
       const oldNewsLinks = await db.select().from(news_links);
       await db.delete(news_links);
-      updatedNewsLinks = await db.insert(news_links).values(newsLinksArr).returning();
+      
+      // Remove id field from news links data to let database auto-generate
+      const sanitizedNewsLinks = newsLinksArr.map(({ id, ...rest }) => rest);
+      
+      updatedNewsLinks = await db.insert(news_links).values(sanitizedNewsLinks).returning();
       await logAudit({    
         tableName: 'news_links',
         action: 'UPDATE',

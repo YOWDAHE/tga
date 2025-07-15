@@ -6,6 +6,7 @@ import express from 'express';
 import uploadsRouter from './routes/uploads.route.js';
 import categoryRouter from './routes/category.route.js';
 import searchRouter from './routes/search.route.js';
+import publicSearchRouter from './routes/public-search.route.js';
 import telegramRouter from './routes/telegram.route.js';
 import newsRouter from './routes/news.route.js';
 import landingRouter from './routes/landing.route.js';
@@ -15,6 +16,7 @@ import authRouter from './routes/auth.route.js';
 import dashboardRouter from './routes/dashboard.route.js';
 import { authenticateJWT, authorizePermissions } from './middlewares/jwtAuth.js';
 import commentsRouter from './routes/comments.route.js';
+import publicCommentsRouter from './routes/public-comments.route.js';
 import usersRouter from './routes/users.route.js';
 import profileRouter from './routes/profile.route.js';
 import auditRouter from './routes/audit.route.js';
@@ -32,14 +34,16 @@ app.prepare().then(() => {
   });
   server.use('/api/auth', authRouter);
   server.use('/api/uploads', authenticateJWT, authorizePermissions('ARCHIVES_CRUD'), uploadsRouter);
-  server.use('/api/category', authenticateJWT, authorizePermissions('CATEGORY_CRUD'), categoryRouter);
+  server.use('/api/category', categoryRouter);
   server.use('/api/search', searchRouter);
+  server.use('/api/public/search', publicSearchRouter);
   server.use('/api/telegram', telegramRouter);
-  server.use('/api/news', authenticateJWT, authorizePermissions('NEWS_CRUD'), newsRouter);
-  server.use('/api/landing', authenticateJWT, authorizePermissions('HOMEPAGE_CRUD'), landingRouter);
+  server.use('/api/news', newsRouter);
+  server.use('/api/landing', landingRouter);
   server.use('/api/remark', authenticateJWT, authorizePermissions('REMARKS_CRUD'), remarksRouter);
   server.use('/api/contact', authenticateJWT, authorizePermissions('HOMEPAGE_CRUD'), contactRouter);
   server.use('/api/comments', authenticateJWT, authorizePermissions('NEWS_CRUD'), commentsRouter);
+  server.use('/api/public/comments', publicCommentsRouter);
   server.use('/api/users', authenticateJWT, authorizePermissions('USER_CRUD'), usersRouter);
   server.use('/api/profile', profileRouter);
   server.use('/api/audit-logs', authenticateJWT, authorizePermissions('USER_CRUD'), auditRouter);
@@ -48,7 +52,7 @@ app.prepare().then(() => {
   // Serve uploaded files statically
   server.use('/uploads', (req, res, next) => {
     // Add cache headers for images
-    res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
     next();
   }, express.static(path.join(process.cwd(), 'backend', 'uploads')));
 
