@@ -327,7 +327,7 @@ export default function NewsManagement({
                 {news.map((item) => (
                   <Table.Tr key={item.id}>
                     <Table.Td>
-                      <Text fw={500}>{item.title}</Text>
+                      <Text fw={500} truncate w={200}>{item.title}</Text>
                     </Table.Td>
                     <Table.Td>
                       {item.category ? (

@@ -317,6 +317,20 @@ const create = async (
     //   source: 'Website',
     // }, imageBuffers);
 
+    // Send to Twitter
+    const twitterPostId = await sendNewsToTwitter({
+      title,
+      content,
+      visual_content,
+      published_date: published_date ? new Date(published_date) : new Date(),
+      created_by: created_by || 'admin',
+      source: 'Website',
+      hashtags,
+    }, imageBuffers);
+
+    // Only store Twitter message ID if the post was successful
+    const twitterMessageId = twitterPostId !== null ? twitterPostId : null;
+
     const [created] = await db.insert(news).values({
       title,
       content,
@@ -330,6 +344,7 @@ const create = async (
       source: 'Website',
       telegram_message_id: telegramMessageIds,
       // linkedin_message_id: linkedinPostId,
+      twitter_message_id: twitterMessageId,
     }).returning();
 
     await logAudit({
@@ -452,6 +467,11 @@ const update = async (
       await editLinkedInPost(oldNews[0].linkedin_message_id as string, updated, imageBuffers);
     }
 
+    // Edit Twitter post only if it was originally created by website
+    if (oldNews[0]?.source === 'Website' && oldNews[0]?.twitter_message_id) {
+      await editTwitterPost(oldNews[0].twitter_message_id as string, updated, imageBuffers);
+    }
+
     await logAudit({
       tableName: 'news',
       action: 'UPDATE',
@@ -512,6 +532,19 @@ const remove = async (
     // Delete from LinkedIn if it was originally created by website
     if (oldNews[0].source === 'Website' && oldNews[0].linkedin_message_id) {
       await deleteFromLinkedIn(oldNews[0].linkedin_message_id as string);
+    }
+
+    // Delete from Twitter if it was originally created by website
+    if (oldNews[0].source === 'Website' && oldNews[0].twitter_message_id) {
+      console.log('Attempting to delete Twitter post with ID:', oldNews[0].twitter_message_id);
+      console.log('Twitter message ID type:', typeof oldNews[0].twitter_message_id);
+      await deleteFromTwitter(oldNews[0].twitter_message_id as string);
+    } else {
+      console.log('Skipping Twitter deletion - conditions not met:', {
+        source: oldNews[0].source,
+        twitter_message_id: oldNews[0].twitter_message_id,
+        hasTwitterId: !!oldNews[0].twitter_message_id
+      });
     }
 
     const [deleted] = await db.delete(news).where(eq(news.id, id)).returning();
@@ -1037,6 +1070,191 @@ async function deleteFromLinkedIn(linkedinPostId: string): Promise<void> {
     }
   } catch (error) {
     console.error(`Error deleting LinkedIn post ${linkedinPostId}:`, error);
+    // Don't throw error to avoid breaking the main deletion flow
+  }
+}
+
+// Twitter integration functions
+async function uploadImageToTwitter(imageBuffer: Buffer): Promise<string | null> {
+  try {
+    const { TwitterApi } = require('twitter-api-v2');
+    
+    const client = new TwitterApi({
+      appKey: process.env.TWITTER_API_KEY!,
+      appSecret: process.env.TWITTER_API_KEY_SECRET!,
+      accessToken: process.env.TWITTER_ACCESS_TOKEN!,
+      accessSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET!,
+    });
+
+    console.log('Uploading image to Twitter, buffer size:', imageBuffer.length);
+
+    // Upload media with timeout
+    const mediaId = await Promise.race([
+      client.v1.uploadMedia(imageBuffer, {
+        mimeType: 'image/jpeg',
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Twitter media upload timeout')), 30000)
+      )
+    ]);
+
+    console.log('Image uploaded to Twitter successfully:', mediaId);
+    return mediaId;
+  } catch (error) {
+    console.error('Error uploading image to Twitter:', error);
+    if (error instanceof Error && error.message === 'Twitter media upload timeout') {
+      console.error('Twitter media upload timed out after 30 seconds');
+    }
+    return null;
+  }
+}
+
+async function sendNewsToTwitter(newsData: any, imageBuffers?: Buffer[]): Promise<string | null> {
+  try {
+    const { TwitterApi } = require('twitter-api-v2');
+    
+    const client = new TwitterApi({
+      appKey: process.env.TWITTER_API_KEY!,
+      appSecret: process.env.TWITTER_API_KEY_SECRET!,
+      accessToken: process.env.TWITTER_ACCESS_TOKEN!,
+      accessSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET!,
+    });
+
+    // Check if credentials are properly configured
+    if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_KEY_SECRET || 
+        !process.env.TWITTER_ACCESS_TOKEN || !process.env.TWITTER_ACCESS_TOKEN_SECRET) {
+      console.log('Twitter credentials not properly configured');
+      console.log('Missing credentials:', {
+        TWITTER_API_KEY: !!process.env.TWITTER_API_KEY,
+        TWITTER_API_KEY_SECRET: !!process.env.TWITTER_API_KEY_SECRET,
+        TWITTER_ACCESS_TOKEN: !!process.env.TWITTER_ACCESS_TOKEN,
+        TWITTER_ACCESS_TOKEN_SECRET: !!process.env.TWITTER_ACCESS_TOKEN_SECRET,
+      });
+      return null;
+    }
+
+    // Upload images if present
+    let mediaIds: string[] = [];
+    if (imageBuffers && imageBuffers.length > 0) {
+      for (let i = 0; i < Math.min(imageBuffers.length, 4); i++) { // Twitter allows max 4 images
+        try {
+          const mediaId = await uploadImageToTwitter(imageBuffers[i]);
+          if (mediaId) {
+            mediaIds.push(mediaId);
+          } else {
+            console.error(`Failed to upload image ${i + 1}/${imageBuffers.length} to Twitter`);
+          }
+        } catch (error) {
+          console.error(`Error uploading image ${i + 1}/${imageBuffers.length} to Twitter:`, error);
+        }
+      }
+    }
+
+    // Prepare tweet content
+    const tweetText = `${newsData.title}\n\n${newsData.content.substring(0, 200)}${newsData.content.length > 200 ? '...' : ''}`;
+    
+    // Add hashtags if present
+    const hashtags = newsData.hashtags ? `\n\n${newsData.hashtags}` : '';
+    const fullTweetText = `${tweetText}${hashtags}`;
+
+    // Ensure tweet doesn't exceed 280 characters
+    const maxLength = 280;
+    const finalTweetText = fullTweetText.length > maxLength 
+      ? fullTweetText.substring(0, maxLength - 3) + '...'
+      : fullTweetText;
+
+    console.log('Attempting to post tweet:', finalTweetText);
+    console.log('Media IDs:', mediaIds);
+
+    // Create tweet with timeout
+    const tweet = await Promise.race([
+      client.v2.tweet(finalTweetText, {
+        media: mediaIds.length > 0 ? { media_ids: mediaIds } : undefined,
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Twitter API timeout')), 30000)
+      )
+    ]);
+
+    console.log('News posted to Twitter successfully:', tweet.data.id);
+    console.log('Full tweet response:', JSON.stringify(tweet, null, 2));
+    return tweet.data.id;
+  } catch (error) {
+    console.error('Error posting to Twitter:', error);
+    if (error instanceof Error) {
+      console.error('Twitter API error details:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack
+      });
+      if (error.message === 'Twitter API timeout') {
+        console.error('Twitter API request timed out after 30 seconds');
+      }
+    }
+    return null;
+  }
+}
+
+async function editTwitterPost(twitterPostId: string, newsData: any, imageBuffers?: Buffer[]): Promise<void> {
+  try {
+    const { TwitterApi } = require('twitter-api-v2');
+    
+    const client = new TwitterApi({
+      appKey: process.env.TWITTER_API_KEY!,
+      appSecret: process.env.TWITTER_API_KEY_SECRET!,
+      accessToken: process.env.TWITTER_ACCESS_TOKEN!,
+      accessSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET!,
+    });
+
+    if (!twitterPostId) {
+      console.log('Twitter post ID not configured');
+      return;
+    }
+
+    // Twitter doesn't support editing tweets, so we delete and recreate
+    await deleteFromTwitter(twitterPostId);
+    await sendNewsToTwitter(newsData, imageBuffers);
+  } catch (error) {
+    console.error('Error editing Twitter post:', error);
+  }
+}
+
+async function deleteFromTwitter(twitterPostId: string): Promise<void> {
+  try {
+    const { TwitterApi } = require('twitter-api-v2');
+    
+    const client = new TwitterApi({
+      appKey: process.env.TWITTER_API_KEY!,
+      appSecret: process.env.TWITTER_API_KEY_SECRET!,
+      accessToken: process.env.TWITTER_ACCESS_TOKEN!,
+      accessSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET!,
+    });
+
+    if (!twitterPostId) {
+      console.log('Twitter post ID not configured');
+      return;
+    }
+
+    console.log(`Attempting to delete Twitter post: ${twitterPostId}`);
+    
+    // Check if credentials are properly configured
+    if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_KEY_SECRET || 
+        !process.env.TWITTER_ACCESS_TOKEN || !process.env.TWITTER_ACCESS_TOKEN_SECRET) {
+      console.log('Twitter credentials not properly configured for deletion');
+      return;
+    }
+
+    const result = await client.v2.deleteTweet(twitterPostId);
+    console.log(`Deleted Twitter post successfully: ${twitterPostId}`, result);
+  } catch (error) {
+    console.error(`Error deleting Twitter post ${twitterPostId}:`, error);
+    if (error instanceof Error) {
+      console.error('Twitter deletion error details:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack
+      });
+    }
     // Don't throw error to avoid breaking the main deletion flow
   }
 }

@@ -22,7 +22,7 @@ const get = async (
 ): Promise<void> => {
   console.log('get landing data');
   try {
-    const landingData = await db.select().from(landing).limit(1);
+    // const landingData = await db.select().from(landing).limit(1);
     const statsData = await db.select().from(stats);
     const partnersData = await db.select().from(partners);
     const practicesData = await db.select().from(practices);
@@ -34,7 +34,7 @@ const get = async (
       status: 'success',
       error: null,
       data: {
-        landing: landingData[0] || null,
+        // landing: landingData[0] || null,
         stats: statsData,
         partners: partnersData,
         practices: practicesData,

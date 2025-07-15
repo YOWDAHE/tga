@@ -93,6 +93,7 @@
     "node-cron": "^4.0.7",
     "node-telegram-bot-api": "^0.66.0",
     "nodemailer": "^7.0.3",
+    "oauth-1.0a": "^2.2.6",
     "pdf-parse": "^1.1.1",
     "pg": "^8.16.0",
     "pg-hstore": "^2.3.4",

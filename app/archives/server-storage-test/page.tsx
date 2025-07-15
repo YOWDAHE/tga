@@ -393,6 +393,70 @@ export default function ServerStorageTestPage() {
     }
   };
 
+  const testTwitterIntegration = async () => {
+    setLoading(true);
+    try {
+      // Test creating news with Twitter integration
+      const newsData = {
+        title: "Test News with Twitter Integration",
+        content: "This is a test news article to verify Twitter integration is working correctly. The news should be posted to Twitter automatically.",
+        hashtags: "test,twitter,integration,news",
+        featured: false,
+        read_minutes: 3,
+        source: "Website",
+        created_by: "test-user"
+      };
+
+      const response = await fetch('/api/news', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newsData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        notifications.show({
+          title: "News Created Successfully",
+          message: `News "${result.data.title}" created and should be posted to Twitter`,
+          color: "green",
+        });
+
+        // Check if Twitter message ID was stored
+        if (result.data.twitter_message_id) {
+          notifications.show({
+            title: "Twitter Integration Success",
+            message: `News posted to Twitter with ID: ${result.data.twitter_message_id}`,
+            color: "green",
+          });
+        } else {
+          notifications.show({
+            title: "Twitter Integration Warning",
+            message: "News was created but Twitter message ID is missing. Check Twitter credentials.",
+            color: "orange",
+          });
+        }
+      } else {
+        notifications.show({
+          title: "News Creation Failed",
+          message: result.error || "Failed to create news with Twitter integration",
+          color: "red",
+        });
+      }
+    } catch (error) {
+      console.error("Error testing Twitter integration:", error);
+      notifications.show({
+        title: "Test Failed",
+        message: "An error occurred while testing Twitter integration",
+        color: "red",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{ padding: "24px", maxWidth: "800px", margin: "0 auto" }}>
       <Paper withBorder p="xl" radius="md">
@@ -478,6 +542,16 @@ export default function ServerStorageTestPage() {
               color="teal"
             >
               Test News Category
+            </Button>
+
+            <Button
+              leftSection={<IconPlus size={16} />}
+              onClick={testTwitterIntegration}
+              loading={loading}
+              variant="light"
+              color="indigo"
+            >
+              Test Twitter Integration
             </Button>
           </Stack>
 

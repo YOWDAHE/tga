@@ -34,6 +34,7 @@ export interface News {
     source: string | null;
     source_id: string | null;
     message_id: string | null;
+    twitter_message_id?: string | null;
     published_date: Date | null;
     created_by: string | null;
 }

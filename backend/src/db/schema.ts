@@ -44,7 +44,7 @@ export const news = pgTable('news', {
     message_id: varchar('message_id', { length: 255 }),
     telegram_message_id: jsonb('telegram_message_id'),
     linkedin_message_id: varchar('linkedin_message_id', { length: 255 }),
-    twitter_message_id: integer('twitter_message_id'),
+    twitter_message_id: varchar('twitter_message_id', { length: 255 }),
     published_date: timestamp('published_date', { withTimezone: true }),
     created_by: varchar('created_by', { length: 100 }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
