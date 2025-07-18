@@ -413,4 +413,15 @@ const getByIdPublic = async (
   }
 };
 
-export default { get, getById, update, remove, getPublic, getTopViewedPublic, getByIdPublic };
+
+
+export default { 
+  get, 
+  getById, 
+  update, 
+  remove, 
+  getTopViewed, 
+  getPublic, 
+  getTopViewedPublic, 
+  getByIdPublic
+};

@@ -7,7 +7,7 @@ export default async function HomepagePage() {
   const homepageRes = await fetchHomepage();
   const homepage = homepageRes.success ? homepageRes.data : null;
 
-  if (!homepage || !homepage.landing) {
+  if (!homepage) {
     return (
       <HomepageManagement
         initialContent={undefined}
@@ -27,7 +27,7 @@ export default async function HomepagePage() {
         initialPractices={homepage.practices}
         initialPartners={homepage.partners}
         initialContactInfo={homepage.contactUs}
-        initialNewsLinks={homepage.newsLinks || []}
+        // initialNewsLinks={homepage.newsLinks || []}
       />
     </Suspense>
   );

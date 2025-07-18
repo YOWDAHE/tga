@@ -120,7 +120,9 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 		imageData: string | { public_id: string; secure_url: string }
 	): string => {
 		if (typeof imageData === "string") {
-			return imageData;
+			// Remove protocol/domain if present, then prepend /api/
+			const cleaned = imageData.replace(/^https?:\/\/[^/]+/, "");
+			return `/api${cleaned.startsWith("/") ? "" : "/"}${cleaned}`;
 		}
 		return imageData.secure_url;
 	};

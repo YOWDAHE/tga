@@ -409,22 +409,22 @@ export default function NewsManagement({
             )}
 
             {/* Show pages around current page */}
-            {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
-              const pageNum = Math.max(1, currentPage - 1 + i)
-              if (pageNum <= totalPages) {
-                return (
-                  <Button
-                    key={pageNum}
-                    variant={pageNum === currentPage ? "filled" : "light"}
-                    size="sm"
-                    onClick={() => handlePageChange(pageNum)}
-                  >
-                    {pageNum}
-                  </Button>
-                )
-              }
-              return null
-            })}
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(
+                (page) =>
+                  page >= Math.max(1, currentPage - 1) &&
+                  page <= Math.min(totalPages, currentPage + 1)
+              )
+              .map((page) => (
+                <Button
+                  key={page}
+                  variant={page === currentPage ? "filled" : "light"}
+                  size="sm"
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </Button>
+              ))}
 
             {/* Show ellipsis if needed */}
             {currentPage < totalPages - 3 && (

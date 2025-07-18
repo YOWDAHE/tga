@@ -475,4 +475,197 @@ const migrateCloudinaryDocuments = async (
   }
 };
 
-export default { get, getById, create, update, remove, serveDocument, migrateCloudinaryDocuments };
+// Increment download count for a document
+const incrementDownloadCount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    
+    if (!id) {
+      res.status(400).json({
+        message: 'Document ID is required',
+        status: 'error',
+        error: 'Validation error',
+        data: null,
+      });
+      return;
+    }
+
+    // Check if document exists
+    const [existingDoc] = await db.select().from(documents).where(eq(documents.id, id));
+    if (!existingDoc) {
+      res.status(404).json({
+        message: 'Document not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Increment download count
+    const [updated] = await db
+      .update(documents)
+      .set({
+        download_count: existingDoc.download_count + 1,
+        updatedAt: new Date()
+      })
+      .where(eq(documents.id, id))
+      .returning();
+
+    res.status(200).json({
+      message: 'Download count incremented successfully',
+      status: 'success',
+      error: null,
+      data: updated,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to increment download count',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+// Increment view count for a document
+const incrementViewCount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    
+    if (!id) {
+      res.status(400).json({
+        message: 'Document ID is required',
+        status: 'error',
+        error: 'Validation error',
+        data: null,
+      });
+      return;
+    }
+
+    // Check if document exists
+    const [existingDoc] = await db.select().from(documents).where(eq(documents.id, id));
+    if (!existingDoc) {
+      res.status(404).json({
+        message: 'Document not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Increment view count
+    const [updated] = await db
+      .update(documents)
+      .set({
+        view_count: existingDoc.view_count + 1,
+        updatedAt: new Date()
+      })
+      .where(eq(documents.id, id))
+      .returning();
+
+    res.status(200).json({
+      message: 'View count incremented successfully',
+      status: 'success',
+      error: null,
+      data: updated,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to increment view count',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+// Download document with incrementing download count
+const downloadDocument = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    
+    if (!id) {
+      res.status(400).json({
+        message: 'Document ID is required',
+        status: 'error',
+        error: 'Validation error',
+        data: null,
+      });
+      return;
+    }
+
+    // Get document details
+    const [document] = await db.select().from(documents).where(eq(documents.id, id));
+    if (!document) {
+      res.status(404).json({
+        message: 'Document not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Get file path
+    const filePath = path.join(process.cwd(), 'backend', 'uploads', 'documents', document.public_id);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({
+        message: 'File not found on server',
+        status: 'error',
+        error: 'File not found',
+        data: null,
+      });
+      return;
+    }
+
+    // Increment download count
+    await db
+      .update(documents)
+      .set({
+        download_count: document.download_count + 1,
+        updatedAt: new Date()
+      })
+      .where(eq(documents.id, id));
+
+    // Get file stats
+    const stats = fs.statSync(filePath);
+    
+    // Set headers for file download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Length', stats.size);
+    res.setHeader('Content-Disposition', `attachment; filename="${document.filename}"`);
+    res.setHeader('Cache-Control', 'no-cache');
+    
+    // Stream the file
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to download document',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+export default { get, getById, create, update, remove, serveDocument, migrateCloudinaryDocuments, incrementDownloadCount, incrementViewCount, downloadDocument };

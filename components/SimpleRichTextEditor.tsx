@@ -40,14 +40,14 @@ export default function SimpleRichTextEditor({
     }, 0)
   }
 
-  const formatButtons = [
-    { icon: IconBold, label: "Bold", before: "**", after: "**" },
-    { icon: IconItalic, label: "Italic", before: "*", after: "*" },
-    { icon: IconUnderline, label: "Underline", before: "<u>", after: "</u>" },
-    { icon: IconList, label: "Bullet List", before: "- ", after: "" },
-    { icon: IconListNumbers, label: "Numbered List", before: "1. ", after: "" },
-    { icon: IconLink, label: "Link", before: "[", after: "](url)" },
-  ]
+  // const formatButtons = [
+  //   { icon: IconBold, label: "Bold", before: "**", after: "**" },
+  //   { icon: IconItalic, label: "Italic", before: "*", after: "*" },
+  //   { icon: IconUnderline, label: "Underline", before: "<u>", after: "</u>" },
+  //   { icon: IconList, label: "Bullet List", before: "- ", after: "" },
+  //   { icon: IconListNumbers, label: "Numbered List", before: "1. ", after: "" },
+  //   { icon: IconLink, label: "Link", before: "[", after: "](url)" },
+  // ]
 
   return (
     <Stack gap="xs">
@@ -57,7 +57,7 @@ export default function SimpleRichTextEditor({
         </Text>
       )}
 
-      <Group gap="xs" mb="xs">
+      {/* <Group gap="xs" mb="xs">
         {formatButtons.map((button) => (
           <Button
             key={button.label}
@@ -69,7 +69,7 @@ export default function SimpleRichTextEditor({
             {button.label}
           </Button>
         ))}
-      </Group>
+      </Group> */}
 
       <Textarea
         value={value}
@@ -84,10 +84,10 @@ export default function SimpleRichTextEditor({
           },
         }}
       />
-
+{/* 
       <Text size="xs" c="dimmed">
         Use **bold**, *italic*, <u>underline</u>, - for bullets, 1. for numbers, [text](url) for links
-      </Text>
+      </Text> */}
     </Stack>
   )
 }

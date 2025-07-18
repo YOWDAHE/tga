@@ -71,6 +71,7 @@ interface NewsDetailsProps {
 }
 
 export default function NewsDetails({ news }: NewsDetailsProps) {
+	console.log(news);
 	const router = useRouter();
 	const [comments, setComments] = useState<Comment[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -173,7 +174,7 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 		imageData: string | { public_id: string; secure_url: string }
 	): string => {
 		if (typeof imageData === "string") {
-			return imageData;
+			return `/api/${imageData}`;
 		}
 		return imageData.secure_url;
 	};
@@ -404,34 +405,39 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 							{news.visual_content && news.visual_content.length > 0 && (
 								<div>
 									<SimpleGrid cols={2}>
-										{news.visual_content.map((imageData, index) => (
-											<Box key={index} pos="relative" style={{ minHeight: 150 }}>
-												{!loadedImages[index] && (
-													<Loader
-														style={{
-															position: "absolute",
-															top: "50%",
-															left: "50%",
-															transform: "translate(-50%, -50%)",
-															zIndex: 1,
-														}}
-													/>
-												)}
-												<Image
-													src={getImageUrl(imageData)}
-													alt={`News visual content ${index + 1}`}
-													radius="md"
-													width="100%"
-													height="100%"
-													fit="cover"
-													fallbackSrc="/placeholder.svg?height=150&width=200"
-													onLoad={() =>
-														setLoadedImages((prev) => ({ ...prev, [index]: true }))
-													}
-													style={{ display: loadedImages[index] ? "block" : "none" }}
-												/>
-											</Box>
-										))}
+										{news.visual_content.map(
+											(imageData, index) => (
+												console.log("imageData:", getImageUrl(imageData)),
+												(
+													<Box key={index} pos="relative" style={{ minHeight: 150 }}>
+														{!loadedImages[index] && (
+															<Loader
+																style={{
+																	position: "absolute",
+																	top: "50%",
+																	left: "50%",
+																	transform: "translate(-50%, -50%)",
+																	zIndex: 1,
+																}}
+															/>
+														)}
+														<Image
+															src={getImageUrl(imageData)}
+															alt={`News visual content ${index + 1}`}
+															radius="md"
+															width="100%"
+															height="100%"
+															fit="cover"
+															fallbackSrc="/placeholder.svg?height=150&width=200"
+															onLoad={() =>
+																setLoadedImages((prev) => ({ ...prev, [index]: true }))
+															}
+															style={{ display: loadedImages[index] ? "block" : "none" }}
+														/>
+													</Box>
+												)
+											)
+										)}
 									</SimpleGrid>
 								</div>
 							)}
@@ -542,7 +548,7 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 
 						{/* Comments Table */}
 						<Paper withBorder>
-							<Group gap="md" align="flex-end" m='md' mb='lg'>
+							<Group gap="md" align="flex-end" m="md" mb="lg">
 								<Textarea
 									placeholder="Add a comment..."
 									value={newComment.content}
@@ -655,13 +661,13 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 															</ActionIcon>
 														}
 
-																											<ActionIcon
-														variant="light"
-														color="red"
-														onClick={() => handleDeleteComment(comment)}
-													>
-														<IconTrash size={16} />
-													</ActionIcon>
+														<ActionIcon
+															variant="light"
+															color="red"
+															onClick={() => handleDeleteComment(comment)}
+														>
+															<IconTrash size={16} />
+														</ActionIcon>
 													</Group>
 												</Table.Td>
 											</Table.Tr>
@@ -741,7 +747,8 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 			>
 				<Stack>
 					<Text size="sm" c="red">
-						Are you sure you want to delete this comment? This action cannot be undone.
+						Are you sure you want to delete this comment? This action cannot be
+						undone.
 					</Text>
 
 					{deletingComment && (

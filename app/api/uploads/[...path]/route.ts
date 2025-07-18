@@ -6,8 +6,10 @@ export async function GET(
 ) {
     try {
         const pathSegments = params.path;
+        console.log('Uploads API route - pathSegments:', pathSegments);
         
         if (pathSegments.length < 2) {
+            console.log('Uploads API route - Invalid path length:', pathSegments.length);
             return NextResponse.json(
                 { error: 'Invalid path' },
                 { status: 400 }
@@ -16,10 +18,12 @@ export async function GET(
 
         const folder = pathSegments[0];
         const filename = pathSegments[1];
+        console.log('Uploads API route - folder:', folder, 'filename:', filename);
 
         // Validate folder to prevent directory traversal
-        const allowedFolders = ['partners', 'documents'];
+        const allowedFolders = ['partners', 'documents', 'news-images'];
         if (!allowedFolders.includes(folder)) {
+            console.log('Uploads API route - Invalid folder:', folder);
             return NextResponse.json(
                 { error: 'Invalid folder' },
                 { status: 400 }
@@ -34,9 +38,13 @@ export async function GET(
             response = await fetch(`${backendUrl}/api/landing/uploads/${folder}/${filename}`);
         } else if (folder === 'documents') {
             response = await fetch(`${backendUrl}/api/uploads/documents/${filename}`);
+        } else if (folder === 'news-images') {
+            console.log('Uploads API route - Fetching news image from:', `${backendUrl}/api/news/images/${filename}`);
+            response = await fetch(`${backendUrl}/api/news/images/${filename}`);
         }
 
         if (!response || !response.ok) {
+            console.log('Uploads API route - Backend response not ok:', response?.status, response?.statusText);
             return NextResponse.json(
                 { error: 'File not found' },
                 { status: 404 }

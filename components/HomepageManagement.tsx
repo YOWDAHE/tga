@@ -176,37 +176,48 @@ const mockContactInfo: ContactInfo[] = [
 
 
 export default function HomepageManagement({
-	initialContent: defaultContent = initialContent,
-	initialStats = mockStats,
-	initialPractices = mockPractices,
-	initialPartners = mockPartners,
-	initialTestimonials = mockTestimonials,
-	initialContactInfo = mockContactInfo,
+	initialContent,
+	initialStats,
+	initialPractices,
+	initialPartners,
+	initialTestimonials,
+	initialContactInfo,
 }: HomepageManagementProps) {
+	console.log('initialContent:', initialContent);
+	console.log('initialStats:', initialStats);
+	console.log('initialPractices:', initialPractices);
+	console.log('initialPartners:', initialPartners);
+	console.log('initialTestimonials:', initialTestimonials);
+	console.log('initialContactInfo:', initialContactInfo);
+	const defaultContent: LandingPageContent = initialContent ?? {
+		logo_url: null,
+		hero_image_url: null,
+		hero_title: "Welcome to Our Platform",
+		about_us: "<p>We are a leading company in our industry...</p>",
+	};
+	const defaultStats: Stat[] = initialStats ?? mockStats;
+	const defaultPractices: Practice[] = initialPractices ?? mockPractices;
+	const defaultPartners: Partner[] = initialPartners ?? mockPartners;
+	const defaultTestimonials: Testimonial[] = initialTestimonials ?? mockTestimonials;
+	const defaultContactInfo: ContactInfo[] = initialContactInfo ?? mockContactInfo;
+
 	const router = useRouter();
 	// State for last fetched landing page
-	const [originalContent, setOriginalContent] =
-		useState<LandingPageContent>(defaultContent);
-	const [originalStats, setOriginalStats] = useState<Stat[]>(initialStats);
-	const [originalPractices, setOriginalPractices] =
-		useState<Practice[]>(initialPractices);
-	const [originalPartners, setOriginalPartners] =
-		useState<Partner[]>(initialPartners);
-	const [originalContactUs, setOriginalContactUs] =
-		useState<ContactInfo[]>(initialContactInfo);
+	const [originalContent, setOriginalContent] = useState<LandingPageContent>(defaultContent);
+	const [originalStats, setOriginalStats] = useState<Stat[]>(defaultStats);
+	const [originalPractices, setOriginalPractices] = useState<Practice[]>(defaultPractices);
+	const [originalPartners, setOriginalPartners] = useState<Partner[]>(defaultPartners);
+	const [originalContactUs, setOriginalContactUs] = useState<ContactInfo[]>(defaultContactInfo);
 	// State for current edits
 	const [content, setContent] = useState<LandingPageContent>(defaultContent);
-	const [stats, setStats] = useState<Stat[]>(initialStats);
-	const [practices, setPractices] = useState<Practice[]>(initialPractices);
-	const [partners, setPartners] = useState<Partner[]>(initialPartners);
-	const [testimonials, setTestimonials] =
-		useState<Testimonial[]>(initialTestimonials);
-	const [contactInfo, setContactInfo] =
-		useState<ContactInfo[]>(initialContactInfo);
+	const [stats, setStats] = useState<Stat[]>(defaultStats);
+	const [practices, setPractices] = useState<Practice[]>(defaultPractices);
+	const [partners, setPartners] = useState<Partner[]>(defaultPartners);
+	const [testimonials, setTestimonials] = useState<Testimonial[]>(defaultTestimonials);
+	const [contactInfo, setContactInfo] = useState<ContactInfo[]>(defaultContactInfo);
 
 	const [aboutUsContent, setAboutUsContent] = useState(content.about_us);
-	const [practiceDescriptionContent, setPracticeDescriptionContent] =
-		useState("");
+	const [practiceDescriptionContent, setPracticeDescriptionContent] = useState("");
 
 	// Loading states
 	const [isSubmitting, setIsSubmitting] = useState(false);

@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
-import { news } from '../db/schema';
-import { news_links } from '../db/schema';
-import { categories } from '../db/schema';
-import { v2 as cloudinary } from 'cloudinary';
-import { eq, desc, asc, count, like, or, and } from 'drizzle-orm';
+import { news, categories, news_links, comments } from '../db/schema';
+import { eq, like, or, desc, asc, and, count } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
 import TelegramBot from 'node-telegram-bot-api';
+import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
+import path from 'path';
+import { promisify } from 'util';
 
 // Configure Cloudinary
 cloudinary.config({
@@ -272,34 +273,24 @@ const create = async (
     console.log('Create news - req.file:', req.file);
     console.log('Create news - req.body:', req.body);
 
-    let visual_content: any[] | null = null;
+    let imageUrls: string[] = [];
+    let visual_content: string[] | null = null;
+    
     if (req.files && Array.isArray(req.files)) {
-      visual_content = [];
-      for (const file of req.files) {
-        console.log('Processing file:', file.originalname, file.size);
-        try {
-          const uploadResult = await uploadToCloudinary(file.buffer);
-          visual_content.push(uploadResult);
-        } catch (error) {
-          console.error('Failed to upload file to Cloudinary:', error);
-          throw error;
-        }
-      }
+      console.log('Processing multiple files:', req.files.length);
+      imageUrls = await uploadImagesToLocal(req.files);
+      visual_content = imageUrls;
     } else if (req.file) {
       console.log('Processing single file:', req.file.originalname, req.file.size);
-      try {
-        const uploadResult = await uploadToCloudinary(req.file.buffer);
-        visual_content = [uploadResult];
-      } catch (error) {
-        console.error('Failed to upload file to Cloudinary:', error);
-        throw error;
-      }
+      imageUrls = await uploadImagesToLocal([req.file]);
+      visual_content = imageUrls;
     }
+
     // Send to Telegram channel first to get message IDs
     const telegramMessageIds = await sendNewsToTelegram({
       title,
       content,
-      visual_content,
+      visual_content: visual_content?.map(url => ({ secure_url: url, public_id: url.split('/').pop() })),
       published_date: published_date ? new Date(published_date) : new Date(),
       created_by: created_by || 'admin',
       source: 'Website',
@@ -329,7 +320,7 @@ const create = async (
     const twitterPostId = await sendNewsToTwitter({
       title,
       content,
-      visual_content,
+      visual_content: visual_content?.map(url => ({ secure_url: url, public_id: url.split('/').pop() })),
       published_date: published_date ? new Date(published_date) : new Date(),
       created_by: created_by || 'admin',
       source: 'Website',
@@ -561,9 +552,12 @@ const remove = async (
       return;
     }
 
-    // Delete images from Cloudinary before deleting from database
+    // Delete related comments first (due to foreign key constraint)
+    await db.delete(comments).where(eq(comments.news_id, id));
+
+    // Delete images from local storage before deleting from database
     if (oldNews[0].visual_content && Array.isArray(oldNews[0].visual_content)) {
-      await deleteMultipleFromCloudinary(oldNews[0].visual_content);
+      await deleteImagesFromLocal(oldNews[0].visual_content);
     }
 
     // Delete from Telegram if it was originally created by website
@@ -677,6 +671,61 @@ async function deleteMultipleFromCloudinary(images: any[]): Promise<void> {
 
   const deletePromises = images.map(image => deleteFromCloudinary(image));
   await Promise.allSettled(deletePromises);
+}
+
+// Helper function to upload images to local storage
+async function uploadImagesToLocal(files: Express.Multer.File[]): Promise<string[]> {
+  const uploadsDir = path.join(process.cwd(), 'backend', 'uploads', 'news-images');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
+  const imageUrls: string[] = [];
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+
+  for (const file of files) {
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.mimetype)) {
+      throw new Error(`Invalid file type: ${file.mimetype}. Allowed types: ${allowedTypes.join(', ')}`);
+    }
+
+    // Generate unique filename (like documents - no ID needed)
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileExtension = path.extname(file.originalname);
+    const filename = `news_${timestamp}_${randomString}${fileExtension}`;
+    const filePath = path.join(uploadsDir, filename);
+
+    // Write file to server
+    const writeFile = promisify(fs.writeFile);
+    await writeFile(filePath, file.buffer);
+
+    // Generate URL for the image
+    const imageUrl = `${backendUrl}/uploads/news-images/${filename}`;
+    imageUrls.push(imageUrl);
+  }
+
+  return imageUrls;
+}
+
+
+
+// Helper function to delete images from local storage
+async function deleteImagesFromLocal(imageUrls: string[]): Promise<void> {
+  for (const imageUrl of imageUrls) {
+    try {
+      const filename = imageUrl.split('/').pop();
+      if (filename) {
+        const filePath = path.join(process.cwd(), 'backend', 'uploads', 'news-images', filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to delete image file:', error);
+    }
+  }
 }
 
 // Helper function to convert markdown to HTML for Telegram
@@ -1332,4 +1381,67 @@ async function deleteFromTwitter(twitterPostId: string): Promise<void> {
   }
 }
 
-export default { get, getById, create, update, remove, publicNews, publicGetById };
+// Serve news image
+const serveNewsImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { filename } = req.params;
+    
+    const filePath = path.join(process.cwd(), 'backend', 'uploads', 'news-images', filename);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({
+        message: 'Image not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    const stats = fs.statSync(filePath);
+    
+    // Determine content type based on file extension
+    const ext = path.extname(filename).toLowerCase();
+    let contentType = 'image/jpeg'; // default
+    
+    switch (ext) {
+      case '.png':
+        contentType = 'image/png';
+        break;
+      case '.gif':
+        contentType = 'image/gif';
+        break;
+      case '.webp':
+        contentType = 'image/webp';
+        break;
+      case '.jpg':
+      case '.jpeg':
+      default:
+        contentType = 'image/jpeg';
+        break;
+    }
+    
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Length', stats.size);
+    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+    
+    // Stream the file
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to serve image',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+export default { get, getById, publicGetById, publicNews, create, update, remove, serveNewsImage };
