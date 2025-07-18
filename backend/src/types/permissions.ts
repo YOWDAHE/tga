@@ -5,5 +5,6 @@ export const ADMIN_PERMISSIONS = [
     'HOMEPAGE_CRUD',
     'USER_CRUD',
     'REMARKS_CRUD',
+    'API_USER',
 ] as const;
 export type AdminPermission = typeof ADMIN_PERMISSIONS[number];

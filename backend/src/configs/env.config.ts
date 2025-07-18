@@ -16,6 +16,7 @@ interface EnvConfig {
   LINKEDIN_ACCESS_TOKEN?: string;
   LINKEDIN_SUB?: string;
   LINKEDIN_API?: string;
+  FRONTEND_URL?: string;
 }
 
 const envFile = `.env.${process.env.NODE_ENV || 'development'}.local`;
@@ -41,5 +42,6 @@ export const envConfig: EnvConfig = ({
   LINKEDIN_ACCESS_TOKEN: process.env.LINKEDIN_ACCESS_TOKEN,
   LINKEDIN_SUB: process.env.LINKEDIN_SUB,
   LINKEDIN_API: process.env.LINKEDIN_API,
+  FRONTEND_URL: process.env.FRONTEND_URL,
 } = process.env as EnvConfig);
       

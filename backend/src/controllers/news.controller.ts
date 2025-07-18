@@ -57,10 +57,11 @@ const get = async (
       ));
     }
     
-    // Add category filter if provided
     if (category && category.trim()) {
-      const categoryTerm = `%${category.trim()}%`;
-      whereConditions.push(like(categories.name, categoryTerm));
+      const categoryId = parseInt(category.trim());
+      if (!isNaN(categoryId)) {
+        whereConditions.push(eq(categories.id, categoryId));
+      }
     }
     
     const whereCondition = whereConditions.length > 0 ? and(...whereConditions) : undefined;
@@ -101,6 +102,13 @@ const get = async (
       ...item.news,
       category: item.category
     }));
+
+    // Log visual content for debugging
+    console.log('News data visual content:', newsData.map(item => ({
+      id: item.id,
+      title: item.title,
+      visual_content: item.visual_content
+    })));
 
     res.status(200).json({
       message: 'News fetched successfully',
@@ -382,10 +390,28 @@ const update = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const { title, content, published_date, created_by, hashtags, featured, read_minutes, category_id } = req.body;
+    const { title, content, published_date, created_by, hashtags, featured, read_minutes, category_id, remainingImages } = req.body;
+    
+    // Get the existing news item first
+    const oldNews = await db.select().from(news).where(eq(news.id, id));
+    if (oldNews.length === 0) {
+      res.status(404).json({
+        message: 'News not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
     let visual_content: any[] | null = null;
+    let shouldDeleteOldImages = false;
+    let imagesToDelete: any[] = [];
+    
+    // Check if new files are being uploaded
     if (req.files && Array.isArray(req.files)) {
       visual_content = [];
+      shouldDeleteOldImages = true;
       for (const file of req.files) {
         try {
           const uploadResult = await uploadToCloudinary(file.buffer);
@@ -396,6 +422,8 @@ const update = async (
         }
       }
     } else if (req.file) {
+      visual_content = [];
+      shouldDeleteOldImages = true;
       try {
         const uploadResult = await uploadToCloudinary(req.file.buffer);
         visual_content = [uploadResult];
@@ -403,18 +431,32 @@ const update = async (
         console.error('Failed to upload file to Cloudinary:', error);
         throw error;
       }
-    }
-    const oldNews = await db.select().from(news).where(eq(news.id, id));
-
-    // Delete old images from Cloudinary if new images are being uploaded or if images are being removed
-    if (oldNews[0]?.visual_content && Array.isArray(oldNews[0].visual_content)) {
-      if (visual_content && visual_content.length > 0) {
-        // New images are being uploaded, delete old ones
-        await deleteMultipleFromCloudinary(oldNews[0].visual_content);
-      } else if (!visual_content || visual_content.length === 0) {
-        // Images are being removed, delete old ones
-        await deleteMultipleFromCloudinary(oldNews[0].visual_content);
+    } else if (remainingImages) {
+      // Images were removed, update visual_content accordingly
+      // remainingImages is an array of URLs (strings)
+      const original = Array.isArray(oldNews[0].visual_content) ? oldNews[0].visual_content : [];
+      // Only keep images that are still present
+      visual_content = original.filter(img => {
+        const url = typeof img === 'string' ? img : img.secure_url;
+        return remainingImages.includes(url);
+      });
+      // Find images to delete
+      imagesToDelete = original.filter(img => {
+        const url = typeof img === 'string' ? img : img.secure_url;
+        return !remainingImages.includes(url);
+      });
+      if (imagesToDelete.length > 0) {
+        await deleteMultipleFromCloudinary(imagesToDelete);
       }
+    } else {
+      // No new files uploaded, preserve existing visual content
+      visual_content = Array.isArray(oldNews[0].visual_content) ? oldNews[0].visual_content : null;
+      console.log('Preserving existing visual content:', visual_content);
+    }
+
+    // Delete old images from Cloudinary only if new images are being uploaded
+    if (shouldDeleteOldImages && oldNews[0]?.visual_content && Array.isArray(oldNews[0].visual_content)) {
+      await deleteMultipleFromCloudinary(oldNews[0].visual_content);
     }
 
     const [updated] = await db
@@ -1150,19 +1192,50 @@ async function sendNewsToTwitter(newsData: any, imageBuffers?: Buffer[]): Promis
       }
     }
 
-    // Prepare tweet content
-    const tweetText = `${newsData.title}\n\n${newsData.content.substring(0, 200)}${newsData.content.length > 200 ? '...' : ''}`;
-    
-    // Add hashtags if present
-    const hashtags = newsData.hashtags ? `\n\n${newsData.hashtags}` : '';
-    const fullTweetText = `${tweetText}${hashtags}`;
+    // Prepare hashtags first (they should not be truncated)
+    let hashtags = '';
+    let hashtagLength = 0;
+    if (newsData.hashtags) {
+      // Split hashtags by comma and add # symbol to each
+      const hashtagArray = newsData.hashtags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag.length > 0);
+      const formattedHashtags = hashtagArray.map((tag: string) => tag.startsWith('#') ? tag : `#${tag}`).join(' ');
+      hashtags = `\n\n${formattedHashtags}`;
+      hashtagLength = hashtags.length;
+    }
 
-    // Ensure tweet doesn't exceed 280 characters
+    // Prepare the news URL
+    const baseUrl = process.env.FRONTEND_URL || 'https://yourdomain.com';
+    const newsUrl = `${baseUrl}/news/${newsData.id}`;
+    const linkText = `\n\nCheck out news: ${newsUrl}`;
+    const linkLength = linkText.length;
+
+    // Calculate available space for content (280 - hashtags - link - some buffer)
+    const maxContentLength = 280 - hashtagLength - linkLength - 10; // 10 chars buffer for safety
+
+    // Prepare tweet content with proper truncation
+    let contentText = newsData.content;
+    if (contentText.length > maxContentLength) {
+      contentText = contentText.substring(0, maxContentLength - 3) + '...';
+    }
+
+    const tweetText = `${newsData.title}\n\n${contentText}`;
+    const fullTweetText = `${tweetText}${hashtags}${linkText}`;
+
+    // Final check to ensure we don't exceed 280 characters
     const maxLength = 280;
     const finalTweetText = fullTweetText.length > maxLength 
       ? fullTweetText.substring(0, maxLength - 3) + '...'
       : fullTweetText;
 
+    console.log('Tweet composition:', {
+      title: newsData.title,
+      contentLength: contentText.length,
+      hashtagLength,
+      linkLength,
+      totalLength: finalTweetText.length,
+      maxLength: 280,
+      truncated: finalTweetText.length > 280
+    });
     console.log('Attempting to post tweet:', finalTweetText);
     console.log('Media IDs:', mediaIds);
 

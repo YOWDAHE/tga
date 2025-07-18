@@ -72,7 +72,7 @@ export const comments = pgTable('comments', {
         .notNull(),
 });
 
-// Users Table
+// Admin Users Table
 export const users = pgTable('users', {
     id: serial('id').primaryKey(),
     username: varchar('username', { length: 100 }).notNull().unique(),
@@ -81,6 +81,21 @@ export const users = pgTable('users', {
     password_hash: varchar('password_hash', { length: 255 }).notNull(),
     role_name: varchar('role_name', { length: 100 }),
     roles: jsonb('roles').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+        .defaultNow()
+        .notNull(),
+});
+
+// API Users Table (for external websites)
+export const apiUsers = pgTable('api_users', {
+    id: serial('id').primaryKey(),
+    username: varchar('username', { length: 100 }).notNull().unique(),
+    email: varchar('email', { length: 100 }).notNull().unique(),
+    phone_number: varchar('phone_number', { length: 100 }).notNull(),
+    password_hash: varchar('password_hash', { length: 255 }).notNull(),
+    is_active: boolean('is_active').default(true).notNull(),
+    last_login: timestamp('last_login'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
         .defaultNow()

@@ -53,6 +53,7 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 	const [loading, setLoading] = useState(false);
 	const [visualFiles, setVisualFiles] = useState<File[]>([]);
 	const [existingImages, setExistingImages] = useState<string[]>([]);
+	const [originalImages, setOriginalImages] = useState<string[]>([]);
 	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 	const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(
 		null
@@ -94,15 +95,15 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 
 			// Set existing images if any
 			if (newsToEdit.visual_content && Array.isArray(newsToEdit.visual_content)) {
-				setExistingImages(
-					newsToEdit.visual_content
-						.map((img) =>
-							typeof img === "string" ? img
-							: img && typeof img === "object" && "secure_url" in img ? img.secure_url
-							: ""
-						)
-						.filter(Boolean)
-				);
+				const images = newsToEdit.visual_content
+					.map((img) =>
+						typeof img === "string" ? img
+						: img && typeof img === "object" && "secure_url" in img ? img.secure_url
+						: ""
+					)
+					.filter(Boolean);
+				setExistingImages(images);
+				setOriginalImages([...images]); // Keep a copy of the original images
 			}
 		}
 	}, []);
@@ -170,7 +171,7 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 		setLoading(true);
 		try {
 			let result;
-			const submitData = {
+			const submitData: any = {
 				...values,
 				content,
 				category_id: values.category_id ? parseInt(values.category_id) : null,
@@ -179,8 +180,26 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 				read_minutes: values.read_minutes,
 				source: "Website",
 				created_by: user?.username || "admin",
-				visual_content: visualFiles.length > 0 ? visualFiles : existingImages,
 			};
+
+			// Handle visual content updates
+			if (newsToEdit) {
+				// For updates, we need to handle different scenarios
+				if (visualFiles.length > 0) {
+					// New files are being uploaded
+					submitData.visual_content = visualFiles;
+				} else if (existingImages.length !== originalImages.length) {
+					// Images were removed, send the remaining images as a separate field
+					submitData.remainingImages = existingImages;
+				}
+				// If no new files and no images were removed, don't send visual_content
+				// This will preserve the existing visual content in the backend
+			} else {
+				// For new news, only include visual_content if there are files
+				if (visualFiles.length > 0) {
+					submitData.visual_content = visualFiles;
+				}
+			}
 
 			console.log("NewsForm - visualFiles:", visualFiles);
 			console.log("NewsForm - existingImages:", existingImages);

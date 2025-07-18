@@ -1,101 +1,71 @@
 # Twitter Integration
 
-This document describes the Twitter integration feature for the news system.
-
 ## Overview
+The application integrates with Twitter to automatically post news articles when they are created or updated.
 
-When creating news articles, the system automatically posts them to Twitter (X) in addition to Telegram. LinkedIn integration is currently commented out as requested.
+## Features
+- **Automatic posting**: News articles are automatically posted to Twitter when created
+- **Image support**: Up to 4 images can be attached to tweets
+- **Hashtag formatting**: Hashtags are automatically formatted with # symbols
+- **Smart truncation**: Content is truncated intelligently to preserve hashtags and links
+- **News links**: Each tweet includes a link to the full news article
 
 ## Environment Variables
 
-The following environment variables are required for Twitter integration:
-
+### Required Twitter Credentials
 ```env
-TWITTER_API_KEY=your_api_key
-TWITTER_API_KEY_SECRET=your_api_key_secret
-TWITTER_BEARER_TOKEN=your_bearer_token
-TWITTER_ACCESS_TOKEN=your_access_token
-TWITTER_ACCESS_TOKEN_SECRET=your_access_token_secret
-TWITTER_CLIENT_ID=your_client_id
-TWITTER_CLIENT_SECRET=your_client_secret
-TWITTER_APP_ID=your_app_id
+TWITTER_API_KEY=your_twitter_api_key
+TWITTER_API_KEY_SECRET=your_twitter_api_key_secret
+TWITTER_ACCESS_TOKEN=your_twitter_access_token
+TWITTER_ACCESS_TOKEN_SECRET=your_twitter_access_token_secret
 ```
 
-## Features
-
-### News Creation
-- When a news article is created, it's automatically posted to Twitter
-- The tweet includes:
-  - News title
-  - First 200 characters of content (truncated if longer)
-  - Hashtags (if provided)
-  - Up to 4 images (if uploaded)
-- Tweet content is automatically truncated to fit Twitter's 280-character limit
-
-### News Updates
-- When a news article is updated, the corresponding Twitter post is updated
-- Since Twitter doesn't support editing tweets, the old tweet is deleted and a new one is created
-
-### News Deletion
-- When a news article is deleted, the corresponding Twitter post is also deleted
-
-## Technical Implementation
-
-### Backend Functions
-
-1. **`uploadImageToTwitter(imageBuffer: Buffer)`**
-   - Uploads images to Twitter's media API
-   - Returns media ID for use in tweets
-
-2. **`sendNewsToTwitter(newsData: any, imageBuffers?: Buffer[])`**
-   - Creates a tweet with the news content
-   - Handles image uploads and media attachments
-   - Returns the tweet ID
-
-3. **`editTwitterPost(twitterPostId: number, newsData: any, imageBuffers?: Buffer[])`**
-   - Deletes the old tweet and creates a new one
-   - Used for updating news articles
-
-4. **`deleteFromTwitter(twitterPostId: number)`**
-   - Deletes a tweet from Twitter
-
-### Database Schema
-
-The `news` table includes a `twitter_message_id` field to store the Twitter post ID:
-
-```sql
-twitter_message_id: integer('twitter_message_id')
+### Frontend URL (for news links)
+```env
+FRONTEND_URL=https://yourdomain.com
 ```
 
-### API Integration
+## Tweet Format
+Tweets follow this format:
+```
+[News Title]
 
-The Twitter integration uses Twitter API v2 with OAuth 1.0a authentication. The system:
+[Content - truncated if needed]...
 
-- Uses the `oauth-1.0a` package for OAuth signature generation
-- Posts to the `/2/tweets` endpoint for creating tweets
-- Uses the media upload endpoint for images
-- Handles rate limiting and error responses gracefully
+[Hashtags with # symbols]
+
+Check out news: https://yourdomain.com/news/[news_id]
+```
+
+## Character Limit Handling
+- **Total limit**: 280 characters
+- **Priority order**:
+  1. Hashtags (never truncated)
+  2. News link (never truncated)
+  3. Content (truncated if needed)
+  4. Title (truncated if needed)
+
+## Example Tweet
+```
+Breaking News: Major Update
+
+The latest developments in technology show significant progress...
+
+#technology #news #update
+
+Check out news: https://yourdomain.com/news/123
+```
 
 ## Error Handling
-
-- If Twitter credentials are not configured, the system logs a warning but continues with news creation
-- If Twitter API calls fail, the error is logged but doesn't prevent news creation
-- Image upload failures are handled gracefully - the tweet is still posted without images
+- Timeout protection (30 seconds)
+- Graceful fallback if Twitter API is unavailable
+- Detailed logging for debugging
+- Non-blocking errors (won't break news creation/update)
 
 ## Testing
-
-Use the "Test Twitter Integration" button in the server storage test page to verify the integration is working correctly.
-
-## Limitations
-
-- Twitter has a 280-character limit for tweets
-- Maximum 4 images per tweet
-- Twitter doesn't support editing tweets (only delete and recreate)
-- Rate limiting applies to Twitter API calls
-
-## Future Enhancements
-
-- Add support for Twitter threads for longer content
-- Implement better error handling and retry logic
-- Add Twitter analytics tracking
-- Support for Twitter Spaces integration 
+To test the Twitter integration:
+1. Ensure all environment variables are set
+2. Create a news article with hashtags
+3. Check the Twitter account for the new post
+4. Verify hashtags have # symbols
+5. Verify the news link is included 

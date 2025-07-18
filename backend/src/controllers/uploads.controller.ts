@@ -198,6 +198,7 @@ const create = async (
     // Generate public URL for serving the file
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
     const fileUrl = `${backendUrl}/uploads/documents/${filename}`;
+    console.log(fileUrl);
 
     // 3. Save document info in the DB
     const [created] = await db.insert(documents).values({

@@ -21,6 +21,7 @@ import publicCommentsRouter from './routes/public-comments.route.js';
 import usersRouter from './routes/users.route.js';
 import profileRouter from './routes/profile.route.js';
 import auditRouter from './routes/audit.route.js';
+import apiAuthRouter from './routes/api-auth.route.js';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -50,6 +51,7 @@ app.prepare().then(() => {
   server.use('/api/profile', profileRouter);
   server.use('/api/audit-logs', authenticateJWT, authorizePermissions('USER_CRUD'), auditRouter);
   server.use('/api/dashboard', authenticateJWT, dashboardRouter);
+  server.use('/api/api-auth', apiAuthRouter);
 
   // Serve uploaded files statically with cache headers
   server.use('/uploads', (req, res, next) => {

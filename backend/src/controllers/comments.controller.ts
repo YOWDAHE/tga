@@ -533,4 +533,178 @@ const toggleLike = async (
   }
 };
 
-export default { get, getById, getByNewsId, create, update, remove, toggleFlag, toggleVisibility, toggleLike };
+const removeOwnComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const currentUsername = req.user?.username; // Get username from JWT token
+    
+    if (!currentUsername) {
+      res.status(401).json({
+        message: 'Authentication required',
+        status: 'error',
+        error: 'User not authenticated',
+        data: null,
+      });
+      return;
+    }
+
+    // First check if the comment exists and belongs to the current user
+    const existingComment = await db.select().from(comments).where(eq(comments.id, id));
+    
+    if (existingComment.length === 0) {
+      res.status(404).json({
+        message: 'Comment not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    const comment = existingComment[0];
+    
+    // Check if the comment belongs to the current user
+    if (comment.user_name !== currentUsername) {
+      res.status(403).json({
+        message: 'You can only delete your own comments',
+        status: 'error',
+        error: 'Forbidden',
+        data: null,
+      });
+      return;
+    }
+
+    // Delete the comment
+    const [deleted] = await db.delete(comments).where(eq(comments.id, id)).returning();
+    
+    if (!deleted) {
+      res.status(404).json({
+        message: 'Comment not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: 'Comment deleted successfully',
+      status: 'success',
+      error: null,
+      data: deleted,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to delete comment',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+const editOwnComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const { content } = req.body;
+    const currentUsername = req.user?.username;
+    
+    if (!currentUsername) {
+      res.status(401).json({
+        message: 'Authentication required',
+        status: 'error',
+        error: 'User not authenticated',
+        data: null,
+      });
+      return;
+    }
+
+    if (!content || content.trim() === '') {
+      res.status(400).json({
+        message: 'Content is required',
+        status: 'error',
+        error: 'Validation error',
+        data: null,
+      });
+      return;
+    }
+
+    // First check if the comment exists and belongs to the current user
+    const existingComment = await db.select().from(comments).where(eq(comments.id, id));
+    
+    if (existingComment.length === 0) {
+      res.status(404).json({
+        message: 'Comment not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    const comment = existingComment[0];
+    
+    // Check if the comment belongs to the current user
+    if (comment.user_name !== currentUsername) {
+      res.status(403).json({
+        message: 'You can only edit your own comments',
+        status: 'error',
+        error: 'Forbidden',
+        data: null,
+      });
+      return;
+    }
+
+    // Check for obfuscated links in the new content
+    const flagged = containsObfuscatedLink(content);
+
+    // Update the comment
+    const [updated] = await db
+      .update(comments)
+      .set({
+        edited: true,
+        content: content.trim(),
+        flagged,
+        flagged_reason: flagged ? 'Might contain obfuscated link' : null,
+        updatedAt: new Date(),
+      })
+      .where(eq(comments.id, id))
+      .returning();
+
+    if (!updated) {
+      res.status(404).json({
+        message: 'Comment not found',
+        status: 'error',
+        error: 'Not found',
+        data: null,
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: 'Comment updated successfully',
+      status: 'success',
+      error: null,
+      data: updated,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to update comment',
+      status: 'error',
+      error: error instanceof Error ? error.message : error,
+      data: null,
+    });
+    next(error);
+  }
+};
+
+export default { get, getById, getByNewsId, create, update, remove, toggleFlag, toggleVisibility, toggleLike, removeOwnComment, editOwnComment };
