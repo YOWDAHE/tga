@@ -242,13 +242,25 @@ const publicNews = async (
     const trending = await db.select().from(news)
       .orderBy(desc(news.view_count))
       .limit(5);
+    // Hot: top 5 by comment count
+    const hot = await db
+      .select({
+        news: news,
+        commentCount: count(comments.id)
+      })
+      .from(news)
+      .leftJoin(comments, eq(news.id, comments.news_id))
+      .groupBy(news.id)
+      .orderBy(desc(count(comments.id)))
+      .limit(5)
+      .then(results => results.map(result => result.news));
     // Others: all news_links
     const newsLinks = await db.select().from(news_links).orderBy(desc(news_links.createdAt)).limit(4);
     res.status(200).json({
       message: 'Public news fetched successfully',
       status: 'success',
       error: null,
-      data: { featured, latest, trending, others: newsLinks },
+      data: { featured, latest, trending, hot, others: newsLinks },
     });
   } catch (error) {
     res.status(500).json({

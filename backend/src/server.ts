@@ -43,7 +43,7 @@ app.prepare().then(() => {
   server.use('/api/telegram', telegramRouter);
   server.use('/api/news', newsRouter);
   server.use('/api/landing', landingRouter);
-  server.use('/api/remark', authenticateJWT, authorizePermissions('REMARKS_CRUD'), remarksRouter);
+  server.use('/api/remark',  remarksRouter);
   server.use('/api/contact', authenticateJWT, authorizePermissions('HOMEPAGE_CRUD'), contactRouter);
   server.use('/api/comments', authenticateJWT, authorizePermissions('NEWS_CRUD'), commentsRouter);
   server.use('/api/public/comments', publicCommentsRouter);

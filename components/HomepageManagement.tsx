@@ -183,12 +183,6 @@ export default function HomepageManagement({
 	initialTestimonials,
 	initialContactInfo,
 }: HomepageManagementProps) {
-	console.log('initialContent:', initialContent);
-	console.log('initialStats:', initialStats);
-	console.log('initialPractices:', initialPractices);
-	console.log('initialPartners:', initialPartners);
-	console.log('initialTestimonials:', initialTestimonials);
-	console.log('initialContactInfo:', initialContactInfo);
 	const defaultContent: LandingPageContent = initialContent ?? {
 		logo_url: null,
 		hero_image_url: null,

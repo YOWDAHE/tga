@@ -83,17 +83,7 @@ const create = async (
       return;
     }
     const [created] = await db.insert(remarks).values({ name, email, content }).returning();
-    await logAudit({
-      tableName: 'remarks',
-      action: 'INSERT',
-      description: 'Created remark',
-      oldData: null,
-      newData: created,
-      user_id: req.user?.id,
-      changedBy: req.user?.username,
-      ipAddress: req.ip,
-      userAgent: req.headers['user-agent'] as string,
-    });
+    
     res.status(201).json({
       message: 'Remark created successfully',
       status: 'success',
