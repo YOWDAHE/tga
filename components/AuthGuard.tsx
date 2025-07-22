@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserPermission } from "@/types/permissions";
 import { Center, Loader } from "@mantine/core";
@@ -22,12 +22,21 @@ export default function AuthGuard({
 	const { isAuthenticated, isLoading, hasAnyPermission, hasAllPermissions } =
 		useAuth();
 	const router = useRouter();
+	const pathname = usePathname();
+
+	// Skip authentication check for login page
+	const isLoginPage = pathname === "/login";
 
 	useEffect(() => {
-		if (!isLoading && !isAuthenticated) {
+		if (!isLoading && !isAuthenticated && !isLoginPage) {
 			router.push("/login");
 		}
-	}, [isAuthenticated, isLoading, router]);
+	}, [isAuthenticated, isLoading, router, isLoginPage]);
+
+	// If it's the login page, render children without authentication check
+	if (isLoginPage) {
+		return <>{children}</>;
+	}
 
 	if (isLoading) {
 		return (

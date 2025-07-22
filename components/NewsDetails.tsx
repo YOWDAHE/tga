@@ -47,12 +47,13 @@ import {
 	IconHash,
 	IconStar,
 } from "@tabler/icons-react";
+import { convertToApiUrl } from "@/lib/utils";
 
 interface NewsItem {
 	id: number;
 	title: string;
 	content: string;
-	visual_content?: (string | { public_id: string; secure_url: string })[] | null;
+	visual_content?: string[] | null;
 	hashtags?: string;
 	category_id?: number | null;
 	category?: { id: number; name: string; description: string | null } | null;
@@ -407,7 +408,7 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 									<SimpleGrid cols={2}>
 										{news.visual_content.map(
 											(imageData, index) => (
-												console.log("imageData:", getImageUrl(imageData)),
+												console.log("imageData:", imageData),
 												(
 													<Box key={index} pos="relative" style={{ minHeight: 150 }}>
 														{!loadedImages[index] && (
@@ -422,7 +423,7 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 															/>
 														)}
 														<Image
-															src={getImageUrl(imageData)}
+															src={convertToApiUrl(imageData)}
 															alt={`News visual content ${index + 1}`}
 															radius="md"
 															width="100%"

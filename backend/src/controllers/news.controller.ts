@@ -45,7 +45,7 @@ const get = async (
 
     // Build search condition
     let whereConditions = [];
-    
+
     if (q && q.trim()) {
       const searchTerm = `%${q.trim()}%`;
       whereConditions.push(or(
@@ -57,14 +57,14 @@ const get = async (
         like(categories.name, searchTerm)
       ));
     }
-    
+
     if (category && category.trim()) {
       const categoryId = parseInt(category.trim());
       if (!isNaN(categoryId)) {
         whereConditions.push(eq(categories.id, categoryId));
       }
     }
-    
+
     const whereCondition = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
     // Get total count for pagination
@@ -287,7 +287,7 @@ const create = async (
 
     let imageUrls: string[] = [];
     let visual_content: string[] | null = null;
-    
+
     if (req.files && Array.isArray(req.files)) {
       console.log('Processing multiple files:', req.files.length);
       imageUrls = await uploadImagesToLocal(req.files);
@@ -393,8 +393,8 @@ const update = async (
 ): Promise<void> => {
   try {
     const id = Number(req.params.id);
-    const { title, content, published_date, created_by, hashtags, featured, read_minutes, category_id, remainingImages } = req.body;
-    
+    const { title, content, published_date, created_by, hashtags, featured, read_minutes, category_id, visual_content: incomingVisualContent } = req.body;
+
     // Get the existing news item first
     const oldNews = await db.select().from(news).where(eq(news.id, id));
     if (oldNews.length === 0) {
@@ -407,59 +407,40 @@ const update = async (
       return;
     }
 
-    let visual_content: any[] | null = null;
-    let shouldDeleteOldImages = false;
-    let imagesToDelete: any[] = [];
-    
-    // Check if new files are being uploaded
-    if (req.files && Array.isArray(req.files)) {
-      visual_content = [];
-      shouldDeleteOldImages = true;
-      for (const file of req.files) {
+    // Parse incoming visual_content (from frontend) if present
+    let newVisualContent: string[] = [];
+    if (incomingVisualContent) {
+      if (Array.isArray(incomingVisualContent)) {
+        newVisualContent = incomingVisualContent;
+      } else if (typeof incomingVisualContent === 'string') {
         try {
-          const uploadResult = await uploadToCloudinary(file.buffer);
-          visual_content.push(uploadResult);
-        } catch (error) {
-          console.error('Failed to upload file to Cloudinary:', error);
-          throw error;
+          newVisualContent = JSON.parse(incomingVisualContent);
+        } catch {
+          newVisualContent = [incomingVisualContent];
         }
       }
-    } else if (req.file) {
-      visual_content = [];
-      shouldDeleteOldImages = true;
-      try {
-        const uploadResult = await uploadToCloudinary(req.file.buffer);
-        visual_content = [uploadResult];
-      } catch (error) {
-        console.error('Failed to upload file to Cloudinary:', error);
-        throw error;
-      }
-    } else if (remainingImages) {
-      // Images were removed, update visual_content accordingly
-      // remainingImages is an array of URLs (strings)
-      const original = Array.isArray(oldNews[0].visual_content) ? oldNews[0].visual_content : [];
-      // Only keep images that are still present
-      visual_content = original.filter(img => {
-        const url = typeof img === 'string' ? img : img.secure_url;
-        return remainingImages.includes(url);
-      });
-      // Find images to delete
-      imagesToDelete = original.filter(img => {
-        const url = typeof img === 'string' ? img : img.secure_url;
-        return !remainingImages.includes(url);
-      });
-      if (imagesToDelete.length > 0) {
-        await deleteMultipleFromCloudinary(imagesToDelete);
-      }
-    } else {
-      // No new files uploaded, preserve existing visual content
-      visual_content = Array.isArray(oldNews[0].visual_content) ? oldNews[0].visual_content : null;
-      console.log('Preserving existing visual content:', visual_content);
     }
 
-    // Delete old images from Cloudinary only if new images are being uploaded
-    if (shouldDeleteOldImages && oldNews[0]?.visual_content && Array.isArray(oldNews[0].visual_content)) {
-      await deleteMultipleFromCloudinary(oldNews[0].visual_content);
+    // Existing images from DB
+    const oldVisualContent: string[] = Array.isArray(oldNews[0].visual_content) ? oldNews[0].visual_content : [];
+
+    // Upload new images if present
+    let uploadedImageUrls: string[] = [];
+    if (req.files && Array.isArray(req.files)) {
+      uploadedImageUrls = await uploadImagesToLocal(req.files);
+    } else if (req.file) {
+      uploadedImageUrls = await uploadImagesToLocal([req.file]);
+    }
+
+    // Merge: keep images from frontend + add new uploads
+    // The frontend should send the images it wants to keep in visual_content
+    // So, the final visual_content = [...newVisualContent, ...uploadedImageUrls]
+    const finalVisualContent: string[] = [...newVisualContent, ...uploadedImageUrls];
+
+    // Find images to delete: those in oldVisualContent but not in finalVisualContent
+    const imagesToDelete = oldVisualContent.filter(img => !finalVisualContent.includes(img));
+    if (imagesToDelete.length > 0) {
+      await deleteImagesFromLocal(imagesToDelete);
     }
 
     const [updated] = await db
@@ -467,7 +448,7 @@ const update = async (
       .set({
         title,
         content,
-        visual_content,
+        visual_content: finalVisualContent,
         hashtags,
         category_id: category_id ? Number(category_id) : null,
         featured,
@@ -1181,7 +1162,7 @@ async function deleteFromLinkedIn(linkedinPostId: string): Promise<void> {
 async function uploadImageToTwitter(imageBuffer: Buffer): Promise<string | null> {
   try {
     const { TwitterApi } = require('twitter-api-v2');
-    
+
     const client = new TwitterApi({
       appKey: process.env.TWITTER_API_KEY!,
       appSecret: process.env.TWITTER_API_KEY_SECRET!,
@@ -1196,7 +1177,7 @@ async function uploadImageToTwitter(imageBuffer: Buffer): Promise<string | null>
       client.v1.uploadMedia(imageBuffer, {
         mimeType: 'image/jpeg',
       }),
-      new Promise((_, reject) => 
+      new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Twitter media upload timeout')), 30000)
       )
     ]);
@@ -1215,7 +1196,7 @@ async function uploadImageToTwitter(imageBuffer: Buffer): Promise<string | null>
 async function sendNewsToTwitter(newsData: any, imageBuffers?: Buffer[]): Promise<string | null> {
   try {
     const { TwitterApi } = require('twitter-api-v2');
-    
+
     const client = new TwitterApi({
       appKey: process.env.TWITTER_API_KEY!,
       appSecret: process.env.TWITTER_API_KEY_SECRET!,
@@ -1224,8 +1205,8 @@ async function sendNewsToTwitter(newsData: any, imageBuffers?: Buffer[]): Promis
     });
 
     // Check if credentials are properly configured
-    if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_KEY_SECRET || 
-        !process.env.TWITTER_ACCESS_TOKEN || !process.env.TWITTER_ACCESS_TOKEN_SECRET) {
+    if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_KEY_SECRET ||
+      !process.env.TWITTER_ACCESS_TOKEN || !process.env.TWITTER_ACCESS_TOKEN_SECRET) {
       console.log('Twitter credentials not properly configured');
       console.log('Missing credentials:', {
         TWITTER_API_KEY: !!process.env.TWITTER_API_KEY,
@@ -1284,7 +1265,7 @@ async function sendNewsToTwitter(newsData: any, imageBuffers?: Buffer[]): Promis
 
     // Final check to ensure we don't exceed 280 characters
     const maxLength = 280;
-    const finalTweetText = fullTweetText.length > maxLength 
+    const finalTweetText = fullTweetText.length > maxLength
       ? fullTweetText.substring(0, maxLength - 3) + '...'
       : fullTweetText;
 
@@ -1305,7 +1286,7 @@ async function sendNewsToTwitter(newsData: any, imageBuffers?: Buffer[]): Promis
       client.v2.tweet(finalTweetText, {
         media: mediaIds.length > 0 ? { media_ids: mediaIds } : undefined,
       }),
-      new Promise((_, reject) => 
+      new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Twitter API timeout')), 30000)
       )
     ]);
@@ -1332,7 +1313,7 @@ async function sendNewsToTwitter(newsData: any, imageBuffers?: Buffer[]): Promis
 async function editTwitterPost(twitterPostId: string, newsData: any, imageBuffers?: Buffer[]): Promise<void> {
   try {
     const { TwitterApi } = require('twitter-api-v2');
-    
+
     const client = new TwitterApi({
       appKey: process.env.TWITTER_API_KEY!,
       appSecret: process.env.TWITTER_API_KEY_SECRET!,
@@ -1356,7 +1337,7 @@ async function editTwitterPost(twitterPostId: string, newsData: any, imageBuffer
 async function deleteFromTwitter(twitterPostId: string): Promise<void> {
   try {
     const { TwitterApi } = require('twitter-api-v2');
-    
+
     const client = new TwitterApi({
       appKey: process.env.TWITTER_API_KEY!,
       appSecret: process.env.TWITTER_API_KEY_SECRET!,
@@ -1370,10 +1351,10 @@ async function deleteFromTwitter(twitterPostId: string): Promise<void> {
     }
 
     console.log(`Attempting to delete Twitter post: ${twitterPostId}`);
-    
+
     // Check if credentials are properly configured
-    if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_KEY_SECRET || 
-        !process.env.TWITTER_ACCESS_TOKEN || !process.env.TWITTER_ACCESS_TOKEN_SECRET) {
+    if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_KEY_SECRET ||
+      !process.env.TWITTER_ACCESS_TOKEN || !process.env.TWITTER_ACCESS_TOKEN_SECRET) {
       console.log('Twitter credentials not properly configured for deletion');
       return;
     }
@@ -1401,9 +1382,9 @@ const serveNewsImage = async (
 ): Promise<void> => {
   try {
     const { filename } = req.params;
-    
+
     const filePath = path.join(process.cwd(), 'backend', 'uploads', 'news-images', filename);
-    
+
     // Check if file exists
     if (!fs.existsSync(filePath)) {
       res.status(404).json({
@@ -1416,11 +1397,11 @@ const serveNewsImage = async (
     }
 
     const stats = fs.statSync(filePath);
-    
+
     // Determine content type based on file extension
     const ext = path.extname(filename).toLowerCase();
     let contentType = 'image/jpeg'; // default
-    
+
     switch (ext) {
       case '.png':
         contentType = 'image/png';
@@ -1437,11 +1418,11 @@ const serveNewsImage = async (
         contentType = 'image/jpeg';
         break;
     }
-    
+
     res.setHeader('Content-Type', contentType);
     res.setHeader('Content-Length', stats.size);
     res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-    
+
     // Stream the file
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);

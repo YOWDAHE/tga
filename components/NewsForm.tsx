@@ -42,7 +42,7 @@ export interface NewsExtended extends News {
 	featured?: boolean;
 	read_minutes?: number;
 }
-
+	
 interface NewsFormProps {
 	newsToEdit?: NewsExtended | null;
 	categories?: Array<{ value: string; label: string }>;
@@ -186,37 +186,14 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 
 			// Handle visual content updates
 			if (newsToEdit) {
-				// For updates, we need to handle different scenarios
-				if (visualFiles.length > 0) {
-					// New files are being uploaded
-					submitData.visual_content = visualFiles;
-				} else if (existingImages.length !== originalImages.length) {
-					// Images were removed, send the remaining images as a separate field
-					submitData.remainingImages = existingImages;
-				}
-				// If no new files and no images were removed, don't send visual_content
-				// This will preserve the existing visual content in the backend
+				// Always send the remaining existing image URLs and new files together
+				submitData.visual_content = [...existingImages, ...visualFiles];
+				result = await updateNews({ id: newsToEdit.id, ...submitData });
 			} else {
 				// For new news, only include visual_content if there are files
 				if (visualFiles.length > 0) {
 					submitData.visual_content = visualFiles;
 				}
-			}
-
-			console.log("NewsForm - visualFiles:", visualFiles);
-			console.log("NewsForm - existingImages:", existingImages);
-			console.log(
-				"NewsForm - submitData.visual_content:",
-				submitData.visual_content
-			);
-
-			if (newsToEdit) {
-				console.log("submitData", submitData);
-				result = await updateNews({
-					id: newsToEdit.id!,
-					...submitData,
-				});
-			} else {
 				result = await createNews(submitData);
 			}
 

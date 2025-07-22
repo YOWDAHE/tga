@@ -111,6 +111,7 @@ export const landing = pgTable('landing', {
     hero_title: varchar('title', { length: 255 }).notNull(),
 
     about_us: text('about_us'),
+    view_count: integer('view_count').default(0).notNull(),
 
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
-import { landing, stats, partners, practices, contactUsInfo, news_links } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { landing, stats, partners, practices, contactUsInfo, news_links, pageViews } from '../db/schema';
+import { eq, sql } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
 import { v2 as cloudinary } from 'cloudinary';
 import * as fs from 'fs';
@@ -22,19 +22,43 @@ const get = async (
 ): Promise<void> => {
   console.log('get landing data');
   try {
-    // const landingData = await db.select().from(landing).limit(1);
-    const statsData = await db.select().from(stats);
-    const partnersData = await db.select().from(partners);
-    const practicesData = await db.select().from(practices);
-    const contactUsData = await db.select().from(contactUsInfo);
-    const newsLinksData = await db.select().from(news_links);
+    
+    
+    // Then, fetch all the necessary data in parallel.
+    const [landingData, statsData, partnersData, practicesData, contactUsData, newsLinksData] = await Promise.all([
+      db.select().from(landing).limit(1),
+      db.select().from(stats),
+      db.select().from(partners),
+      db.select().from(practices),
+      db.select().from(contactUsInfo),
+      db.select().from(news_links),
+    ]);
+
+    if (landingData.length > 0) {
+      // Increment view count
+      await db.update(landing)
+        .set({ view_count: sql`${landing.view_count} + 1` })
+        .where(eq(landing.id, landingData[0].id));
+    }
+
+
+    // Log the page view if landing data exists
+    if (landingData && landingData.length > 0) {
+      await db.insert(pageViews).values({
+        page_type: 'landing',
+        page_id: landingData[0].id,
+        user_id: req.user?.id,
+        ip_address: req.ip,
+        user_agent: req.headers['user-agent'] as string,
+      });
+    }
 
     res.status(200).json({
       message: 'Landing page data fetched successfully',
       status: 'success',
       error: null,
       data: {
-        // landing: landingData[0] || null,
+        landing: landingData[0] || null,
         stats: statsData,
         partners: partnersData,
         practices: practicesData,
@@ -43,12 +67,6 @@ const get = async (
       },
     });
   } catch (error) {
-    res.status(500).json({
-      message: 'Failed to fetch landing data',
-      status: 'error',
-      error: error instanceof Error ? error.message : error,
-      data: null,
-    });
     next(error);
   }
 };

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
-import { news, documents, categories, auditLog, remarks } from '../db/schema';
-import { count, desc, eq, gte, sql } from 'drizzle-orm';
+import { news, documents, categories, auditLog, remarks, landing } from '../db/schema';
+import { count, desc, eq, gte, sql, sum } from 'drizzle-orm';
 
 // GET dashboard data
 const get = async (
@@ -14,10 +14,70 @@ const get = async (
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    // Get date for last month comparison
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+
     // Get total counts
     const [newsCount] = await db.select({ count: count() }).from(news);
     const [documentsCount] = await db.select({ count: count() }).from(documents);
     const [categoriesCount] = await db.select({ count: count() }).from(categories);
+    const [landingCount] = await db.select({count: landing.view_count}).from(landing);
+
+    // Get view counts
+    const [newsViews] = await db.select({ total: sum(news.view_count) }).from(news);
+    const [documentsViews] = await db.select({ total: sum(documents.view_count) }).from(documents);
+    const [landingViews] = await db.select({ total: sum(landing.view_count) }).from(landing);
+
+    // Get this month's view counts
+    const [thisMonthNewsViews] = await db
+      .select({ total: sum(news.view_count) })
+      .from(news)
+      .where(gte(news.createdAt, lastMonth));
+
+    const [thisMonthDocumentsViews] = await db
+      .select({ total: sum(documents.view_count) })
+      .from(documents)
+      .where(gte(documents.createdAt, lastMonth));
+
+    const [thisMonthLandingViews] = await db
+      .select({ total: sum(landing.view_count) })
+      .from(landing)
+      .where(gte(landing.createdAt, lastMonth));
+
+    // Get last month's view counts (for comparison)
+    const twoMonthsAgo = new Date();
+    twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+
+    const [lastMonthNewsViews] = await db
+      .select({ total: sum(news.view_count) })
+      .from(news)
+      .where(sql`${news.createdAt} >= ${twoMonthsAgo} AND ${news.createdAt} < ${lastMonth}`);
+
+    const [lastMonthDocumentsViews] = await db
+      .select({ total: sum(documents.view_count) })
+      .from(documents)
+      .where(sql`${documents.createdAt} >= ${twoMonthsAgo} AND ${documents.createdAt} < ${lastMonth}`);
+
+    const [lastMonthLandingViews] = await db
+      .select({ total: sum(landing.view_count) })
+      .from(landing)
+      .where(sql`${landing.createdAt} >= ${twoMonthsAgo} AND ${landing.createdAt} < ${lastMonth}`);
+
+    // Calculate percentage changes for view growth
+    const calculateViewGrowth = (current: number, previous: number): { change: string; changeType: "positive" | "negative" | "neutral"; growth: number } => {
+      if (previous === 0) {
+        return current > 0 ? { change: "+100%", changeType: "positive", growth: 100 } : { change: "0%", changeType: "neutral", growth: 0 };
+      }
+      const percentage = ((current - previous) / previous) * 100;
+      const change = percentage >= 0 ? `+${percentage.toFixed(1)}%` : `${percentage.toFixed(1)}%`;
+      const changeType = percentage > 0 ? "positive" : percentage < 0 ? "negative" : "neutral";
+      return { change, changeType, growth: percentage };
+    };
+
+    const newsViewGrowth = calculateViewGrowth(Number(thisMonthNewsViews.total) || 0, Number(lastMonthNewsViews.total) || 0);
+    const documentsViewGrowth = calculateViewGrowth(Number(thisMonthDocumentsViews.total) || 0, Number(lastMonthDocumentsViews.total) || 0);
+    const landingViewGrowth = calculateViewGrowth(Number(thisMonthLandingViews.total) || 0, Number(lastMonthLandingViews.total) || 0);
 
     // Get today's activity counts
     const [todayNewsCount] = await db
@@ -49,30 +109,54 @@ const get = async (
       .orderBy(desc(auditLog.changeTimestamp))
       .limit(10);
 
-    // Calculate percentage changes (mock data for now)
-    const newsChange = "+12%";
-    const archivesChange = "+8%";
-    const categoriesChange = "+2";
-
     const dashboardData = {
       stats: [
         {
           title: "Total News",
           value: newsCount.count.toString(),
-          change: newsChange,
+          change: "+12%",
           changeType: "positive",
         },
         {
           title: "Archives",
           value: documentsCount.count.toString(),
-          change: archivesChange,
+          change: "+8%",
           changeType: "positive",
         },
+        // {
+        //   title: "Categories",
+        //   value: categoriesCount.count.toString(),
+        //   change: "+2",
+        //   changeType: "neutral",
+        // },
         {
-          title: "Categories",
-          value: categoriesCount.count.toString(),
-          change: categoriesChange,
-          changeType: "neutral",
+          title: "Landing Page Views",
+          value: landingCount.count.toString(),
+          change: "+12%",
+          changeType: "positive",
+        }
+      ],
+      viewStats: [
+        {
+          title: "News Views",
+          value: (newsViews.total || 0).toString(),
+          change: newsViewGrowth.change,
+          changeType: newsViewGrowth.changeType,
+          growth: newsViewGrowth.growth,
+        },
+        {
+          title: "Document Views",
+          value: (documentsViews.total || 0).toString(),
+          change: documentsViewGrowth.change,
+          changeType: documentsViewGrowth.changeType,
+          growth: documentsViewGrowth.growth,
+        },
+        {
+          title: "Landing Page Views",
+          value: (landingViews.total || 0).toString(),
+          change: landingViewGrowth.change,
+          changeType: landingViewGrowth.changeType,
+          growth: landingViewGrowth.growth,
         },
       ],
       todayOverview: {

@@ -1,4 +1,3 @@
-
 import { del, post, put } from "@/lib/axiosWrapper";
 
 export async function createNews(data: any) {
@@ -55,27 +54,22 @@ export async function updateNews(data: any) {
         console.log("data", data);
         const { id, ...rest } = data;
         let formData: FormData | null = null;
-        
-        // Check if there are files in visual_content
-        const hasFiles = rest.visual_content && (
-            rest.visual_content instanceof File || 
-            (Array.isArray(rest.visual_content) && rest.visual_content.some((item: any) => item instanceof File))
-        );
-        
-        if (hasFiles) {
+
+        // Check if there are files or strings in visual_content
+        const hasVisualContent = rest.visual_content && Array.isArray(rest.visual_content) && rest.visual_content.length > 0;
+
+        if (hasVisualContent) {
             formData = new FormData();
-            
-            // Handle visual_content - can be single file or array of files
-            if (Array.isArray(rest.visual_content)) {
-                rest.visual_content.forEach((file: File, index: number) => {
-                    if (file instanceof File) {
-                        formData!.append('visual_content', file);
-                    }
-                });
-            } else if (rest.visual_content instanceof File) {
-                formData.append('visual_content', rest.visual_content);
-            }
-            
+
+            // Append both File objects and strings (existing image URLs)
+            rest.visual_content.forEach((item: any) => {
+                if (item instanceof File) {
+                    formData!.append('visual_content', item);
+                } else if (typeof item === 'string') {
+                    formData!.append('visual_content', item);
+                }
+            });
+
             // Add other fields
             Object.entries(rest).forEach(([key, value]) => {
                 if (key !== 'visual_content' && value !== undefined && value !== null) {
@@ -83,7 +77,8 @@ export async function updateNews(data: any) {
                 }
             });
         }
-        
+
+        console.dir(`Updating news with id: ${formData ? `FormData with ${formData.getAll('visual_content').length} items` : 'no files'}`, { depth: null });
         const res = await put(`/news/${id}`, formData || rest);
         if (!res.data.data) throw new Error(res.data.error || "Failed to update news");
         return { success: true, data: res.data.data };
@@ -101,4 +96,4 @@ export async function deleteNews(id: number) {
     } catch (error: any) {
         return { success: false, error: error.message };
     }
-} 
+}
