@@ -8,6 +8,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
+import sharp from 'sharp';
 
 // Configure Cloudinary
 cloudinary.config({
@@ -288,13 +289,43 @@ const create = async (
     let imageUrls: string[] = [];
     let visual_content: string[] | null = null;
 
+    // Compress images if they exceed a certain size (e.g., 1MB)
+    const sizeThreshold = 200 * 1024; // 200KB
+
     if (req.files && Array.isArray(req.files)) {
-      console.log('Processing multiple files:', req.files.length);
-      imageUrls = await uploadImagesToLocal(req.files);
+      const processedFiles = [];
+      for (const file of req.files) {
+        if (file.mimetype.startsWith('image/') && file.size > sizeThreshold) {
+          try {
+            const compressedBuffer = await sharp(file.buffer)
+              .resize({ width: 1200 }) // Optional: adjust width as needed
+              .jpeg({ quality: 75 })
+              .toBuffer();
+            processedFiles.push({ ...file, buffer: compressedBuffer });
+          } catch (err) {
+            console.error('Image compression failed, using original buffer:', err);
+            processedFiles.push(file);
+          }
+        } else {
+          processedFiles.push(file);
+        }
+      }
+      imageUrls = await uploadImagesToLocal(processedFiles);
       visual_content = imageUrls;
     } else if (req.file) {
-      console.log('Processing single file:', req.file.originalname, req.file.size);
-      imageUrls = await uploadImagesToLocal([req.file]);
+      let processedFile = req.file;
+      if (req.file.mimetype.startsWith('image/') && req.file.size > sizeThreshold) {
+        try {
+          const compressedBuffer = await sharp(req.file.buffer)
+            .resize({ width: 1200 })
+            .jpeg({ quality: 75 })
+            .toBuffer();
+          processedFile = { ...req.file, buffer: compressedBuffer };
+        } catch (err) {
+          console.error('Image compression failed, using original buffer:', err);
+        }
+      }
+      imageUrls = await uploadImagesToLocal([processedFile]);
       visual_content = imageUrls;
     }
 
@@ -433,8 +464,6 @@ const update = async (
     }
 
     // Merge: keep images from frontend + add new uploads
-    // The frontend should send the images it wants to keep in visual_content
-    // So, the final visual_content = [...newVisualContent, ...uploadedImageUrls]
     const finalVisualContent: string[] = [...newVisualContent, ...uploadedImageUrls];
 
     // Find images to delete: those in oldVisualContent but not in finalVisualContent
@@ -488,6 +517,33 @@ const update = async (
       imageBuffers.push(req.file.buffer);
     }
 
+    // Prepare image buffers for Twitter: include both new and existing images
+    const twitterImageBuffers: Buffer[] = [];
+    // Add existing images (from finalVisualContent) that are URLs and exist on disk
+    for (const imgUrl of finalVisualContent) {
+      // Only add if it's a local file (not a remote URL)
+      if (typeof imgUrl === 'string' && imgUrl.includes('/uploads/news-images/')) {
+        try {
+          const filename = imgUrl.split('/').pop();
+          const filePath = path.join(process.cwd(), 'backend', 'uploads', 'news-images', filename!);
+          if (fs.existsSync(filePath)) {
+            const buffer = fs.readFileSync(filePath);
+            twitterImageBuffers.push(buffer);
+          }
+        } catch (err) {
+          console.error('Failed to read existing image for Twitter:', imgUrl, err);
+        }
+      }
+    }
+    // Add new uploaded files
+    if (req.files && Array.isArray(req.files)) {
+      for (const file of req.files) {
+        twitterImageBuffers.push(file.buffer);
+      }
+    } else if (req.file) {
+      twitterImageBuffers.push(req.file.buffer);
+    }
+
     // Edit LinkedIn post only if it was originally created by website
     if (oldNews[0]?.source === 'Website' && oldNews[0]?.linkedin_message_id) {
       await editLinkedInPost(oldNews[0].linkedin_message_id as string, updated, imageBuffers);
@@ -495,7 +551,7 @@ const update = async (
 
     // Edit Twitter post only if it was originally created by website
     if (oldNews[0]?.source === 'Website' && oldNews[0]?.twitter_message_id) {
-      await editTwitterPost(oldNews[0].twitter_message_id as string, updated, imageBuffers);
+      await editTwitterPost(oldNews[0].twitter_message_id as string, updated, twitterImageBuffers);
     }
 
     await logAudit({

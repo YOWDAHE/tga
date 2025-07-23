@@ -108,6 +108,7 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.0",
     "sequelize": "^6.37.7",
+    "sharp": "^0.34.3",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
@@ -169,5 +170,8 @@
     "typescript-eslint": "^8.33.0"
   },
   "language": "TypeScript",
-  "testing": "Jest"
+  "testing": "Jest",
+  "optionalDependencies": {
+    "@img/sharp-win32-x64": "^0.34.3"
+  }
 }

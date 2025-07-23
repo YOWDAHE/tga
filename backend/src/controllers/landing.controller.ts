@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db';
-import { landing, stats, partners, practices, contactUsInfo, news_links, pageViews } from '../db/schema';
+import { landing, stats, partners, practices, contactUsInfo, news_links } from '../db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { logAudit } from './audit.controller';
 import { v2 as cloudinary } from 'cloudinary';
@@ -39,18 +39,6 @@ const get = async (
       await db.update(landing)
         .set({ view_count: sql`${landing.view_count} + 1` })
         .where(eq(landing.id, landingData[0].id));
-    }
-
-
-    // Log the page view if landing data exists
-    if (landingData && landingData.length > 0) {
-      await db.insert(pageViews).values({
-        page_type: 'landing',
-        page_id: landingData[0].id,
-        user_id: req.user?.id,
-        ip_address: req.ip,
-        user_agent: req.headers['user-agent'] as string,
-      });
     }
 
     res.status(200).json({
