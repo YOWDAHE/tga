@@ -796,14 +796,45 @@ function markdownToHtml(text: string): string {
 
 // Helper to split text into chunks of maxLength
 function splitText(text: string, maxLength: number): string[] {
-  const result = [];
-  let i = 0;
-  while (i < text.length) {
-    result.push(text.slice(i, i + maxLength));
-    i += maxLength;
+  const result: string[] = [];
+
+  let start = 0;
+  const len = text.length;
+
+  while (start < len) {
+    if (len - start <= maxLength) {
+      // Remaining text fits
+      result.push(text.slice(start));
+      break;
+    }
+
+    // Take a chunk candidate of maxLength
+    let chunk = text.slice(start, start + maxLength);
+
+    // 1. Try to cut at the last newline within chunk
+    const lastNewline = chunk.lastIndexOf('\n');
+    if (lastNewline !== -1) {
+      result.push(chunk.slice(0, lastNewline + 1)); // keep newline in chunk
+      start += lastNewline + 1;
+      continue;
+    }
+
+    // 2. If no newline, try to cut at last space within chunk
+    const lastSpace = chunk.lastIndexOf(' ');
+    if (lastSpace !== -1) {
+      result.push(chunk.slice(0, lastSpace));
+      start += lastSpace + 1; // skip the space
+      continue;
+    }
+
+    // 3. If no newline or space, cut at maxLength (force split)
+    result.push(chunk);
+    start += maxLength;
   }
+
   return result;
 }
+
 
 async function sendNewsToTelegram(newsData: any): Promise<number[]> {
   try {
@@ -831,6 +862,15 @@ async function sendNewsToTelegram(newsData: any): Promise<number[]> {
           parse_mode: 'HTML'
         });
         telegramMessageIds = [result.message_id];
+
+        // If there is more text after the caption, send as additional messages
+        if (rest.length > 0) {
+          const chunks = splitText(rest, MAX_MESSAGE);
+          for (const chunk of chunks) {
+            const msg = await bot.sendMessage(channelId, chunk, { parse_mode: 'HTML' });
+            telegramMessageIds.push(msg.message_id);
+          }
+        }
       } else {
         // Send multiple photos as media group
         const media = newsData.visual_content.map((imageData: any, index: number) => ({
@@ -841,6 +881,15 @@ async function sendNewsToTelegram(newsData: any): Promise<number[]> {
         }));
         const result = await bot.sendMediaGroup(channelId, media);
         telegramMessageIds = result.map((msg: any) => msg.message_id);
+
+        // If there is more text after the caption, send as additional messages
+        if (rest.length > 0) {
+          const chunks = splitText(rest, MAX_MESSAGE);
+          for (const chunk of chunks) {
+            const msg = await bot.sendMessage(channelId, chunk, { parse_mode: 'HTML' });
+            telegramMessageIds.push(msg.message_id);
+          }
+        }
       }
     } else {
       // Send text only (no image)
@@ -848,14 +897,6 @@ async function sendNewsToTelegram(newsData: any): Promise<number[]> {
       for (const chunk of chunks) {
         const result = await bot.sendMessage(channelId, chunk, { parse_mode: 'HTML' });
         telegramMessageIds.push(result.message_id);
-      }
-    }
-
-    // Send the rest of the text (if any) as additional messages
-    if (rest.length > 0) {
-      const chunks = splitText(rest, MAX_MESSAGE);
-      for (const chunk of chunks) {
-        await bot.sendMessage(channelId, chunk, { parse_mode: 'HTML' });
       }
     }
 
