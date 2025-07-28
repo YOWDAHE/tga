@@ -4,7 +4,10 @@ import multer from 'multer';
 import { authenticateJWT, authorizePermissions } from '../middlewares/jwtAuth';
 
 const newsRouter: Router = Router();
-const upload = multer();
+
+// im memory storage for multer before processing with sharp
+const upload = multer({storage: multer.memoryStorage()});
+
 
 newsRouter.get('/public', newsController.publicNews);
 newsRouter.get('/public/:id', newsController.publicGetById);
