@@ -4,14 +4,15 @@ import { getTokenCookie } from "@/app/utils/server/token";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tableName: string } }
+  { params }: { params: Promise<{ tableName: string }> }
 ) {
   try {
+    const { tableName } = await params;
     const tokens = request.cookies ? await getTokenCookie(request) : null;
     const { searchParams } = new URL(request.url);
     const queryString = searchParams.toString();
     
-    const url = `/audit-logs/table/${params.tableName}${queryString ? `?${queryString}` : ''}`;
+    const url = `/audit-logs/table/${tableName}${queryString ? `?${queryString}` : ''}`;
     const res = await get(url, {
       headers: {
         Authorization: `Bearer ${tokens?.accessToken}`,

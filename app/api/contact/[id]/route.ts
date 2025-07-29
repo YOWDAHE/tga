@@ -6,11 +6,12 @@ const BACKEND_URL = process.env.BACKEND_API_URL;
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const tokens = req.cookies ? await getTokenCookie(req) : null;
-        const res = await axios.get(`${BACKEND_URL}/contact/${params.id}`, {
+        const res = await axios.get(`${BACKEND_URL}/contact/${id}`, {
             headers: {
                 Authorization: `Bearer ${tokens?.accessToken}`,
             },
@@ -26,12 +27,13 @@ export async function GET(
 
 export async function PUT(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const tokens = req.cookies ? await getTokenCookie(req) : null;
         const body = await req.json();
-        const res = await axios.put(`${BACKEND_URL}/contact/${params.id}`, body, {
+        const res = await axios.put(`${BACKEND_URL}/contact/${id}`, body, {
             headers: {
                 Authorization: `Bearer ${tokens?.accessToken}`,
             },
@@ -47,11 +49,12 @@ export async function PUT(
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const {id} = await params;
         const tokens = req.cookies ? await getTokenCookie(req) : null;
-        const res = await axios.delete(`${BACKEND_URL}/contact/${params.id}`, {
+        const res = await axios.delete(`${BACKEND_URL}/contact/${id}`, {
             headers: {
                 Authorization: `Bearer ${tokens?.accessToken}`,
             },

@@ -6,11 +6,12 @@ const BACKEND_URL = process.env.BACKEND_API_URL;
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const tokens = req.cookies ? await getTokenCookie(req) : null;
-        const res = await axios.get(`${BACKEND_URL}/remark/${params.id}`, {
+        const res = await axios.get(`${BACKEND_URL}/remark/${id}`, {
             headers: {
                 Authorization: `Bearer ${tokens?.accessToken}`,
             },

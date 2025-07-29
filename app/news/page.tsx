@@ -8,19 +8,20 @@ import Link from "next/link";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 
 interface NewsPageProps {
-  searchParams: {
-    page?: string;
-    search?: string;
-    sortBy?: string;
-    order?: string;
-  };
+	searchParams: Promise<{
+		page?: string;
+		search?: string;
+		sortBy?: string;
+		order?: string;
+	}>;
 }
 
 export default async function NewsPage({ searchParams }: NewsPageProps) {
-  const page = searchParams.page ? parseInt(searchParams.page) : 1;
-  const search = searchParams.search || "";
-  const sortBy = searchParams.sortBy || "createdAt";
-  const order = searchParams.order || "desc";
+  const searchParamsResolved = await searchParams;
+  const page = searchParamsResolved.page ? parseInt(searchParamsResolved.page) : 1;
+  const search = searchParamsResolved.search || "";
+  const sortBy = searchParamsResolved.sortBy || "createdAt";
+  const order = searchParamsResolved.order || "desc";
 
   try {
     const newsRes = await fetchNews({

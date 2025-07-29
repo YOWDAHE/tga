@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { path: string[] } }
+    { params }: { params: Promise<{ path: string[] }> }
 ) {
     try {
-        const pathSegments = params.path;
+        const pathSegments = (await params).path;
         console.log('Uploads API route - pathSegments:', pathSegments);
         
         if (pathSegments.length < 2) {

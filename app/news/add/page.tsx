@@ -6,13 +6,13 @@ import { notFound } from "next/navigation";
 import NewsForm from "@/components/NewsForm";
 
 interface NewsAddPageProps {
-  searchParams: {
-    edit?: string;
-  };
+	searchParams: Promise<{
+		edit?: string;
+	}>;
 }
 
 export default async function NewsAddPage({ searchParams }: NewsAddPageProps) {
-  const editId = searchParams.edit;
+  const editId = (await searchParams).edit;
   let newsToEdit = null;
   let categories = [];
 

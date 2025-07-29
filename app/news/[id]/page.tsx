@@ -5,14 +5,14 @@ import { fetchNewsById } from "@/app/actionsServers/news.server.actions";
 import { notFound } from "next/navigation";
 
 interface NewsPageProps {
-	params: {
+	params: Promise<{
 		id: string;
-	};
+	}>;
 }
 
 export default async function NewsPage({ params }: NewsPageProps) {
 	try {
-		const newsRes = await fetchNewsById(params.id);
+		const newsRes = await fetchNewsById((await params).id);
 
 		if (!newsRes.success) {
 			notFound();

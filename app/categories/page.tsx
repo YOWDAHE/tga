@@ -3,17 +3,18 @@ import CategoriesManagement from "@/components/CategoriesManagement";
 import { fetchCategories } from "@/app/actionsServers/category.server.actions";
 
 interface CategoriesPageProps {
-    searchParams: {
+    searchParams: Promise<{
         page?: string;
         limit?: string;
         search?: string;
-    };
+    }>;
 }
 
 export default async function CategoriesPage({ searchParams }: CategoriesPageProps) {
-    const page = searchParams.page ? parseInt(searchParams.page) : 1;
-    const limit = searchParams.limit ? parseInt(searchParams.limit) : 10;
-    const search = searchParams.search || "";
+    const searchParamsResolved = await searchParams;
+    const page = searchParamsResolved.page ? parseInt(searchParamsResolved.page) : 1;
+    const limit = searchParamsResolved.limit ? parseInt(searchParamsResolved.limit) : 10;
+    const search = searchParamsResolved.search || "";
 
     let categories = [];
     let pagination = null;

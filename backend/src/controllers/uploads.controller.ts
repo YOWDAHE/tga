@@ -11,7 +11,6 @@ import { logAudit } from './audit.controller';
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { recordPageView } from '../services/statistics.service';
 
 declare global {
   namespace Express {
@@ -574,14 +573,6 @@ const incrementViewCount = async (
       })
       .where(eq(documents.id, id))
       .returning();
-    
-    recordPageView({
-      page_type: 'document',
-      page_id: id,
-      user_id: req.user?.id,
-      ip_address: req.ip,
-      user_agent: req.headers['user-agent'] as string,
-    });
 
     res.status(200).json({
       message: 'View count incremented successfully',

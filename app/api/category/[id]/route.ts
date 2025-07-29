@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import { getTokenCookie } from "@/app/utils/server/token";
-import { categorySchema } from "../route";
+import { categorySchema } from "@/app/types/category.type";
+// import { categorySchema } from "../route";
 
 
 const BACKEND_URL = process.env.BACKEND_API_URL;
@@ -40,10 +41,10 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
         if (!id) {
             return NextResponse.json({
                 success: false,

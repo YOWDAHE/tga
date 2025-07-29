@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { fetchDocuments, getCategories } from "@/app/actionsServers/archive.server.actions";
 import { Button, Skeleton } from "@mantine/core";
-import ArchivesManagement from "@/components/ArchivesManagement";
 import DocumentsManagement from "@/components/DocumentsManagement";
 import EmptyState from "@/components/EmptyState";
 import { FileIcon, FileX2Icon } from "lucide-react";
@@ -9,23 +8,25 @@ import Link from "next/link";
 import { IconPlus } from "@tabler/icons-react";
 
 interface ArchivesPageProps {
-	searchParams: {
+	searchParams: Promise<{
 		page?: string;
 		search?: string;
 		category?: string;
 		sortBy?: string;
 		order?: string;
-	};
+	}>;
 }
 
 export default async function ArchivesPage({
 	searchParams,
 }: ArchivesPageProps) {
-	const page = searchParams.page ? parseInt(searchParams.page) : 1;
-	const search = searchParams.search || "";
-	const category = searchParams.category || "";
-	const sortBy = searchParams.sortBy || "createdAt";
-	const order = searchParams.order || "desc";
+	const searchParamsResolved = await searchParams;
+	const page =
+		searchParamsResolved.page ? parseInt(searchParamsResolved.page) : 1;
+	const search = searchParamsResolved.search || "";
+	const category = searchParamsResolved.category || "";
+	const sortBy = searchParamsResolved.sortBy || "createdAt";
+	const order = searchParamsResolved.order || "desc";
 
 	try {
 		const documentsRes = await fetchDocuments({

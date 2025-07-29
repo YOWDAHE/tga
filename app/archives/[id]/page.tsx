@@ -6,14 +6,14 @@ import { getCategories } from "@/app/actionsServers/archive.server.actions";
 import { notFound } from "next/navigation";
 
 interface DocumentPageProps {
-	params: {
+	params: Promise<{
 		id: string;
-	};
+	}>;
 }
 
 export default async function DocumentPage({ params }: DocumentPageProps) {
 	try {
-		const documentRes = await fetchDocument(params.id);
+		const documentRes = await fetchDocument((await params).id);
 		const categoriesRes = await getCategories();
 
 		if (!documentRes.success) {

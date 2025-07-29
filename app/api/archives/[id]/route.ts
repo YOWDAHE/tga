@@ -6,10 +6,10 @@ const BACKEND_URL = process.env.BACKEND_API_URL;
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
         
         if (!id) {
             return NextResponse.json({
@@ -41,13 +41,14 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const body = await request.json();
         const tokens = request.cookies ? await getTokenCookie(request) : null;
+        const { id } = await params;
         
-        const res = await axios.put(`${BACKEND_URL}/uploads/${params.id}`, body, {
+        const res = await axios.put(`${BACKEND_URL}/uploads/${id}`, body, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${tokens?.accessToken}`,
@@ -65,13 +66,14 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        console.log("Deleting document:", params.id);
+        const {id} = await params;
+        console.log("Deleting document:", id);
         const tokens = request.cookies ? await getTokenCookie(request) : null;
         
-        const res = await axios.delete(`${BACKEND_URL}/uploads/${params.id}`, {
+        const res = await axios.delete(`${BACKEND_URL}/uploads/${id}`, {
             headers: {
                 Authorization: `Bearer ${tokens?.accessToken}`,
             },

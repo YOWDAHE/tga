@@ -6,7 +6,7 @@ import { setRequestCookies } from "@/lib/axiosContext";
 import { cookies } from "next/headers";
 import { getTokenCookie } from "@/app/utils/server/token";
 
-export const categorySchema = z.object({
+const categorySchema = z.object({
   id: z.number().optional(),
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),

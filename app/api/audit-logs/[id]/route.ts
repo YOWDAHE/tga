@@ -4,11 +4,12 @@ import { getTokenCookie } from "@/app/utils/server/token";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const tokens = request.cookies ? await getTokenCookie(request) : null;
-        const res = await get(`/audit-logs/${params.id}`, {
+        const res = await get(`/audit-logs/${id}`, {
             headers: {
                 Authorization: `Bearer ${tokens?.accessToken}`,
             }

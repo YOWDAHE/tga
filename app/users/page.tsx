@@ -4,15 +4,15 @@ import { fetchUsers } from "@/app/actionsServers/user.server.action";
 import { fetchAuditLogs } from "@/app/actionsServers/audit.server.actions";
 
 interface PageProps {
-  searchParams: {
-    page?: string;
-    usersPage?: string;
-    auditPage?: string;
-    search?: string;
-    auditUser?: string;
-    auditStartDate?: string;
-    auditEndDate?: string;
-  };
+	searchParams: Promise<{
+		page?: string;
+		usersPage?: string;
+		auditPage?: string;
+		search?: string;
+		auditUser?: string;
+		auditStartDate?: string;
+		auditEndDate?: string;
+	}>;
 }
 
 export default async function UsersPage({ searchParams }: PageProps) {
@@ -22,11 +22,12 @@ export default async function UsersPage({ searchParams }: PageProps) {
   let auditTotalPages = 1;
   let currentUsersPage = 1;
   let currentAuditPage = 1;
+  const searchParamsResolved = await searchParams;
 
   try {
     // Get current pages from URL params
-    currentUsersPage = searchParams.usersPage ? parseInt(searchParams.usersPage) : 1;
-    currentAuditPage = searchParams.auditPage ? parseInt(searchParams.auditPage) : 1;
+    currentUsersPage = searchParamsResolved.usersPage ? parseInt(searchParamsResolved.usersPage) : 1;
+    currentAuditPage = searchParamsResolved.auditPage ? parseInt(searchParamsResolved.auditPage) : 1;
     if (currentUsersPage < 1) currentUsersPage = 1;
     if (currentAuditPage < 1) currentAuditPage = 1;
 
@@ -34,7 +35,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
     const usersResult = await fetchUsers({
       limit: 6,
       page: currentUsersPage,
-      search: searchParams.search
+      search: searchParamsResolved.search
     });
     if (usersResult.success) {
       users = usersResult.data?.users || [];
@@ -47,9 +48,9 @@ export default async function UsersPage({ searchParams }: PageProps) {
     const auditResult = await fetchAuditLogs({
       limit: 6,
       page: currentAuditPage,
-      changedBy: searchParams.auditUser,
-      startDate: searchParams.auditStartDate,
-      endDate: searchParams.auditEndDate
+      changedBy: searchParamsResolved.auditUser,
+      startDate: searchParamsResolved.auditStartDate,
+      endDate: searchParamsResolved.auditEndDate
     });
     if (auditResult.success) {
       auditLogs = auditResult.data?.logs || [];
@@ -69,10 +70,10 @@ export default async function UsersPage({ searchParams }: PageProps) {
       currentAuditPage={currentAuditPage}
       usersTotalPages={usersTotalPages}
       auditTotalPages={auditTotalPages}
-      searchQuery={searchParams.search || ''}
-      auditUserFilter={searchParams.auditUser || ''}
-      auditStartDate={searchParams.auditStartDate || ''}
-      auditEndDate={searchParams.auditEndDate || ''}
+      searchQuery={searchParamsResolved.search || ''}
+      auditUserFilter={searchParamsResolved.auditUser || ''}
+      auditStartDate={searchParamsResolved.auditStartDate || ''}
+      auditEndDate={searchParamsResolved.auditEndDate || ''}
     />
   );
 }
