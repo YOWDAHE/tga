@@ -10,7 +10,7 @@
     "drizzle:generate": "npx drizzle-kit generate",
     "drizzle:migrate": "npx drizzle-kit migrate",
     "build": "next build",
-    "start": "concurrently \"next start\" \"npm run start:backend\"",
+    "start": "next start -p 3002",
     "start:backend": "node backend/dist/server.js",
     "lint": "next lint"
   },
