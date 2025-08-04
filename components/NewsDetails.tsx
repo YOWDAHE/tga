@@ -429,7 +429,7 @@ export default function NewsDetails({ news }: NewsDetailsProps) {
 															width="100%"
 															height="100%"
 															fit="cover"
-															fallbackSrc="/placeholder.svg?height=150&width=200"
+															fallbackSrc="/placeholder.jpg?height=150&width=200"
 															onLoad={() =>
 																setLoadedImages((prev) => ({ ...prev, [index]: true }))
 															}

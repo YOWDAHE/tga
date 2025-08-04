@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function convertToApiUrl(url: string): string {
-  if (!url) return '/placeholder.svg';
+  if (!url) return '/placeholder.jpg';
 
   // If it's already a relative URL, return as is
   if (url.startsWith('/')) return url;
