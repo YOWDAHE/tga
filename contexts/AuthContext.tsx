@@ -64,19 +64,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	useEffect(() => {
 		async function fetchSession() {
 			try {
-				const res = await fetch("/api/auth/session", {
-					credentials: "include",
-					method: "GET",
+				const axios = (await import("axios")).default;
+				const res = await axios.get("/api/auth/session", {
+					withCredentials: true,
 				});
-				if (res.ok) {
-					const data = await res.json();
-					if (data.authenticated) {
-						setUser(data.user);
-						setIsAuthenticated(true);
-					} else {
-						setUser(null);
-						setIsAuthenticated(false);
-					}
+				const data = res.data;
+				if (data.authenticated) {
+					setUser(data.user);
+					setIsAuthenticated(true);
 				} else {
 					setUser(null);
 					setIsAuthenticated(false);
