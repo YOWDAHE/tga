@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		async function fetchSession() {
 			try {
 				const axios = (await import("axios")).default;
-				const res = await axios.get("/api/auth/session", {
+				const res = await axios.get("/office/api/auth/session", {
 					withCredentials: true,
 				});
 				const data = res.data;

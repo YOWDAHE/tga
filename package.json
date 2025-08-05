@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "next dev --turbopack",
+    "dev:frontend": "next dev --turbopack -H 0.0.0.0",
     "dev:backend": "nodemon --watch backend --ext ts,tsx,json --exec \"tsx backend/src/server.ts\"",
     "drizzle:push": "npx drizzle-kit push",
     "drizzle:generate": "npx drizzle-kit generate",
