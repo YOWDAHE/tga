@@ -141,13 +141,13 @@ const mockPartners: Partner[] = [
 	{
 		id: 1,
 		name: "Partner 1",
-		logo_url: "/placeholder.jpg?height=100&width=200",
+		logo_url: "/office/placeholder.jpg?height=100&width=200",
 		description: "Strategic partner",
 	},
 	{
 		id: 2,
 		name: "Partner 2",
-		logo_url: "/placeholder.jpg?height=100&width=200",
+		logo_url: "/office/placeholder.jpg?height=100&width=200",
 		description: "Technology partner",
 	},
 ];
@@ -831,7 +831,7 @@ export default function HomepageManagement({
 
 	// Helper function to get full image URL
 	const getImageUrl = (imagePath: string) => {
-		if (!imagePath) return "/placeholder.jpg";
+		if (!imagePath) return "/office/placeholder.jpg";
 
 		// If it's already a full URL (starts with http), return as is
 		if (imagePath.startsWith("http")) {

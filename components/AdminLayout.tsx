@@ -3,6 +3,7 @@
 import type React from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import Logo from "@/public/Logo/logo.svg";
 
 import Image from "next/image";
 import {
@@ -77,12 +78,6 @@ const navigationItems: NavigationItem[] = [
 		permission: "HOMEPAGE_CRUD",
 	},
 	{
-		label: "Reports",
-		icon: IconFlag,
-		href: "/reports",
-		permission: "NEWS_CRUD",
-	},
-	{
 		label: "Remarks",
 		icon: IconMessage,
 		href: "/remarks",
@@ -139,7 +134,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 				<Group h="100%" px="xl" justify="space-between">
 					<Group>
 						<Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-						<Image src="/Logo/logo.png" alt="TGA Logo" width={100} height={70} style={{objectFit: "contain"}}/>
+						<img
+							src="/office/logo/logo.svg"
+							alt="TGA Logo"
+							width={100}
+							height={70}
+							style={{ objectFit: "contain" }}
+						/>
+						{/* <div style={{ width: 100, height: 70 }}>
+							<Logo alt="TGA Logo" width="100%" height="auto" />
+						</div> */}
 						<div>
 							<Title order={2} size="h3" fw={700} c="primary.7">
 								TGA

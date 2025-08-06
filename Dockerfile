@@ -14,6 +14,8 @@ WORKDIR /app
 COPY --from=builder /app .
 
 ENV NEXT_PUBLIC_API_URL=http://frontend:3001
+ENV BACKEND_URL=http://backend:3000
+ENV BACKEND_API_URL=http://backend:3000/api
 EXPOSE 3001
 
 CMD ["npm", "run", "start"]

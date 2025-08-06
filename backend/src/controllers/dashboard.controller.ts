@@ -173,7 +173,7 @@ const get = async (
         description: activity.description,
         time: getTimeAgo(activity.changeTimestamp),
         user: activity.changedBy || 'System',
-        avatar: "/placeholder.jpg?height=32&width=32",
+        avatar: "/office/placeholder.jpg?height=32&width=32",
       })),
     };
 
