@@ -4,7 +4,8 @@ import { getRequestCookies } from "./axiosContext";
 
 const api: AxiosInstance = axios.create({
   // baseURL: process.env.BACKEND_API_URL,
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  // baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: 'http://localhost/office/api',
   withCredentials: true,
 });
 
@@ -34,7 +35,7 @@ api.interceptors.response.use(
 
       try {
         console.log("Refreshing token");
-        const refreshResponse = await api.post("/api/auth/refresh-token");
+        const refreshResponse = await api.post("/office/api/auth/refresh-token");
         
         const newAccessToken = refreshResponse.data.accessToken;
         

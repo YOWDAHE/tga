@@ -997,12 +997,11 @@ export default function HomepageManagement({
 									<Paper key={partner.id} withBorder p="md">
 										<Group justify="space-between" mb="xs">
 											<Group>
-												<Image
+												<img
 													src={partner.logo_url}
 													alt={partner.name}
 													height={80}
 													width={80}
-													objectFit="contain"
 													style={{
 														objectFit: "contain",
 														objectPosition: "center",

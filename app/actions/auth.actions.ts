@@ -20,28 +20,15 @@ export async function loginAction(username: string, password: string) {
   }
 
   try {
-    const res = await fetch("/api/auth/signin", {
-      method: "POST",
+    const axios = (await import("axios")).default;
+    const res = await axios.post("/office/api/auth/signin", parsed.data, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(parsed.data),
+      withCredentials: true,
     });
 
-    
-    if (!res.ok) {
-      // console.log("Problem: ", res)
-      return {
-        success: false,
-        error: "Invalid response from server",
-      };
-    }
-    const data = await res.json();
-    
-    // const parsedResponse = userSignInResponseSchema.safeParse(data);
-    // if (!parsedResponse.success) {
-    //   return { success: false, error: "Invalid response from server" };
-    // }
+    const data = res.data;
 
     return {
       success: true,
@@ -52,7 +39,7 @@ export async function loginAction(username: string, password: string) {
   } catch (error: any) {
     return {
       success: false,
-      error: error?.message || "Network or server error",
+      error: error?.response?.data?.error || error?.message || "Network or server error",
     };
   }
 }

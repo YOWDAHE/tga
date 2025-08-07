@@ -7,7 +7,9 @@ import React from "react";
 function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<AuthProvider>
-			<AuthGuard>{children}</AuthGuard>
+			<AuthGuard>
+				<AdminLayout>{children}</AdminLayout>
+			</AuthGuard>
 		</AuthProvider>
 	);
 }

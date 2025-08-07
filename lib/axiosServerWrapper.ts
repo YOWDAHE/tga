@@ -1,10 +1,14 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { getRequestCookies } from "./axiosContext";
 import { cookies } from "next/headers";
+import dotenv from "dotenv";
+dotenv.config();
 
+console.log("Backend API URL:", process.env.BACKEND_API_URL || "NOT FOUND");
 
 const api: AxiosInstance = axios.create({
-  baseURL: process.env.BACKEND_API_URL,
+  // baseURL: process.env.BACKEND_API_URL,
+  baseURL: "http://backend:3000/api",
   withCredentials: true,
 });
 

@@ -16,7 +16,7 @@ export async function uploadHomepageImage(file: File, imageType: 'hero_image' | 
         formData.append('file', file);
         formData.append('imageType', imageType);
 
-        const res = await fetch('/api/landing/upload', {
+        const res = await fetch('/office/api/landing/upload', {
             method: 'POST',
             body: formData,
         });

@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { patch, del } from './axiosWrapper';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/office/api';
 
 export interface Comment {
     id: number;

@@ -29,7 +29,7 @@ export default function AuthGuard({
 
 	useEffect(() => {
 		if (!isLoading && !isAuthenticated && !isLoginPage) {
-			router.push("/test");
+			router.push("/login");
 		}
 	}, [isAuthenticated, isLoading, router, isLoginPage]);
 

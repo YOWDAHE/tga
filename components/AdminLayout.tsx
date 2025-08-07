@@ -145,8 +145,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 							<Logo alt="TGA Logo" width="100%" height="auto" />
 						</div> */}
 						<div>
-							<Title order={2} size="h3" fw={700} c="primary.7">
-								TGA
+							<Title order={2} size="h3" fw={600} c="primary.7">
+								TGA Global Law Group
 							</Title>
 							<Text size="sm" c="gray.6">
 								{user?.email || "Admin Portal"}
