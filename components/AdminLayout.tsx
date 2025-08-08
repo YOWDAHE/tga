@@ -135,7 +135,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 					<Group>
 						<Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
 						<img
-							src="/office/logo/logo.svg"
+							src="/office/logo.svg"
 							alt="TGA Logo"
 							width={100}
 							height={70}
