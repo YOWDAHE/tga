@@ -5,7 +5,7 @@ import { getRequestCookies } from "./axiosContext";
 const api: AxiosInstance = axios.create({
   // baseURL: process.env.BACKEND_API_URL,
   // baseURL: process.env.NEXT_PUBLIC_API_URL,
-  baseURL: 'http://frontend:3001/office/api',
+  baseURL: 'http://72.60.25.92/office/api',
   withCredentials: true,
 });
 
