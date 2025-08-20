@@ -3,7 +3,7 @@ import { patch, del } from './axiosWrapper';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/office/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://frontend:3001/office/api';
 
 export interface Comment {
     id: number;
