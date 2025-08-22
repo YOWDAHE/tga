@@ -3,7 +3,7 @@ import { patch, del } from './axiosWrapper';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://72.60.25.92/office/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tgalawgroup.com/office/api';
 
 export interface Comment {
     id: number;
