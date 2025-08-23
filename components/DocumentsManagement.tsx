@@ -522,7 +522,7 @@ function DocumentsManagement({
 													variant="light"
 													color="green"
 													component="a"
-													href={`/archives/${item.id}`}
+													href={`/office/archives/${item.id}`}
 													disabled={loading}
 													title="View Details"
 												>
