@@ -224,7 +224,6 @@ const UploadForm = ({ categories }: { categories: any[] }) => {
                                 onReject={handleFileReject}
 								accept={PDF_MIME_TYPE}
 								maxFiles={1}
-								maxSize={10 * 1024 * 1024}
 							>
 								<Group
 									justify="center"
@@ -251,7 +250,7 @@ const UploadForm = ({ categories }: { categories: any[] }) => {
 											Drag PDF file here or click to select
 										</Text>
 										<Text size="sm" c="dimmed" inline mt={7}>
-											Only PDF files up to 10MB are accepted
+											Only PDF files are accepted
 										</Text>
 									</div>
 								</Group>
@@ -320,8 +319,6 @@ const UploadForm = ({ categories }: { categories: any[] }) => {
 					>
 						<Text size="sm">
 							• Only PDF files are accepted
-							<br />
-							• Maximum file size: 10MB
 							<br />
 							• Document title and category are required
 							<br />• Author and description are optional
