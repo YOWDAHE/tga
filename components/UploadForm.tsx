@@ -36,6 +36,7 @@ interface UploadFormData {
 	category_id: string;
 	author: string;
 	description: string;
+	seo_keywords: string;
 }
 
 const UploadForm = ({ categories }: { categories: any[] }) => {
@@ -53,6 +54,7 @@ const UploadForm = ({ categories }: { categories: any[] }) => {
 			category_id: "",
 			author: "",
 			description: "",
+			seo_keywords: "",
 		},
 		validate: {
 			title: (value) => (!value ? "Title is required" : null),
@@ -120,6 +122,7 @@ const UploadForm = ({ categories }: { categories: any[] }) => {
 			formData.append("category_id", values.category_id);
 			formData.append("author", values.author);
 			formData.append("description", values.description);
+			formData.append("seo_keywords", values.seo_keywords);
 
 			const result = await uploadDocument(formData);
 
@@ -287,6 +290,12 @@ const UploadForm = ({ categories }: { categories: any[] }) => {
 								placeholder="Brief description of the document (optional)"
 								rows={3}
 								{...form.getInputProps("description")}
+							/>
+
+							<TextInput
+								label="SEO Keywords"
+								placeholder="Enter SEO keywords, separated by commas (e.g. legal document,ethiopia law,contract template) - These won't be displayed on the frontend but used for search engine optimization"
+								{...form.getInputProps("seo_keywords")}
 							/>
 
 							{/* Submit Button */}

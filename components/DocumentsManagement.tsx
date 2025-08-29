@@ -266,6 +266,7 @@ function DocumentsManagement({
 			category_id: "",
 			author: "",
 			description: "",
+			seo_keywords: "",
 		},
 	});
 
@@ -289,6 +290,7 @@ function DocumentsManagement({
 					category_id: Number.parseInt(values.category_id),
 					author: values.author,
 					description: values.description,
+					seo_keywords: values.seo_keywords,
 				});
 
 				if (result.success) {
@@ -334,6 +336,7 @@ function DocumentsManagement({
 			category_id: document.category_id.toString(),
 			author: document.author || "",
 			description: document.description || "",
+			seo_keywords: document.seo_keywords || "",
 		});
 		openModal();
 	};
@@ -715,6 +718,12 @@ function DocumentsManagement({
 							placeholder="Brief description of the document"
 							rows={3}
 							{...form.getInputProps("description")}
+						/>
+
+						<TextInput
+							label="SEO Keywords"
+							placeholder="Enter SEO keywords, separated by commas (e.g. legal document,ethiopia law,contract template) - These won't be displayed on the frontend but used for search engine optimization"
+							{...form.getInputProps("seo_keywords")}
 						/>
 
 						<Group justify="flex-end">

@@ -70,6 +70,7 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 			published_date: new Date(),
 			visual_content: [] as File[],
 			hashtags: "",
+			seo_keywords: "",
 			featured: false,
 			read_minutes: 1,
 		},
@@ -88,6 +89,7 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 					:	new Date(),
 				visual_content: [],
 				hashtags: newsToEdit.hashtags || "",
+				seo_keywords: newsToEdit.seo_keywords || "",
 				featured: newsToEdit.featured || false,
 				read_minutes: newsToEdit.read_minutes || 1,
 			});
@@ -178,6 +180,7 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 				content,
 				category_id: values.category_id ? parseInt(values.category_id) : null,
 				hashtags: values.hashtags,
+				seo_keywords: values.seo_keywords,
 				featured: values.featured,
 				read_minutes: values.read_minutes,
 				source: "Website",
@@ -257,6 +260,11 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 							label="Hashtags"
 							placeholder="Enter hashtags, separated by commas (e.g. news,update,breaking)"
 							{...form.getInputProps("hashtags")}
+						/>
+						<TextInput
+							label="SEO Keywords"
+							placeholder="Enter SEO keywords, separated by commas (e.g. legal news,ethiopia law,corporate law) - These won't be displayed on the frontend but used for search engine optimization"
+							{...form.getInputProps("seo_keywords")}
 						/>
 						<Switch
 							label="Featured Article?"

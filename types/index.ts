@@ -14,6 +14,7 @@ export interface Document {
     author: string | null;
     description: string | null;
     content_text: string | null;
+    seo_keywords: string | null;
     file_size: number;
     file_url: string;
     public_id: string;
@@ -29,6 +30,7 @@ export interface News {
     visual_content: (string | { public_id: string; secure_url: string })[] | null;
     content: string;
     hashtags: string | null;
+    seo_keywords: string | null;
     category_id?: number | null;
     category?: Category | null;
     source: string | null;

@@ -22,6 +22,7 @@ export const documentUpdateSchema = z.object({
     category_id: z.number().min(1, "Category is required"),
     author: z.string().optional(),
     description: z.string().optional(),
+    seo_keywords: z.string().optional(),
 });
 
 export type DocumentInput = z.infer<typeof documentSchema>;
