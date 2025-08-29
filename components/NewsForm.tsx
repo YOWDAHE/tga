@@ -262,8 +262,8 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 							{...form.getInputProps("hashtags")}
 						/>
 						<TextInput
-							label="SEO Keywords"
-							placeholder="Enter SEO keywords, separated by commas (e.g. legal news,ethiopia law,corporate law) - These won't be displayed on the frontend but used for search engine optimization"
+							label="Search Keywords"
+							placeholder="Enter search keywords, separated by commas (e.g. legal news,ethiopia law,corporate law) - These won't be displayed on the frontend but used for search engine optimization"
 							{...form.getInputProps("seo_keywords")}
 						/>
 						<Switch

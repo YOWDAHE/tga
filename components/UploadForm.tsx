@@ -293,8 +293,8 @@ const UploadForm = ({ categories }: { categories: any[] }) => {
 							/>
 
 							<TextInput
-								label="SEO Keywords"
-								placeholder="Enter SEO keywords, separated by commas (e.g. legal document,ethiopia law,contract template) - These won't be displayed on the frontend but used for search engine optimization"
+								label="Search Keywords"
+								placeholder="Enter search keywords, separated by commas (e.g. legal document,ethiopia law,contract template) - These won't be displayed on the frontend but used for search engine optimization"
 								{...form.getInputProps("seo_keywords")}
 							/>
 
