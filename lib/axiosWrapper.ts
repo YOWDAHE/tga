@@ -5,8 +5,8 @@ import { getRequestCookies } from "./axiosContext";
 const api: AxiosInstance = axios.create({
   // baseURL: process.env.BACKEND_API_URL,
   // baseURL: process.env.NEXT_PUBLIC_API_URL,
-  baseURL: 'https://tgalawgroup.com/office/api',
   // baseURL: 'https://tgalawgroup.com/office/api',
+  baseURL: 'https://tgagloballawfirm.com/office/api',
   withCredentials: true,
 });
 
