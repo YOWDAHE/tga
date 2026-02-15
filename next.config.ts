@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   basePath: '/office',
-  trailingSlash: true,
+  trailingSlash: false,
   images: {
     remotePatterns: [
       {
