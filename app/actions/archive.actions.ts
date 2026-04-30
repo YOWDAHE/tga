@@ -90,14 +90,11 @@ export async function deleteDocument(id: number) {
 
 // Upload a document file
 export async function uploadDocument(formData: FormData) {
-    try {
-        const res = await post("/archives/add", formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        return { success: true, data: res.data.data };
-    } catch (error: any) {
-        return { success: false, error: error?.response?.data?.message || error?.message };
-    }
+	try {
+		// Let axios set multipart boundary (do not send Content-Type: multipart/form-data alone).
+		const res = await post("/archives/add", formData);
+		return { success: true, data: res.data.data };
+	} catch (error: any) {
+		return { success: false, error: error?.response?.data?.message || error?.message };
+	}
 } 

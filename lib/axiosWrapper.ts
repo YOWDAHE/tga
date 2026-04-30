@@ -6,7 +6,7 @@ const api: AxiosInstance = axios.create({
   // baseURL: process.env.BACKEND_API_URL,
   // baseURL: process.env.NEXT_PUBLIC_API_URL,
   // baseURL: 'https://tgalawgroup.com/office/api',
-  baseURL: 'https://tgagloballawfirm.com/api-backend',
+  // baseURL: 'https://tgagloballawfirm.com/api-backend',
   withCredentials: true,
 });
 
@@ -84,7 +84,13 @@ export async function post<T = any>(
       headers['Content-Type'] = 'application/json';
     }
     
-    return await api.post<T>(url, data, { ...config, headers });
+    return await api.post<T>(url, data, {
+      ...config,
+      headers,
+      ...(data instanceof FormData
+        ? { maxBodyLength: Infinity, maxContentLength: Infinity }
+        : {}),
+    });
   } catch (error: any) {
     throw formatAxiosError(error);
   }
@@ -119,7 +125,13 @@ export async function put<T = any>(
       headers['Content-Type'] = 'application/json';
     }
     
-    return await api.put<T>(url, data, { ...config, headers });
+    return await api.put<T>(url, data, {
+      ...config,
+      headers,
+      ...(data instanceof FormData
+        ? { maxBodyLength: Infinity, maxContentLength: Infinity }
+        : {}),
+    });
   } catch (error: any) {
     throw formatAxiosError(error);
   }
