@@ -55,7 +55,7 @@ export async function createDocument(input: DocumentInput) {
         return { success: false, error: parsed.error.errors.map(e => e.message).join(", ") };
     }
     try {
-        const res = await post("/archives", parsed.data);
+        const res = await post("archives", parsed.data);
         return { success: true, data: res.data.data };
     } catch (error: any) {
         return { success: false, error: error?.response?.data?.message || error?.message };
@@ -69,7 +69,7 @@ export async function updateDocument(input: DocumentUpdate) {
         return { success: false, error: parsed.error.errors.map(e => e.message).join(", ") };
     }
     try {
-        const res = await put(`/archives/${input.id}`, parsed.data);
+        const res = await put(`archives/${input.id}`, parsed.data);
         return { success: true, data: res.data.data };
     } catch (error: any) {
         return { success: false, error: error?.response?.data?.message || error?.message };
@@ -80,7 +80,7 @@ export async function updateDocument(input: DocumentUpdate) {
 export async function deleteDocument(id: number) {
     try {
         console.log("Deleting document:", id);
-        const res = await del(`/archives/${id}`);
+        const res = await del(`archives/${id}`);
         console.log("Document deleted:", res.data);
         return { success: true };
     } catch (error: any) {
@@ -92,7 +92,7 @@ export async function deleteDocument(id: number) {
 export async function uploadDocument(formData: FormData) {
 	try {
 		// Let axios set multipart boundary (do not send Content-Type: multipart/form-data alone).
-		const res = await post("/archives/add", formData);
+		const res = await post("archives/add", formData);
 		return { success: true, data: res.data.data };
 	} catch (error: any) {
 		return { success: false, error: error?.response?.data?.message || error?.message };

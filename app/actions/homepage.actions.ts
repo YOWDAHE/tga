@@ -2,7 +2,7 @@ import { get, post, put } from '@/lib/axiosWrapper';
 
 export async function updateHomepage(updateData: any) {
     try {
-        const res = await put('/landing', updateData);
+        const res = await put('homepage', updateData);
         if (!res.data.data) throw new Error(res.data.error || 'Failed to update homepage');
         return { success: true, data: res.data.data };
     } catch (error: any) {
@@ -38,7 +38,7 @@ export async function uploadPartnerImage(file: File) {
         const formData = new FormData();
         formData.append('file', file);
 
-        const res = await post('/landing/upload-partner', formData);
+        const res = await post('landing/upload-partner', formData);
 
         if (!res.data) throw new Error(res.data.error || 'Failed to upload partner image');
         return { success: true, data: res.data };

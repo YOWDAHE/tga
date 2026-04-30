@@ -6,7 +6,7 @@ export async function GET() {
     console.log("Fetching session from backend");
     const accessToken = (await cookies()).get("tgaAccessToken")?.value;
     if (!accessToken) {
-        return NextResponse.json({ user: null, authenticated: false }, { status: 401 });
+        return NextResponse.json({ user: null, authenticated: false }, { status: 200 });
     }
 
     try {
@@ -19,6 +19,6 @@ export async function GET() {
         return NextResponse.json({ user: res.data.data, authenticated: true });
     } catch (error) {
         console.error("Error fetching session:", error);
-        return NextResponse.json({ user: null, authenticated: false }, { status: 401 });
+        return NextResponse.json({ user: null, authenticated: false }, { status: 200 });
     }
 }

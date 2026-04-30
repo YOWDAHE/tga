@@ -1,13 +1,18 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { getRequestCookies } from "./axiosContext";
 
+/** Browser: Next BFF under basePath. Server (Route Handlers): same env as axiosServerWrapper. */
+function resolveAxiosBaseURL(): string | undefined {
+	if (typeof window !== "undefined") {
+		return "/office/api";
+	}
+	const u = process.env.BACKEND_API_URL?.trim();
+	return u || undefined;
+}
 
 const api: AxiosInstance = axios.create({
-  // baseURL: process.env.BACKEND_API_URL,
-  // baseURL: process.env.NEXT_PUBLIC_API_URL,
-  // baseURL: 'https://tgalawgroup.com/office/api',
-  // baseURL: 'https://tgagloballawfirm.com/api-backend',
-  withCredentials: true,
+	baseURL: resolveAxiosBaseURL(),
+	withCredentials: true,
 });
 
 // api.interceptors.request.use((config) => {
@@ -36,7 +41,7 @@ api.interceptors.response.use(
 
       try {
         console.log("Refreshing token");
-        const refreshResponse = await api.post("/office/api/auth/refresh-token");
+        const refreshResponse = await api.post("auth/refresh-token");
         
         const newAccessToken = refreshResponse.data.accessToken;
         

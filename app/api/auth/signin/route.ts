@@ -5,9 +5,17 @@ import { cookieSettings } from "../cookieOptions";
 
 export async function POST(req: Request) {
     const body = await req.json();
+    const backend = process.env.BACKEND_API_URL?.trim();
+    if (!backend) {
+        console.error("BACKEND_API_URL is not set on the frontend server");
+        return NextResponse.json(
+            { error: "Server misconfiguration: BACKEND_API_URL is missing" },
+            { status: 503 }
+        );
+    }
     try {
         console.log("Login request body:", body);
-        const res = await axios.post(`${process.env.BACKEND_API_URL}/auth/signin`, body);
+        const res = await axios.post(`${backend}/auth/signin`, body);
         const { accessToken, refreshToken, ...user } = res.data.data;
         if (!accessToken || !refreshToken) {
             console.error("Access or refresh token is missing in the response");

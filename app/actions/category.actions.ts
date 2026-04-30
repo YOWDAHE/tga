@@ -4,24 +4,17 @@ import { CategoryInput, categorySchema } from "../types/category.type";
 
 // Fetch all categories
 export async function fetchCategories() {
-    try {
-        console.log("Category FETCHING");
-        try {
-            const res = await get("/category");
-        } catch (error) {
-            console.error("Error fetching categories:", error);
-            return { success: false };
-        }
-        // console.log("Category fetched:", res.data);
-        // return { success: true, data: res.data.data };
-    } catch (error: any) {
-        return { success: false, error: error?.response?.data?.message || error?.message };
-    }
+	try {
+		const res = await get("category");
+		return { success: true, data: res.data.data };
+	} catch (error: any) {
+		return { success: false, error: error?.response?.data?.message || error?.message };
+	}
 }
 
 export async function fetchCategory(id: number) {
     try {
-        const res = await get(`/categories/${id}`);
+        const res = await get(`category/${id}`);
         return { success: true, data: res.data.data };
     } catch (error: any) {
         return { success: false, error: error?.response?.data?.message || error?.message };
