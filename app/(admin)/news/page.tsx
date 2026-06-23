@@ -46,17 +46,15 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
           icon={<FileX2Icon size={48} />}
           action={
             search || sortBy !== "createdAt" || order !== "desc" ? (
-              <Button 
-                variant="light" 
-                component={Link} 
-                href="/news"
-              >
-                Clear Search
-              </Button>
+              <Link href="/news">
+                <Button variant="light">Clear Search</Button>
+              </Link>
             ) : (
-              <Button component={Link} href="/news/add">
-                <IconPlus size={16} style={{ marginRight: 4 }} /> Add News
-              </Button>
+              <Link href="/news/add">
+                <Button>
+                  <IconPlus size={16} style={{ marginRight: 4 }} /> Add News
+                </Button>
+              </Link>
             )
           }
         />

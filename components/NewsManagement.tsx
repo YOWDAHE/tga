@@ -238,7 +238,7 @@ export default function NewsManagement({
   }
 
   return (
-    <div style={{ padding: "24px" }}>
+    <div style={{ padding: "4px" }}>
       <Group justify="space-between" mb="lg">
         <Title order={2}>News Management</Title>
         <Button leftSection={<IconPlus size={16} />} onClick={handleCreate}>

@@ -46,7 +46,13 @@ export default async function ArchivesPage({
         title="No documents found"
         description="There are no documents to display at the moment."
         icon={<FileX2Icon size={48} />}
-        action={ <Button component={Link} href="/archives/uploads"> <IconPlus size={16} style={{ marginRight: 4 }} /> Add Document</Button>}
+        action={
+          <Link href="/archives/uploads">
+            <Button>
+              <IconPlus size={16} style={{ marginRight: 4 }} /> Add Document
+            </Button>
+          </Link>
+        }
       />;
 		}
 

@@ -9,6 +9,7 @@ console.log("Backend API URL:", process.env.BACKEND_API_URL || "NOT FOUND");
 const api: AxiosInstance = axios.create({
   // baseURL: process.env.BACKEND_API_URL,
   baseURL: "http://backend:3000/api",
+  // baseURL: process.env.BACKEND_API_URL || "http://localhost:3000/api", // for local development
   withCredentials: true,
 });
 

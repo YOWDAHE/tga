@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "next dev --turbopack -H 0.0.0.0",
-    "dev:backend": "nodemon --watch backend --ext ts,tsx,json --exec \"tsx backend/src/server.ts\"",
+    "dev": "next dev --turbopack -H 0.0.0.0 -p 3001",
+    "dev:frontend": "next dev --turbopack -H 0.0.0.0 -p 3001",
     "drizzle:push": "npx drizzle-kit push",
     "drizzle:generate": "npx drizzle-kit generate",
     "drizzle:migrate": "npx drizzle-kit migrate",

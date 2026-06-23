@@ -105,6 +105,7 @@ export default function RemarksManagement({
 					color: "red",
 				});
 				closeDeleteModal();
+				closeViewModal();
 				setSelectedRemark(null);
 			} else {
 				notifications.show({
@@ -270,6 +271,18 @@ export default function RemarksManagement({
 						<Group>
 							<Text fw={500}>Date:</Text>
 							<Text>{formatDate(selectedRemark.createdAt)}</Text>
+						</Group>
+						<Group justify="flex-end" mt="md">
+							<Button variant="outline" onClick={closeViewModal}>
+								Close
+							</Button>
+							<Button
+								color="red"
+								leftSection={<IconTrash size={16} />}
+								onClick={openDeleteModal}
+							>
+								Delete
+							</Button>
 						</Group>
 					</Stack>
 				)}

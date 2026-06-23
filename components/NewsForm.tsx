@@ -36,6 +36,7 @@ import { useRouter } from "next/navigation";
 import { createNews, updateNews } from "@/app/actions/news.actions";
 import { News } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
+import { convertToApiUrl } from "@/lib/utils";
 
 // If News type is imported from '@/types', extend it here for local use
 export interface NewsExtended extends News {
@@ -116,18 +117,6 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 			imagePreviews.forEach((url) => URL.revokeObjectURL(url));
 		};
 	}, [imagePreviews]);
-
-	// Helper function to get image URL from either string or object
-	const getImageUrl = (
-		imageData: string | { public_id: string; secure_url: string }
-	): string => {
-		if (typeof imageData === "string") {
-			// Remove protocol/domain if present, then prepend /api/
-			const cleaned = imageData.replace(/^https?:\/\/[^/]+/, "");
-			return `/api${cleaned.startsWith("/") ? "" : "/"}${cleaned}`;
-		}
-		return imageData.secure_url;
-	};
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const files = event.target.files;
@@ -375,7 +364,7 @@ export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps)
 											<Card key={index} p={0} radius="md" withBorder>
 												<Box style={{ position: "relative" }}>
 													<Image
-														src={getImageUrl(imageData)}
+														src={convertToApiUrl(imageData)}
 														alt={`Existing Image ${index + 1}`}
 														width={120}
 														height={120}
