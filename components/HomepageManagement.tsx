@@ -23,6 +23,7 @@ import {
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { convertToApiUrl } from "@/lib/utils";
 import {
 	IconUpload,
 	IconPlus,
@@ -829,19 +830,6 @@ export default function HomepageManagement({
 		return match && match[2].length === 11 ? match[2] : null;
 	};
 
-	// Helper function to get full image URL
-	const getImageUrl = (imagePath: string) => {
-		if (!imagePath) return "/office/placeholder.jpg";
-
-		// If it's already a full URL (starts with http), return as is
-		if (imagePath.startsWith("http")) {
-			return imagePath;
-		}
-
-		// For other cases, return as is (like placeholder images)
-		return imagePath;
-	};
-
 	return (
 		<div style={{ padding: "24px" }}>
 			<Title order={2} mb="lg">
@@ -998,7 +986,7 @@ export default function HomepageManagement({
 										<Group justify="space-between" mb="xs">
 											<Group>
 												<img
-													src={partner.logo_url}
+													src={convertToApiUrl(partner.logo_url)}
 													alt={partner.name}
 													height={80}
 													width={80}

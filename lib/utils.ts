@@ -5,19 +5,35 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+function filenameFromPartnerUrl(input: string): string | null {
+  const q = input.indexOf('?');
+  const path = q === -1 ? input : input.slice(0, q);
+  for (const marker of ['/landing/uploads/partners/', '/uploads/partners/']) {
+    const idx = path.indexOf(marker);
+    if (idx === -1) continue;
+    const after = path.slice(idx + marker.length);
+    const filename = after.split('/')[0];
+    if (filename) return filename;
+  }
+  return null;
+}
+
 export function convertToApiUrl(url: string): string {
   if (!url) return '/office/placeholder.jpg';
 
-  // If it's already a relative URL, return as is
+  if (url.startsWith('/office/')) return url;
+
+  const partnerFile = filenameFromPartnerUrl(url);
+  if (partnerFile) {
+    return `/office/api/uploads/partners/${partnerFile}`;
+  }
+
   if (url.startsWith('/')) return url;
 
-  // If it's a localhost upload URL, convert to use our API route
   if (url.includes('localhost:3000/uploads/')) {
     const urlObj = new URL(url);
-    console.log('urlObj:', `/api${urlObj.pathname}`);
     return `/api${urlObj.pathname}`;
   }
 
-  // For external URLs, return as is
   return url;
 }
