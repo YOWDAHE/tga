@@ -1,7 +1,9 @@
 name: Deploy
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main, master]
 
 concurrency:
@@ -10,7 +12,11 @@ concurrency:
 
 jobs:
   deploy:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Deploy admin frontend to VPS
         uses: appleboy/ssh-action@v1.2.0
@@ -18,12 +24,13 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          command_timeout: 30m
           script_stop: true
           script: |
             set -euo pipefail
             DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH }}"
             REPO_DIR="${DEPLOY_PATH}/tga"
-            BRANCH="${{ github.ref_name }}"
+            BRANCH="${{ github.event.workflow_run.head_branch }}"
 
             cd "${REPO_DIR}"
             git fetch origin
