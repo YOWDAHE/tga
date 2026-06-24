@@ -31,5 +31,5 @@ jobs:
             git pull origin "${BRANCH}"
 
             cd "${DEPLOY_PATH}"
-            docker compose build frontend
-            docker compose up -d frontend
+            docker-compose build frontend
+            docker-compose up -d frontend
