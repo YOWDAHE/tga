@@ -1,0 +1,35 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main, master]
+
+concurrency:
+  group: deploy-tga-admin
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy admin frontend to VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH }}"
+            REPO_DIR="${DEPLOY_PATH}/tga"
+            BRANCH="${{ github.ref_name }}"
+
+            cd "${REPO_DIR}"
+            git fetch origin
+            git checkout "${BRANCH}"
+            git pull origin "${BRANCH}"
+
+            cd "${DEPLOY_PATH}"
+            docker compose build frontend
+            docker compose up -d frontend
