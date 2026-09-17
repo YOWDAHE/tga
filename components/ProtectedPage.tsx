@@ -60,6 +60,14 @@ export function HomepageProtectedPage({ children }: { children: ReactNode }) {
   )
 }
 
+export function LegalUpdatesProtectedPage({ children }: { children: ReactNode }) {
+  return (
+    <ProtectedPage requiredPermissions={["LEGAL_UPDATES_CRUD"]}>
+      {children}
+    </ProtectedPage>
+  )
+}
+
 export function AdminProtectedPage({ children }: { children: ReactNode }) {
   return (
     <ProtectedPage 

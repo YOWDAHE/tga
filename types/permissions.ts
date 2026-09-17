@@ -6,6 +6,7 @@ export const USER_PERMISSIONS = [
   'HOMEPAGE_CRUD',
   'USER_CRUD',
   'REMARKS_CRUD',
+  'LEGAL_UPDATES_CRUD',
 ] as const;
 
 export type UserPermission = typeof USER_PERMISSIONS[number];
@@ -41,6 +42,11 @@ export const PERMISSION_OPTIONS = [
     value: "REMARKS_CRUD" as UserPermission,
     label: "Remarks Management",
     description: "View and respond to user remarks and feedback. Manage customer communication.",
+  },
+  {
+    value: "LEGAL_UPDATES_CRUD" as UserPermission,
+    label: "Legal Updates Management",
+    description: "Create, publish, and manage legal updates. Manage email subscribers.",
   },
 ] as const;
 

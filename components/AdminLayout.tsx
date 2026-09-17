@@ -34,6 +34,7 @@ import {
 	IconSettings,
 	IconLogout,
 	IconChevronDown,
+	IconScale,
 } from "@tabler/icons-react";
 import { UserPermission } from "@/types/permissions";
 
@@ -51,6 +52,12 @@ const navigationItems: NavigationItem[] = [
 		icon: IconNews,
 		href: "/news",
 		permission: "NEWS_CRUD",
+	},
+	{
+		label: "Legal Updates",
+		icon: IconScale,
+		href: "/legal-updates",
+		permission: "LEGAL_UPDATES_CRUD",
 	},
 	{
 		label: "Archives",
