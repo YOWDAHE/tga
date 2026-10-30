@@ -1,1171 +1,515 @@
 "use client";
 
-import { useState } from "react";
-import "@mantine/core/styles.css";
+import { useState, type ReactNode } from "react";
 import "@mantine/tiptap/styles.css";
-import Image from "next/image";
 import {
-	Title,
+	ActionIcon,
+	Badge,
+	Box,
 	Button,
+	FileInput,
+	Group,
+	Menu,
+	Modal,
+	Paper,
+	SimpleGrid,
+	Stack,
+	Text,
 	TextInput,
 	Textarea,
-	Paper,
-	Text,
-	Stack,
-	Group,
-	FileInput,
-	Grid,
-	Accordion,
-	ActionIcon,
-	Modal,
-	SimpleGrid,
+	Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { convertToApiUrl } from "@/lib/utils";
 import {
-	IconUpload,
-	IconPlus,
+	IconDots,
 	IconEdit,
+	IconPlus,
 	IconTrash,
-	IconPhoto,
+	IconUpload,
 } from "@tabler/icons-react";
 import { RichTextEditor, Link } from "@mantine/tiptap";
-import { useEditor } from "@tiptap/react";
+import { useEditor, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
 import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import {
-	updateHomepage,
-	uploadHomepageImage,
+	createHomepageItem,
+	deleteHomepageItem,
+	updateHomepageItem,
 	uploadPartnerImage,
+	type HomepageSection,
 } from "@/app/actions/homepage.actions";
-import { useRouter } from "next/navigation";
-import { title } from "process";
-
-interface LandingPageContent {
-	id?: number;
-	logo_url: string | null;
-	hero_image_url: string | null;
-	hero_title: string;
-	about_us: string;
-	createdAt?: string;
-	updatedAt?: string;
-}
 
 interface Stat {
 	id: number;
 	stat: string;
 	description: string;
-	createdAt?: string;
-	updatedAt?: string;
 }
 
 interface Practice {
 	id: number;
 	title: string;
 	description: string;
-	createdAt?: string;
-	updatedAt?: string;
 }
 
 interface Partner {
 	id: number;
 	name: string;
 	logo_url: string;
-	description?: string;
-	createdAt?: string;
-	updatedAt?: string;
+	description?: string | null;
 }
-
-interface Testimonial {
-	id: number;
-	client: string;
-	position: string;
-	content: string;
-	createdAt?: string;
-	updatedAt?: string;
-}
-
-interface ContactInfo {
-	id: number;
-	medium: string;
-	email?: string;
-	phone_number?: string;
-	createdAt?: string;
-	updatedAt?: string;
-}
-
-
 
 interface HomepageManagementProps {
-	initialContent?: LandingPageContent;
 	initialStats?: Stat[];
 	initialPractices?: Practice[];
 	initialPartners?: Partner[];
-	initialTestimonials?: Testimonial[];
-	initialContactInfo?: ContactInfo[];
 }
 
-const initialContent: LandingPageContent = {
-	logo_url: null,
-	hero_image_url: null,
-	hero_title: "Welcome to Our Platform",
-	about_us: "<p>We are a leading company in our industry...</p>",
-};
+// Soft surfaces cycled across item cards
+const PASTELS = ["#ece7fb", "#e3f1fb", "#fdf1d9", "#e2f5e9", "#fde7ec", "#e8eefc"];
 
-const mockStats: Stat[] = [
-	{ id: 1, stat: "500+", description: "Happy Clients" },
-	{ id: 2, stat: "10+", description: "Years Experience" },
-	{ id: 3, stat: "50+", description: "Projects Completed" },
+const SECTIONS = [
+	{ id: "stats", label: "Statistics" },
+	{ id: "practices", label: "Practice areas" },
+	{ id: "partners", label: "Partners" },
 ];
 
-const mockPractices: Practice[] = [
-	{
-		id: 1,
-		title: "Quality Service",
-		description: "We provide high-quality services",
-	},
-	{
-		id: 2,
-		title: "Expert Team",
-		description: "Our team consists of industry experts",
-	},
+const editorExtensions = [
+	StarterKit,
+	Underline,
+	Link,
+	Superscript,
+	SubScript,
+	Highlight,
+	TextAlign.configure({ types: ["heading", "paragraph"] }),
 ];
 
-const mockPartners: Partner[] = [
-	{
-		id: 1,
-		name: "Partner 1",
-		logo_url: "/office/placeholder.jpg?height=100&width=200",
-		description: "Strategic partner",
-	},
-	{
-		id: 2,
-		name: "Partner 2",
-		logo_url: "/office/placeholder.jpg?height=100&width=200",
-		description: "Technology partner",
-	},
-];
+const notifyError = (message?: string) =>
+	notifications.show({ title: "Error", message: message || "Something went wrong", color: "red" });
+const notifySuccess = (message: string) =>
+	notifications.show({ title: "Saved", message, color: "green" });
 
-const mockTestimonials: Testimonial[] = [
-	{
-		id: 1,
-		client: "John Doe",
-		position: "CEO, Company Inc.",
-		content: "Excellent service and support!",
-	},
-	{
-		id: 2,
-		client: "Jane Smith",
-		position: "Manager, Corp Ltd.",
-		content: "Professional and reliable!",
-	},
-];
+function SectionCard({
+	id,
+	title,
+	description,
+	count,
+	action,
+	children,
+}: {
+	id: string;
+	title: string;
+	description: string;
+	count?: number;
+	action?: ReactNode;
+	children: ReactNode;
+}) {
+	return (
+		<Paper id={`section-${id}`} withBorder p={{ base: "md", sm: "xl" }} style={{ scrollMarginTop: 16 }}>
+			<Group justify="space-between" align="flex-start" mb="lg" gap="sm">
+				<div>
+					<Group gap="xs">
+						<Title order={3}>{title}</Title>
+						{count !== undefined && (
+							<Badge color="gray" variant="light">
+								{count}
+							</Badge>
+						)}
+					</Group>
+					<Text size="sm" c="dimmed" mt={4}>
+						{description}
+					</Text>
+				</div>
+				{action}
+			</Group>
+			{children}
+		</Paper>
+	);
+}
 
-const mockContactInfo: ContactInfo[] = [
-	{ id: 1, medium: "Email", email: "contact@company.com" },
-	{ id: 2, medium: "Phone", phone_number: "+1 234 567 8900" },
-	{ id: 3, medium: "WhatsApp", phone_number: "+1 234 567 8901" },
-];
+function ItemMenu({ onEdit, onDelete, label }: { onEdit: () => void; onDelete: () => void; label: string }) {
+	return (
+		<Menu position="bottom-end" withinPortal>
+			<Menu.Target>
+				<ActionIcon variant="subtle" color="gray" aria-label={`Actions for ${label}`}>
+					<IconDots size={18} />
+				</ActionIcon>
+			</Menu.Target>
+			<Menu.Dropdown>
+				<Menu.Item leftSection={<IconEdit size={14} />} onClick={onEdit}>
+					Edit
+				</Menu.Item>
+				<Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={onDelete}>
+					Delete
+				</Menu.Item>
+			</Menu.Dropdown>
+		</Menu>
+	);
+}
 
+function EmptyState({ label }: { label: string }) {
+	return (
+		<Box py="xl" ta="center">
+			<Text c="dimmed" size="sm">
+				No {label} yet.
+			</Text>
+		</Box>
+	);
+}
 
+function RichEditor({ editor }: { editor: Editor | null }) {
+	return (
+		<RichTextEditor editor={editor} style={{ borderRadius: 12 }}>
+			<RichTextEditor.Toolbar>
+				<RichTextEditor.ControlsGroup>
+					<RichTextEditor.Bold />
+					<RichTextEditor.Italic />
+					<RichTextEditor.Underline />
+					<RichTextEditor.Highlight />
+				</RichTextEditor.ControlsGroup>
+				<RichTextEditor.ControlsGroup>
+					<RichTextEditor.H2 />
+					<RichTextEditor.H3 />
+					<RichTextEditor.BulletList />
+					<RichTextEditor.OrderedList />
+					<RichTextEditor.Blockquote />
+				</RichTextEditor.ControlsGroup>
+				<RichTextEditor.ControlsGroup>
+					<RichTextEditor.Link />
+					<RichTextEditor.Unlink />
+				</RichTextEditor.ControlsGroup>
+				<RichTextEditor.ControlsGroup>
+					<RichTextEditor.AlignLeft />
+					<RichTextEditor.AlignCenter />
+					<RichTextEditor.AlignRight />
+				</RichTextEditor.ControlsGroup>
+			</RichTextEditor.Toolbar>
+			<RichTextEditor.Content />
+		</RichTextEditor>
+	);
+}
+
+type PendingDelete = { section: HomepageSection; id: number; label: string } | null;
 
 export default function HomepageManagement({
-	initialContent,
-	initialStats,
-	initialPractices,
-	initialPartners,
-	initialTestimonials,
-	initialContactInfo,
+	initialStats = [],
+	initialPractices = [],
+	initialPartners = [],
 }: HomepageManagementProps) {
-	const defaultContent: LandingPageContent = initialContent ?? {
-		logo_url: null,
-		hero_image_url: null,
-		hero_title: "Welcome to Our Platform",
-		about_us: "<p>We are a leading company in our industry...</p>",
-	};
-	const defaultStats: Stat[] = initialStats ?? mockStats;
-	const defaultPractices: Practice[] = initialPractices ?? mockPractices;
-	const defaultPartners: Partner[] = initialPartners ?? mockPartners;
-	const defaultTestimonials: Testimonial[] = initialTestimonials ?? mockTestimonials;
-	const defaultContactInfo: ContactInfo[] = initialContactInfo ?? mockContactInfo;
+	const [stats, setStats] = useState<Stat[]>(initialStats);
+	const [practices, setPractices] = useState<Practice[]>(initialPractices);
+	const [partners, setPartners] = useState<Partner[]>(initialPartners);
 
-	const router = useRouter();
-	// State for last fetched landing page
-	const [originalContent, setOriginalContent] = useState<LandingPageContent>(defaultContent);
-	const [originalStats, setOriginalStats] = useState<Stat[]>(defaultStats);
-	const [originalPractices, setOriginalPractices] = useState<Practice[]>(defaultPractices);
-	const [originalPartners, setOriginalPartners] = useState<Partner[]>(defaultPartners);
-	const [originalContactUs, setOriginalContactUs] = useState<ContactInfo[]>(defaultContactInfo);
-	// State for current edits
-	const [content, setContent] = useState<LandingPageContent>(defaultContent);
-	const [stats, setStats] = useState<Stat[]>(defaultStats);
-	const [practices, setPractices] = useState<Practice[]>(defaultPractices);
-	const [partners, setPartners] = useState<Partner[]>(defaultPartners);
-	const [testimonials, setTestimonials] = useState<Testimonial[]>(defaultTestimonials);
-	const [contactInfo, setContactInfo] = useState<ContactInfo[]>(defaultContactInfo);
+	const [submitting, setSubmitting] = useState(false);
+	const [deleting, setDeleting] = useState(false);
+	const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null);
 
-	const [aboutUsContent, setAboutUsContent] = useState(content.about_us);
-	const [practiceDescriptionContent, setPracticeDescriptionContent] = useState("");
-
-	// Loading states
-	const [isSubmitting, setIsSubmitting] = useState(false);
-
-	// Modal states
-	const [statModalOpened, { open: openStatModal, close: closeStatModal }] =
-		useDisclosure(false);
-	const [
-		practiceModalOpened,
-		{ open: openPracticeModal, close: closePracticeModal },
-	] = useDisclosure(false);
-	const [
-		partnerModalOpened,
-		{ open: openPartnerModal, close: closePartnerModal },
-	] = useDisclosure(false);
-	const [
-		testimonialModalOpened,
-		{ open: openTestimonialModal, close: closeTestimonialModal },
-	] = useDisclosure(false);
-	const [
-		contactModalOpened,
-		{ open: openContactModal, close: closeContactModal },
-	] = useDisclosure(false);
-	const [
-		newsLinkModalOpened,
-		{ open: openNewsLinkModal, close: closeNewsLinkModal },
-	] = useDisclosure(false);
-
-	// Editing states
+	const [statModalOpened, statModal] = useDisclosure(false);
+	const [practiceModalOpened, practiceModal] = useDisclosure(false);
+	const [partnerModalOpened, partnerModal] = useDisclosure(false);
 	const [editingStat, setEditingStat] = useState<Stat | null>(null);
 	const [editingPractice, setEditingPractice] = useState<Practice | null>(null);
 	const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
-	const [editingTestimonial, setEditingTestimonial] =
-		useState<Testimonial | null>(null);
-	const [editingContact, setEditingContact] = useState<ContactInfo | null>(null);
 
-
-	const heroForm = useForm({
-		initialValues: {
-			hero_title: content.hero_title,
-			logo_url: null as File | null,
-			hero_image_url: null as File | null,
-		},
+	const practiceEditor = useEditor({
+		extensions: editorExtensions,
+		content: "",
+		immediatelyRender: false,
 	});
 
 	const statForm = useForm({
-		initialValues: {
-			stat: "",
-			description: "",
+		initialValues: { stat: "", description: "" },
+		validate: {
+			stat: (v) => (v.trim() ? null : "Required"),
+			description: (v) => (v.trim() ? null : "Required"),
 		},
 	});
-
 	const practiceForm = useForm({
-		initialValues: {
-			title: "",
-		},
+		initialValues: { title: "" },
+		validate: { title: (v) => (v.trim() ? null : "Required") },
 	});
-
 	const partnerForm = useForm({
-		initialValues: {
-			name: "",
-			description: "",
-			logo_url: null as File | null,
-		},
+		initialValues: { name: "", description: "", logo: null as File | null },
+		validate: { name: (v) => (v.trim() ? null : "Required") },
 	});
 
-	const testimonialForm = useForm({
-		initialValues: {
-			client: "",
-			position: "",
-			content: "",
-		},
-	});
+	// Replace one item by id, or append it when new
+	const upsert = <T extends { id: number }>(list: T[], item: T) =>
+		list.some((i) => i.id === item.id) ? list.map((i) => (i.id === item.id ? item : i)) : [...list, item];
 
-	const contactForm = useForm({
-		initialValues: {
-			medium: "",
-			email: "",
-			phone_number: "",
-		},
-	});
-
-
-
-	const aboutUsEditor = useEditor({
-		extensions: [
-			StarterKit,
-			Underline,
-			Link,
-			Superscript,
-			SubScript,
-			Highlight,
-			TextAlign.configure({ types: ["heading", "paragraph"] }),
-		],
-		content: aboutUsContent,
-		onUpdate: ({ editor }) => {
-			setAboutUsContent(editor.getHTML());
-		},
-	});
-
-	const practiceDescriptionEditor = useEditor({
-		extensions: [
-			StarterKit,
-			Underline,
-			Link,
-			Superscript,
-			SubScript,
-			Highlight,
-			TextAlign.configure({ types: ["heading", "paragraph"] }),
-		],
-		content: practiceDescriptionContent,
-		onUpdate: ({ editor }) => {
-			setPracticeDescriptionContent(editor.getHTML());
-		},
-	});
-
-	const handleAboutUsSubmit = async () => {
-		setIsSubmitting(true);
-		try {
-			const updatedContent = {
-				...content,
-				about_us: aboutUsContent,
-			};
-			const result = await updateHomepage({ landing: updatedContent });
-			if (result.success) {
-				// Update local state immediately
-				setContent(updatedContent);
-				setOriginalContent(updatedContent);
-				notifications.show({
-					title: "Success",
-					message: "About Us updated successfully",
-					color: "green",
-				});
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to update About Us",
-					color: "red",
-				});
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
-
-	const handleHeroSubmit = async (values: typeof heroForm.values) => {
-		setIsSubmitting(true);
-		try {
-			// Handle file uploads first if files are selected
-			let updatedContent = { ...content, hero_title: values.hero_title };
-
-			// Upload logo if a new file is selected
-			if (values.logo_url instanceof File) {
-				const logoResult = await uploadHomepageImage(values.logo_url, "logo");
-				if (logoResult.success) {
-					updatedContent.logo_url = logoResult.data.imageUrl;
-				} else {
-					notifications.show({
-						title: "Error",
-						message: logoResult.error || "Failed to upload logo",
-						color: "red",
-					});
-					return;
-				}
-			}
-
-			// Upload hero image if a new file is selected
-			if (values.hero_image_url instanceof File) {
-				const heroResult = await uploadHomepageImage(
-					values.hero_image_url,
-					"hero_image"
-				);
-				if (heroResult.success) {
-					updatedContent.hero_image_url = heroResult.data.imageUrl;
-				} else {
-					notifications.show({
-						title: "Error",
-						message: heroResult.error || "Failed to upload hero image",
-						color: "red",
-					});
-					return;
-				}
-			}
-
-			// Remove createdAt and updatedAt from the data being sent
-			const { createdAt, updatedAt, ...sanitizedContent } = updatedContent as any;
-
-			// Update the landing page data
-			const result = await updateHomepage({ landing: sanitizedContent });
-			if (result.success) {
-				// Update local state immediately
-				setContent(updatedContent);
-				setOriginalContent(updatedContent);
-				notifications.show({
-					title: "Success",
-					message: "Hero section updated successfully",
-					color: "green",
-				});
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to update hero section",
-					color: "red",
-				});
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
-		} finally {
-			heroForm.reset();
-			setIsSubmitting(false);
-		}
-	};
-
-	// Reusable function to update stats
-	const handleStatsUpdate = async (updatedStats: Stat[]) => {
-		try {
-			// Remove createdAt and updatedAt from the data being sent
-			const sanitizedStats = updatedStats.map((item) => {
-				const { createdAt, updatedAt, ...rest } = item as any;
-				return rest;
-			});
-
-			const updatePayload = {
-				stats: sanitizedStats,
-			};
-			const result = await updateHomepage(updatePayload);
-			if (result.success) {
-				// Update local state immediately
-				setStats(updatedStats);
-				setOriginalStats(updatedStats);
-				return true;
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to update stats",
-					color: "red",
-				});
-				return false;
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
-			return false;
-		}
+	const openStat = (stat: Stat | null) => {
+		setEditingStat(stat);
+		statForm.setValues({ stat: stat?.stat ?? "", description: stat?.description ?? "" });
+		statForm.resetDirty();
+		statModal.open();
 	};
 
 	const handleStatSubmit = async (values: typeof statForm.values) => {
-		setIsSubmitting(true);
+		setSubmitting(true);
 		try {
-			const updatedStats =
+			const result =
 				editingStat ?
-					stats.map((item) =>
-						item.id === editingStat.id ? { ...item, ...values } : item
-					)
-				:	[...stats, { ...values }];
-
-			const success = await handleStatsUpdate(updatedStats as Stat[]);
-			if (success) {
-				notifications.show({
-					title: "Success",
-					message:
-						editingStat ? "Stat updated successfully" : "Stat added successfully",
-					color: "green",
-				});
-			}
-			closeStatModal();
-			setEditingStat(null);
-			statForm.reset();
+					await updateHomepageItem<Stat>("stats", editingStat.id, values)
+				:	await createHomepageItem<Stat>("stats", values);
+			if (!result.success) return notifyError(result.error);
+			setStats((prev) => upsert(prev, result.data));
+			notifySuccess(editingStat ? "Statistic updated" : "Statistic added");
+			statModal.close();
 		} finally {
-			setIsSubmitting(false);
+			setSubmitting(false);
 		}
 	};
 
-	// Reusable function to update practices
-	const handlePracticesUpdate = async (updatedPractices: Practice[]) => {
-		try {
-			// Remove createdAt and updatedAt from the data being sent
-			const sanitizedPractices = updatedPractices.map((item) => {
-				const { createdAt, updatedAt, ...rest } = item as any;
-				return rest;
-			});
-
-			const updatePayload = {
-				practices: sanitizedPractices,
-			};
-			const result = await updateHomepage(updatePayload);
-			if (result.success) {
-				// Update local state immediately
-				setPractices(updatedPractices);
-				setOriginalPractices(updatedPractices);
-				return true;
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to update practices",
-					color: "red",
-				});
-				return false;
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
-			return false;
-		}
+	const openPractice = (practice: Practice | null) => {
+		setEditingPractice(practice);
+		practiceForm.setValues({ title: practice?.title ?? "" });
+		practiceEditor?.commands.setContent(practice?.description ?? "");
+		practiceModal.open();
 	};
 
 	const handlePracticeSubmit = async (values: typeof practiceForm.values) => {
-		setIsSubmitting(true);
+		const description = practiceEditor?.getHTML() ?? "";
+		if (!practiceEditor || practiceEditor.isEmpty) return notifyError("Description is required");
+		setSubmitting(true);
 		try {
-			// Validate that description content is not empty
-			if (!practiceDescriptionContent.trim()) {
-				notifications.show({
-					title: "Error",
-					message: "Practice description is required",
-					color: "red",
-				});
-				return;
-			}
-
-			// Use the rich text editor content for description
-			const practiceData = {
-				// ...values,
-				title: values.title.toUpperCase(),
-				description: practiceDescriptionContent,
-			};
-
-			const updatedPractices =
+			const data = { title: values.title.trim().toUpperCase(), description };
+			const result =
 				editingPractice ?
-					practices.map((item) =>
-						item.id === editingPractice.id ? { ...item, ...practiceData } : item
-					)
-				:	[...practices, { ...practiceData }];
-
-			const success = await handlePracticesUpdate(updatedPractices as Practice[]);
-			if (success) {
-				notifications.show({
-					title: "Success",
-					message:
-						editingPractice ?
-							"Practice updated successfully"
-						:	"Practice added successfully",
-					color: "green",
-				});
-			}
-			closePracticeModal();
-			setEditingPractice(null);
-			practiceForm.reset();
-			setPracticeDescriptionContent("");
-			practiceDescriptionEditor?.commands.setContent("");
+					await updateHomepageItem<Practice>("practices", editingPractice.id, data)
+				:	await createHomepageItem<Practice>("practices", data);
+			if (!result.success) return notifyError(result.error);
+			setPractices((prev) => upsert(prev, result.data));
+			notifySuccess(editingPractice ? "Practice area updated" : "Practice area added");
+			practiceModal.close();
 		} finally {
-			setIsSubmitting(false);
+			setSubmitting(false);
 		}
+	};
+
+	const openPartner = (partner: Partner | null) => {
+		setEditingPartner(partner);
+		partnerForm.setValues({ name: partner?.name ?? "", description: partner?.description ?? "", logo: null });
+		partnerModal.open();
 	};
 
 	const handlePartnerSubmit = async (values: typeof partnerForm.values) => {
-		setIsSubmitting(true);
+		if (!editingPartner && !values.logo) {
+			partnerForm.setFieldError("logo", "A logo is required");
+			return;
+		}
+		setSubmitting(true);
 		try {
-			console.log(values);
-			let logoUrl = editingPartner?.logo_url || "";
-
-			// Upload new image if provided
-			if (values.logo_url instanceof File) {
-				const uploadResult = await uploadPartnerImage(values.logo_url);
-				if (uploadResult.success) {
-					logoUrl = uploadResult.data.imageUrl;
-				} else {
-					notifications.show({
-						title: "Error",
-						message: uploadResult.error || "Failed to upload partner logo",
-						color: "red",
-					});
-					return;
-				}
+			let logo_url = editingPartner?.logo_url;
+			if (values.logo) {
+				const upload = await uploadPartnerImage(values.logo);
+				if (!upload.success) return notifyError(upload.error);
+				logo_url = upload.data.imageUrl;
 			}
-
-			const partnerData = {
-				...values,
-				logo_url: logoUrl,
-			};
-
-			const updatedPartners =
+			const data = { name: values.name.trim(), description: values.description.trim(), logo_url };
+			const result =
 				editingPartner ?
-					originalPartners.map((item) =>
-						item.id === editingPartner.id ? { ...item, ...partnerData } : item
-					)
-				:	[...originalPartners, { ...partnerData }];
-
-			// Remove createdAt and updatedAt from the data being sent
-			const sanitizedPartners = updatedPartners.map((item) => {
-				const { createdAt, updatedAt, ...rest } = item as any;
-				return rest;
-			});
-
-			const updatePayload = {
-				partners: sanitizedPartners,
-			};
-			const result = await updateHomepage(updatePayload);
-			if (result.success) {
-				// Update local state immediately
-				setPartners(updatedPartners as Partner[]);
-				setOriginalPartners(updatedPartners as Partner[]);
-				notifications.show({
-					title: "Success",
-					message:
-						editingPartner ?
-							"Partner updated successfully"
-						:	"Partner added successfully",
-					color: "green",
-				});
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to update partners",
-					color: "red",
-				});
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
+					await updateHomepageItem<Partner>("partners", editingPartner.id, data)
+				:	await createHomepageItem<Partner>("partners", data);
+			if (!result.success) return notifyError(result.error);
+			setPartners((prev) => upsert(prev, result.data));
+			notifySuccess(editingPartner ? "Partner updated" : "Partner added");
+			partnerModal.close();
 		} finally {
-			closePartnerModal();
-			setEditingPartner(null);
-			partnerForm.reset();
-			setIsSubmitting(false);
+			setSubmitting(false);
 		}
 	};
 
-	const handleTestimonialSubmit = (values: typeof testimonialForm.values) => {
-		if (editingTestimonial) {
-			setTestimonials((prev) =>
-				prev.map((item) =>
-					item.id === editingTestimonial.id ? { ...item, ...values } : item
-				)
-			);
-		} else {
-			const newTestimonial: Testimonial = {
-				id: Date.now(),
-				...values,
-			};
-			setTestimonials((prev) => [...prev, newTestimonial]);
-		}
-		closeTestimonialModal();
-		setEditingTestimonial(null);
-		testimonialForm.reset();
-		notifications.show({
-			title: "Success",
-			message:
-				editingTestimonial ?
-					"Testimonial updated successfully"
-				:	"Testimonial added successfully",
-			color: "green",
-		});
-	};
-
-	const handleContactSubmit = async (values: typeof contactForm.values) => {
+	const confirmDelete = async () => {
+		if (!pendingDelete) return;
+		const { section, id, label } = pendingDelete;
+		setDeleting(true);
 		try {
-			const updatedContactInfo =
-				editingContact ?
-					originalContactUs.map((item) =>
-						item.id === editingContact.id ? { ...item, ...values } : item
-					)
-				:	[...originalContactUs, { ...values }];
-
-			// Remove createdAt and updatedAt from the data being sent
-			const sanitizedContactInfo = updatedContactInfo.map((item) => {
-				const { createdAt, updatedAt, ...rest } = item as any;
-				return rest;
-			});
-
-			const updatePayload = {
-				contactUs: sanitizedContactInfo,
-			};
-			const result = await updateHomepage(updatePayload);
-			if (result.success) {
-				// Update local state immediately
-				setContactInfo(updatedContactInfo as ContactInfo[]);
-				setOriginalContactUs(updatedContactInfo as ContactInfo[]);
-				notifications.show({
-					title: "Success",
-					message:
-						editingContact ?
-							"Contact info updated successfully"
-						:	"Contact info added successfully",
-					color: "green",
-				});
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to update contact info",
-					color: "red",
-				});
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
-		}
-		closeContactModal();
-		setEditingContact(null);
-		contactForm.reset();
-	};
-
-	// Edit handlers
-	const handleEditStat = (stat: Stat) => {
-		setEditingStat(stat);
-		statForm.setValues({ stat: stat.stat, description: stat.description });
-		openStatModal();
-	};
-
-	const handleEditPractice = (practice: Practice) => {
-		setEditingPractice(practice);
-		practiceForm.setValues({
-			title: practice.title,
-		});
-		// Set the rich text editor content
-		setPracticeDescriptionContent(practice.description);
-		practiceDescriptionEditor?.commands.setContent(practice.description);
-		openPracticeModal();
-	};
-
-	const handleEditPartner = (partner: Partner) => {
-		setEditingPartner(partner);
-		partnerForm.setValues({
-			name: partner.name,
-			description: partner.description || "",
-			logo_url: null,
-		});
-		openPartnerModal();
-	};
-
-	// Delete handlers
-	const handleDeleteStat = async (id: number) => {
-		const updatedStats = stats.filter((item) => item.id !== id);
-		const success = await handleStatsUpdate(updatedStats);
-		if (success) {
-			notifications.show({
-				title: "Success",
-				message: "Stat deleted successfully",
-				color: "red",
-			});
+			const result = await deleteHomepageItem(section, id);
+			if (!result.success) return notifyError(result.error);
+			// Only the deleted row leaves local state; everything else is untouched
+			if (section === "stats") setStats((prev) => prev.filter((i) => i.id !== id));
+			if (section === "practices") setPractices((prev) => prev.filter((i) => i.id !== id));
+			if (section === "partners") setPartners((prev) => prev.filter((i) => i.id !== id));
+			notifySuccess(`"${label}" deleted`);
+			setPendingDelete(null);
+		} finally {
+			setDeleting(false);
 		}
 	};
 
-	const handleDeletePractice = async (id: number) => {
-		const updatedPractices = practices.filter((item) => item.id !== id);
-		const success = await handlePracticesUpdate(updatedPractices);
-		if (success) {
-			notifications.show({
-				title: "Success",
-				message: "Practice deleted successfully",
-				color: "red",
-			});
-		}
-	};
-
-	const handleDeletePartner = async (id: number) => {
-		try {
-			const updatedPartners = partners.filter((item) => item.id !== id);
-			const updatePayload = {
-				partners: updatedPartners,
-			};
-			const result = await updateHomepage(updatePayload);
-			if (result.success) {
-				// Update local state immediately
-				setPartners(updatedPartners);
-				setOriginalPartners(updatedPartners);
-				notifications.show({
-					title: "Success",
-					message: "Partner deleted successfully",
-					color: "red",
-				});
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to delete partner",
-					color: "red",
-				});
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
-		}
-	};
-
-	
-
-	// Helper function to extract YouTube video ID
-	const getYouTubeVideoId = (url: string) => {
-		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-		const match = url.match(regExp);
-		return match && match[2].length === 11 ? match[2] : null;
-	};
+	const scrollTo = (id: string) =>
+		document.getElementById(`section-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 	return (
-		<div style={{ padding: "24px" }}>
-			<Title order={2} mb="lg">
-				Homepage Management
-			</Title>
+		<Box p={{ base: "sm", sm: "lg" }}>
+			<Group justify="space-between" align="flex-end" mb="xl" gap="md">
+				<div>
+					<Title order={2}>Homepage</Title>
+					<Text c="dimmed" size="sm" mt={4}>
+						Everything shown on the public landing page. Each item saves on its own.
+					</Text>
+				</div>
+				<Group gap={8}>
+					{SECTIONS.map((s) => (
+						<Button key={s.id} variant="default" size="xs" onClick={() => scrollTo(s.id)}>
+							{s.label}
+						</Button>
+					))}
+				</Group>
+			</Group>
 
-			<Accordion
-				multiple
-				defaultValue={[
-					"hero",
-					"about",
-					"stats",
-					"practices",
-					"partners",
-					"news-links",
-					"contact",
-				]}
-			>
-
-				{/* Stats Section */}
-				<Accordion.Item value="stats">
-					<Accordion.Control>
-						<Title order={4}>Statistics</Title>
-					</Accordion.Control>
-					<Accordion.Panel>
-						<Paper withBorder p="md">
-							<Group justify="space-between" mb="md">
-								<Text fw={500}>Statistics</Text>
-								<Button
-									leftSection={<IconPlus size={16} />}
-									onClick={() => {
-										setEditingStat(null);
-										statForm.reset();
-										openStatModal();
-									}}
-								>
-									Add Statistic
-								</Button>
-							</Group>
-
-							<SimpleGrid cols={{ base: 1, md: 3 }}>
-								{stats.map((stat) => (
-									<Paper key={stat.id} withBorder p="md">
-										<Group justify="space-between" mb="xs">
-											<Text fw={700} size="xl">
-												{stat.stat}
-											</Text>
-											<Group gap="xs">
-												<ActionIcon
-													variant="light"
-													color="orange"
-													onClick={() => handleEditStat(stat)}
-												>
-													<IconEdit size={16} />
-												</ActionIcon>
-												<ActionIcon
-													variant="light"
-													color="red"
-													onClick={() => handleDeleteStat(stat.id)}
-												>
-													<IconTrash size={16} />
-												</ActionIcon>
-											</Group>
-										</Group>
-										<Text size="sm" c="dimmed">
-											{stat.description}
+			<Stack gap="lg">
+				<SectionCard
+					id="stats"
+					title="Statistics"
+					description="Headline numbers shown in the statistics strip."
+					count={stats.length}
+					action={
+						<Button leftSection={<IconPlus size={16} />} onClick={() => openStat(null)}>
+							Add statistic
+						</Button>
+					}
+				>
+					{stats.length === 0 ?
+						<EmptyState label="statistics" />
+					:	<SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
+							{stats.map((stat, i) => (
+								<Paper key={stat.id} p="lg" style={{ background: PASTELS[i % PASTELS.length] }}>
+									<Group justify="space-between" align="flex-start" wrap="nowrap">
+										<Text fw={700} fz={28} lh={1.1}>
+											{stat.stat}
 										</Text>
-									</Paper>
-								))}
-							</SimpleGrid>
-						</Paper>
-					</Accordion.Panel>
-				</Accordion.Item>
-
-				{/* Practices Section */}
-				<Accordion.Item value="practices">
-					<Accordion.Control>
-						<Title order={4}>Our Practices</Title>
-					</Accordion.Control>
-					<Accordion.Panel>
-						<Paper withBorder p="md">
-							<Group justify="space-between" mb="md">
-								<Text fw={500}>Practices</Text>
-								<Button
-									leftSection={<IconPlus size={16} />}
-									onClick={() => {
-										setEditingPractice(null);
-										practiceForm.reset();
-										openPracticeModal();
-									}}
-								>
-									Add Practice
-								</Button>
-							</Group>
-
-							<SimpleGrid cols={{ base: 1, md: 2 }}>
-								{practices.map((practice) => (
-									<Paper key={practice.id} withBorder p="md">
-										<Group justify="space-between" mb="xs">
-											<Text fw={500}>{practice.title}</Text>
-											<Group gap="xs">
-												<ActionIcon
-													variant="light"
-													color="orange"
-													onClick={() => handleEditPractice(practice)}
-												>
-													<IconEdit size={16} />
-												</ActionIcon>
-												<ActionIcon
-													variant="light"
-													color="red"
-													onClick={() => handleDeletePractice(practice.id)}
-												>
-													<IconTrash size={16} />
-												</ActionIcon>
-											</Group>
-										</Group>
-										<Text
-											size="sm"
-											c="dimmed"
-											dangerouslySetInnerHTML={{ __html: practice.description }}
+										<ItemMenu
+											label={stat.stat}
+											onEdit={() => openStat(stat)}
+											onDelete={() => setPendingDelete({ section: "stats", id: stat.id, label: stat.stat })}
 										/>
-									</Paper>
-								))}
-							</SimpleGrid>
-						</Paper>
-					</Accordion.Panel>
-				</Accordion.Item>
+									</Group>
+									<Text size="sm" c="dark.4" mt={6}>
+										{stat.description}
+									</Text>
+								</Paper>
+							))}
+						</SimpleGrid>
+					}
+				</SectionCard>
 
-				{/* Partners Section */}
-				<Accordion.Item value="partners">
-					<Accordion.Control>
-						<Title order={4}>Partners</Title>
-					</Accordion.Control>
-					<Accordion.Panel>
-						<Paper withBorder p="md">
-							<Group justify="space-between" mb="md">
-								<Text fw={500}>Partners</Text>
-								<Button
-									leftSection={<IconPlus size={16} />}
-									onClick={() => {
-										setEditingPartner(null);
-										partnerForm.reset();
-										openPartnerModal();
-									}}
-								>
-									Add Partner
-								</Button>
-							</Group>
+				<SectionCard
+					id="practices"
+					title="Practice areas"
+					description="Services listed under “Our practices”."
+					count={practices.length}
+					action={
+						<Button leftSection={<IconPlus size={16} />} onClick={() => openPractice(null)}>
+							Add practice area
+						</Button>
+					}
+				>
+					{practices.length === 0 ?
+						<EmptyState label="practice areas" />
+					:	<SimpleGrid cols={{ base: 1, md: 2, xl: 3 }} spacing="md">
+							{practices.map((practice, i) => (
+								<Paper key={practice.id} p="lg" style={{ background: PASTELS[i % PASTELS.length] }}>
+									<Group justify="space-between" align="flex-start" wrap="nowrap" mb={6}>
+										<Text fw={600}>{practice.title}</Text>
+										<ItemMenu
+											label={practice.title}
+											onEdit={() => openPractice(practice)}
+											onDelete={() =>
+												setPendingDelete({ section: "practices", id: practice.id, label: practice.title })
+											}
+										/>
+									</Group>
+									<Text
+										size="sm"
+										c="dark.4"
+										lineClamp={4}
+										className="rich-text-content"
+										dangerouslySetInnerHTML={{ __html: practice.description }}
+									/>
+								</Paper>
+							))}
+						</SimpleGrid>
+					}
+				</SectionCard>
 
-							<SimpleGrid cols={{ base: 1, md: 2 }}>
-								{partners.map((partner) => (
-									<Paper key={partner.id} withBorder p="md">
-										<Group justify="space-between" mb="xs">
-											<Group>
+				<SectionCard
+					id="partners"
+					title="Partners"
+					description="Logos shown in the partners carousel."
+					count={partners.length}
+					action={
+						<Button leftSection={<IconPlus size={16} />} onClick={() => openPartner(null)}>
+							Add partner
+						</Button>
+					}
+				>
+					{partners.length === 0 ?
+						<EmptyState label="partners" />
+					:	<SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+							{partners.map((partner) => (
+								<Paper key={partner.id} withBorder p="md">
+									<Group justify="space-between" align="flex-start" wrap="nowrap">
+										<Group gap="md" wrap="nowrap" style={{ minWidth: 0 }}>
+											<Box
+												style={{
+													width: 72,
+													height: 72,
+													flexShrink: 0,
+													borderRadius: 14,
+													background: "#f4f5f7",
+													display: "flex",
+													alignItems: "center",
+													justifyContent: "center",
+													overflow: "hidden",
+												}}
+											>
+												{/* eslint-disable-next-line @next/next/no-img-element */}
 												<img
 													src={convertToApiUrl(partner.logo_url)}
 													alt={partner.name}
-													height={80}
-													width={80}
-													style={{
-														objectFit: "contain",
-														objectPosition: "center",
-													}}
+													style={{ width: "100%", height: "100%", objectFit: "contain" }}
 												/>
-												<div>
-													<Text fw={500}>{partner.name}</Text>
-													<Text size="sm" c="dimmed">
-														{partner.description}
-													</Text>
-												</div>
-											</Group>
-											<Group gap="xs">
-												<ActionIcon
-													variant="light"
-													color="orange"
-													onClick={() => handleEditPartner(partner)}
-												>
-													<IconEdit size={16} />
-												</ActionIcon>
-												<ActionIcon
-													variant="light"
-													color="red"
-													onClick={() => handleDeletePartner(partner.id)}
-												>
-													<IconTrash size={16} />
-												</ActionIcon>
-											</Group>
-										</Group>
-									</Paper>
-								))}
-							</SimpleGrid>
-						</Paper>
-					</Accordion.Panel>
-				</Accordion.Item>
-
-
-
-				{/* Testimonials Section */}
-				{/* <Accordion.Item value="testimonials">
-					<Accordion.Control>
-						<Title order={4}>Testimonials</Title>
-					</Accordion.Control>
-					<Accordion.Panel>
-						<Paper withBorder p="md">
-							<Group justify="space-between" mb="md">
-								<Text fw={500}>Testimonials</Text>
-								<Button
-									leftSection={<IconPlus size={16} />}
-									onClick={() => {
-										setEditingTestimonial(null);
-										testimonialForm.reset();
-										openTestimonialModal();
-									}}
-								>
-									Add Testimonial
-								</Button>
-							</Group>
-
-							<SimpleGrid cols={{ base: 1, md: 2 }}>
-								{testimonials.map((testimonial) => (
-									<Paper key={testimonial.id} withBorder p="md">
-										<Group justify="space-between" mb="xs">
-											<div>
-												<Text fw={500}>{testimonial.client}</Text>
-												<Text size="sm" c="dimmed">
-													{testimonial.position}
+											</Box>
+											<div style={{ minWidth: 0 }}>
+												<Text fw={600} truncate>
+													{partner.name}
+												</Text>
+												<Text size="sm" c="dimmed" lineClamp={2}>
+													{partner.description || "No description"}
 												</Text>
 											</div>
-											<Group gap="xs">
-												<ActionIcon
-													variant="light"
-													color="orange"
-													onClick={() => handleEditTestimonial(testimonial)}
-												>
-													<IconEdit size={16} />
-												</ActionIcon>
-												<ActionIcon
-													variant="light"
-													color="red"
-													onClick={() => handleDeleteTestimonial(testimonial.id)}
-												>
-													<IconTrash size={16} />
-												</ActionIcon>
-											</Group>
 										</Group>
-										<Text size="sm">{testimonial.content}</Text>
-									</Paper>
-								))}
-							</SimpleGrid>
-						</Paper>
-					</Accordion.Panel>
-				</Accordion.Item> */}
+										<ItemMenu
+											label={partner.name}
+											onEdit={() => openPartner(partner)}
+											onDelete={() => setPendingDelete({ section: "partners", id: partner.id, label: partner.name })}
+										/>
+									</Group>
+								</Paper>
+							))}
+						</SimpleGrid>
+					}
+				</SectionCard>
+			</Stack>
 
-				{/* Contact Info Section */}
-				{/* <Accordion.Item value="contact">
-					<Accordion.Control>
-						<Title order={4}>Contact Information</Title>
-					</Accordion.Control>
-					<Accordion.Panel>
-						<Paper withBorder p="md">
-							<Group justify="space-between" mb="md">
-								<Text fw={500}>Contact Information</Text>
-								<Button
-									leftSection={<IconPlus size={16} />}
-									onClick={() => {
-										setEditingContact(null);
-										contactForm.reset();
-										openContactModal();
-									}}
-								>
-									Add Contact Info
-								</Button>
-							</Group>
-
-							<SimpleGrid cols={{ base: 1, md: 2 }}>
-								{contactInfo.map((contact) => (
-									<Paper key={contact.id} withBorder p="md">
-										<Group justify="space-between" mb="xs">
-											<div>
-												<Text fw={500}>{contact.medium}</Text>
-												<Text size="sm" c="dimmed">
-													{contact.email || contact.phone_number}
-												</Text>
-											</div>
-											<Group gap="xs">
-												<ActionIcon
-													variant="light"
-													color="orange"
-													onClick={() => handleEditContact(contact)}
-												>
-													<IconEdit size={16} />
-												</ActionIcon>
-												<ActionIcon
-													variant="light"
-													color="red"
-													onClick={() => handleDeleteContact(contact.id)}
-												>
-													<IconTrash size={16} />
-												</ActionIcon>
-											</Group>
-										</Group>
-									</Paper>
-								))}
-							</SimpleGrid>
-						</Paper>
-					</Accordion.Panel>
-				</Accordion.Item> */}
-			</Accordion>
-
-			{/* Modals */}
-			<Modal
-				opened={statModalOpened}
-				onClose={closeStatModal}
-				title={editingStat ? "Edit Statistic" : "Add Statistic"}
-			>
+			<Modal opened={statModalOpened} onClose={statModal.close} title={editingStat ? "Edit statistic" : "Add statistic"}>
 				<form onSubmit={statForm.onSubmit(handleStatSubmit)}>
 					<Stack>
-						<TextInput
-							label="Statistic"
-							placeholder="e.g., 500+"
-							required
-							{...statForm.getInputProps("stat")}
-						/>
-						<TextInput
-							label="Description"
-							placeholder="e.g., Happy Clients"
-							required
-							{...statForm.getInputProps("description")}
-						/>
+						<TextInput label="Number" placeholder="e.g. 500+" {...statForm.getInputProps("stat")} />
+						<TextInput label="Label" placeholder="e.g. Happy clients" {...statForm.getInputProps("description")} />
 						<Group justify="flex-end">
-							<Button variant="light" onClick={closeStatModal} disabled={isSubmitting}>
+							<Button variant="default" onClick={statModal.close} disabled={submitting}>
 								Cancel
 							</Button>
-							<Button type="submit" loading={isSubmitting}>
-								{editingStat ? "Update" : "Add"}
+							<Button type="submit" loading={submitting}>
+								{editingStat ? "Save" : "Add"}
 							</Button>
 						</Group>
 					</Stack>
@@ -1174,195 +518,71 @@ export default function HomepageManagement({
 
 			<Modal
 				opened={practiceModalOpened}
-				onClose={closePracticeModal}
-				title={editingPractice ? "Edit Practice" : "Add Practice"}
+				onClose={practiceModal.close}
+				title={editingPractice ? "Edit practice area" : "Add practice area"}
+				size="lg"
 			>
 				<form onSubmit={practiceForm.onSubmit(handlePracticeSubmit)}>
 					<Stack>
-						<TextInput
-							label="Practice Title"
-							placeholder="Enter practice title"
-							required
-							{...practiceForm.getInputProps("title")}
-						/>
-						<Text size="sm" fw={500} mb={8}>
-							Description
-						</Text>
-						<RichTextEditor editor={practiceDescriptionEditor}>
-							<RichTextEditor.Toolbar sticky stickyOffset={60}>
-								<RichTextEditor.ControlsGroup>
-									<RichTextEditor.Bold />
-									<RichTextEditor.Italic />
-									<RichTextEditor.Underline />
-									<RichTextEditor.Strikethrough />
-									<RichTextEditor.Highlight />
-								</RichTextEditor.ControlsGroup>
-
-								<RichTextEditor.ControlsGroup>
-									<RichTextEditor.H1 />
-									<RichTextEditor.H2 />
-									<RichTextEditor.H3 />
-									<RichTextEditor.H4 />
-								</RichTextEditor.ControlsGroup>
-
-								<RichTextEditor.ControlsGroup>
-									<RichTextEditor.BulletList />
-									<RichTextEditor.OrderedList />
-									<RichTextEditor.Hr />
-									<RichTextEditor.Blockquote />
-								</RichTextEditor.ControlsGroup>
-
-								<RichTextEditor.ControlsGroup>
-									<RichTextEditor.Link />
-									<RichTextEditor.Unlink />
-								</RichTextEditor.ControlsGroup>
-
-								<RichTextEditor.ControlsGroup>
-									<RichTextEditor.AlignLeft />
-									<RichTextEditor.AlignCenter />
-									<RichTextEditor.AlignRight />
-									<RichTextEditor.AlignJustify />
-								</RichTextEditor.ControlsGroup>
-
-								<RichTextEditor.ControlsGroup>
-									<RichTextEditor.Superscript />
-									<RichTextEditor.Subscript />
-								</RichTextEditor.ControlsGroup>
-							</RichTextEditor.Toolbar>
-
-							<RichTextEditor.Content />
-						</RichTextEditor>
+						<TextInput label="Title" placeholder="e.g. Corporate law" {...practiceForm.getInputProps("title")} />
+						<div>
+							<Text size="sm" fw={500} mb={6}>
+								Description
+							</Text>
+							<RichEditor editor={practiceEditor} />
+						</div>
 						<Group justify="flex-end">
-							<Button
-								variant="light"
-								onClick={() => {
-									closePracticeModal();
-									setPracticeDescriptionContent("");
-									practiceDescriptionEditor?.commands.setContent("");
-								}}
-								disabled={isSubmitting}
-							>
+							<Button variant="default" onClick={practiceModal.close} disabled={submitting}>
 								Cancel
 							</Button>
-							<Button type="submit" loading={isSubmitting}>
-								{editingPractice ? "Update" : "Add"}
+							<Button type="submit" loading={submitting}>
+								{editingPractice ? "Save" : "Add"}
 							</Button>
 						</Group>
 					</Stack>
 				</form>
 			</Modal>
 
-			<Modal
-				opened={partnerModalOpened}
-				onClose={closePartnerModal}
-				title={editingPartner ? "Edit Partner" : "Add Partner"}
-			>
+			<Modal opened={partnerModalOpened} onClose={partnerModal.close} title={editingPartner ? "Edit partner" : "Add partner"}>
 				<form onSubmit={partnerForm.onSubmit(handlePartnerSubmit)}>
 					<Stack>
-						<TextInput
-							label="Partner Name"
-							placeholder="Enter partner name"
-							required
-							{...partnerForm.getInputProps("name")}
-						/>
+						<TextInput label="Name" placeholder="Partner name" {...partnerForm.getInputProps("name")} />
 						<FileInput
 							label="Logo"
-							placeholder="Upload partner logo"
+							placeholder={editingPartner ? "Keep current logo" : "Upload logo"}
 							accept="image/*"
+							clearable
 							leftSection={<IconUpload size={16} />}
-							{...partnerForm.getInputProps("logo_url")}
+							{...partnerForm.getInputProps("logo")}
 						/>
-						<Textarea
-							label="Description"
-							placeholder="Enter partner description"
-							rows={3}
-							{...partnerForm.getInputProps("description")}
-						/>
+						<Textarea label="Description" rows={3} {...partnerForm.getInputProps("description")} />
 						<Group justify="flex-end">
-							<Button
-								variant="light"
-								onClick={closePartnerModal}
-								disabled={isSubmitting}
-							>
+							<Button variant="default" onClick={partnerModal.close} disabled={submitting}>
 								Cancel
 							</Button>
-							<Button type="submit" loading={isSubmitting}>
-								{editingPartner ? "Update" : "Add"}
+							<Button type="submit" loading={submitting}>
+								{editingPartner ? "Save" : "Add"}
 							</Button>
 						</Group>
 					</Stack>
 				</form>
 			</Modal>
 
-			<Modal
-				opened={testimonialModalOpened}
-				onClose={closeTestimonialModal}
-				title={editingTestimonial ? "Edit Testimonial" : "Add Testimonial"}
-			>
-				<form onSubmit={testimonialForm.onSubmit(handleTestimonialSubmit)}>
-					<Stack>
-						<TextInput
-							label="Client Name"
-							placeholder="Enter client name"
-							required
-							{...testimonialForm.getInputProps("client")}
-						/>
-						<TextInput
-							label="Position"
-							placeholder="Enter position/title"
-							required
-							{...testimonialForm.getInputProps("position")}
-						/>
-						<Textarea
-							label="Testimonial Content"
-							placeholder="Enter testimonial content"
-							rows={4}
-							required
-							{...testimonialForm.getInputProps("content")}
-						/>
-						<Group justify="flex-end">
-							<Button variant="light" onClick={closeTestimonialModal}>
-								Cancel
-							</Button>
-							<Button type="submit">{editingTestimonial ? "Update" : "Add"}</Button>
-						</Group>
-					</Stack>
-				</form>
+			<Modal opened={pendingDelete !== null} onClose={() => setPendingDelete(null)} title="Delete item?" size="sm">
+				<Stack>
+					<Text size="sm">
+						“{pendingDelete?.label}” will be removed from the homepage. Other items are not affected.
+					</Text>
+					<Group justify="flex-end">
+						<Button variant="default" onClick={() => setPendingDelete(null)} disabled={deleting}>
+							Cancel
+						</Button>
+						<Button color="red" onClick={confirmDelete} loading={deleting}>
+							Delete
+						</Button>
+					</Group>
+				</Stack>
 			</Modal>
-
-			<Modal
-				opened={contactModalOpened}
-				onClose={closeContactModal}
-				title={editingContact ? "Edit Contact Info" : "Add Contact Info"}
-			>
-				<form onSubmit={contactForm.onSubmit(handleContactSubmit)}>
-					<Stack>
-						<TextInput
-							label="Medium"
-							placeholder="e.g., Email, Phone, WhatsApp"
-							required
-							{...contactForm.getInputProps("medium")}
-						/>
-						<TextInput
-							label="Email"
-							placeholder="Enter email address"
-							{...contactForm.getInputProps("email")}
-						/>
-						<TextInput
-							label="Phone Number"
-							placeholder="Enter phone number"
-							{...contactForm.getInputProps("phone_number")}
-						/>
-						<Group justify="flex-end">
-							<Button variant="light" onClick={closeContactModal}>
-								Cancel
-							</Button>
-							<Button type="submit">{editingContact ? "Update" : "Add"}</Button>
-						</Group>
-					</Stack>
-				</form>
-			</Modal>
-
-		</div>
+		</Box>
 	);
 }

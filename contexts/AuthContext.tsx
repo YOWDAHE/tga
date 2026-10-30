@@ -24,7 +24,7 @@ interface AuthContextType {
 	user: User | null;
 	isAuthenticated: boolean;
 	login: (userData: User) => void;
-	logout: () => void;
+	logout: () => Promise<void>;
 	updateUser: (userData: Partial<User>) => void;
 	isLoading: boolean;
 	hasPermission: (permission: UserPermission) => boolean;
@@ -36,7 +36,7 @@ const AuthContext = createContext<AuthContextType>({
 	user: null,
 	isAuthenticated: false,
 	login: () => {},
-	logout: () => {},
+	logout: async () => {},
 	updateUser: () => {},
 	isLoading: true,
 	hasPermission: () => false,
@@ -91,9 +91,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		setIsAuthenticated(true);
 	};
 
-	const logout = () => {
-		setUser(null);
-		setIsAuthenticated(false);
+	// The session lives in httpOnly cookies, so only the server can end it
+	const logout = async () => {
+		try {
+			await fetch("/office/api/auth/sign-out/", {
+				method: "POST",
+				credentials: "include",
+			});
+		} finally {
+			setUser(null);
+			setIsAuthenticated(false);
+		}
 	};
 
 	const updateUser = (userData: Partial<User>) => {

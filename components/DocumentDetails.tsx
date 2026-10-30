@@ -1,84 +1,104 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-	Paper,
-	Group,
-	Text,
-	Button,
-	Stack,
-	Title,
-	Badge,
-	Divider,
-	Grid,
-	Card,
-	ActionIcon,
-	Modal,
-	TextInput,
-	Textarea,
-	Select,
-	Loader,
-} from "@mantine/core";
+import { Button, Group, Modal, Select, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { useForm } from "@mantine/form";
-import {
-	IconDownload,
-	IconEdit,
-	IconTrash,
-	IconFileText,
-	IconArrowLeft,
-	IconEye,
-	IconCalendar,
-	IconUser,
-	IconCategory,
-	IconFile,
-	IconExternalLink,
-} from "@tabler/icons-react";
-import { updateDocument, deleteDocument } from "@/app/actions/archive.actions";
+import { IconDownload, IconEdit, IconExternalLink, IconFileUpload, IconTrash } from "@tabler/icons-react";
+import { updateDocument, deleteDocument, replaceDocumentFile } from "@/app/actions/archive.actions";
 import { Document } from "@/types";
+import { convertToApiUrl } from "@/lib/utils";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import { formatDate } from "./admin-ui";
+import {
+	Chips,
+	EditorFrame,
+	Facts,
+	SaveState,
+	SideCard,
+	TitleBlock,
+	Workspace,
+	editorClasses as classes,
+	splitList,
+	useEditorGuards,
+} from "./editor";
 
 interface DocumentDetailsProps {
 	document: Document;
 	categories: { value: string; label: string }[];
 }
 
+function formatFileSize(bytes?: number | null) {
+	if (!bytes) return "—";
+	if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+	return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+const fileExtension = (doc: Document) => {
+	const name = (doc.filename || doc.file_url || "").split("?")[0];
+	const ext = name.includes(".") ? name.split(".").pop() : "";
+	return (ext || "").toLowerCase();
+};
+
+const valuesOf = (doc: Document) => ({
+	title: doc.title ?? "",
+	category_id: doc.category_id != null ? String(doc.category_id) : "",
+	author: doc.author || "",
+	description: doc.description || "",
+});
+
 const DocumentDetails = ({ document, categories }: DocumentDetailsProps) => {
-	const [loading, setLoading] = useState(false);
-	const [editModalOpened, { open: openEditModal, close: closeEditModal }] =
-		useDisclosure(false);
-	const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] =
-		useDisclosure(false);
 	const router = useRouter();
+	const [editing, setEditing] = useState(false);
+	const [values, setValues] = useState(() => valuesOf(document));
+	const [errors, setErrors] = useState<{ title?: string; category?: string }>({});
+	const [saving, setSaving] = useState(false);
+	const [deleting, setDeleting] = useState(false);
+	const [savedAt, setSavedAt] = useState<string | Date | null>(document.updatedAt ?? null);
+	const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+	const [showAllText, setShowAllText] = useState(false);
+	const fileInput = useRef<HTMLInputElement>(null);
+	const [newFile, setNewFile] = useState<File | null>(null);
+	const [replacing, setReplacing] = useState(false);
 
-	const form = useForm({
-		initialValues: {
-			title: document.title,
-			category_id: document.category_id.toString(),
-			author: document.author || "",
-			description: document.description || "",
-		},
-		validate: {
-			title: (value) => (!value ? "Title is required" : null),
-			category_id: (value) => (!value ? "Category is required" : null),
-		},
-	});
+	const fileUrl = convertToApiUrl(document.file_url) ?? document.file_url;
+	const ext = fileExtension(document);
+	const previewable = ext === "pdf" || (!ext && Boolean(document.file_url));
+	const categoryName =
+		categories.find((c) => c.value === String(document.category_id))?.label ?? "Uncategorised";
+	const keywords = splitList(document.seo_keywords);
+	const contentText = document.content_text?.trim() ?? "";
 
-	const handleEdit = () => {
-		form.setValues({
-			title: document.title,
-			category_id: document.category_id.toString(),
-			author: document.author || "",
-			description: document.description || "",
-		});
-		openEditModal();
+	const dirty = editing && JSON.stringify(values) !== JSON.stringify(valuesOf(document));
+	const set = (key: keyof typeof values) => (value: string) => setValues((v) => ({ ...v, [key]: value }));
+
+	const startEdit = () => {
+		setValues(valuesOf(document));
+		setErrors({});
+		setEditing(true);
 	};
 
-	const handleSubmit = async (values: typeof form.values) => {
-		setLoading(true);
+	const cancelEdit = () => {
+		setValues(valuesOf(document));
+		setErrors({});
+		setEditing(false);
+	};
 
+	const save = async () => {
+		if (!editing || saving) return;
+		const nextErrors = {
+			title: values.title.trim() ? undefined : "Title is required",
+			category: values.category_id ? undefined : "Category is required",
+		};
+		setErrors(nextErrors);
+		if (nextErrors.title || nextErrors.category) return;
+		if (!dirty) {
+			setEditing(false);
+			return;
+		}
+
+		setSaving(true);
 		try {
 			const result = await updateDocument({
 				id: document.id!,
@@ -89,355 +109,293 @@ const DocumentDetails = ({ document, categories }: DocumentDetailsProps) => {
 			});
 
 			if (result.success) {
-				notifications.show({
-					title: "Success",
-					message: "Document updated successfully",
-					color: "green",
-				});
-				closeEditModal();
+				notifications.show({ title: "Saved", message: "Document updated successfully", color: "green" });
+				setSavedAt(result.data?.updatedAt ?? new Date());
+				setEditing(false);
 				router.refresh();
 			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to update document",
-					color: "red",
-				});
+				notifications.show({ title: "Error", message: result.error || "Failed to update document", color: "red" });
 			}
-		} catch (error) {
-			notifications.show({
-				title: "Error",
-				message: "An unexpected error occurred",
-				color: "red",
-			});
+		} catch {
+			notifications.show({ title: "Error", message: "An unexpected error occurred", color: "red" });
 		} finally {
-			setLoading(false);
+			setSaving(false);
 		}
 	};
 
-	const handleDelete = async () => {
-		openDeleteModal();
-	};
+	useEditorGuards({ dirty, onSave: save });
 
 	const handleConfirmDelete = async () => {
-		setLoading(true);
+		setDeleting(true);
 		try {
 			const result = await deleteDocument(document.id!);
 			if (result.success) {
-				notifications.show({
-					title: "Success",
-					message: "Document deleted successfully",
-					color: "green",
-				});
+				notifications.show({ title: "Deleted", message: "Document deleted successfully", color: "green" });
 				router.push("/archives");
 			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to delete document",
-					color: "red",
-				});
+				notifications.show({ title: "Error", message: result.error || "Failed to delete document", color: "red" });
 			}
-		} catch (error) {
-			notifications.show({
-				title: "Error",
-				message: "An unexpected error occurred",
-				color: "red",
-			});
+		} catch {
+			notifications.show({ title: "Error", message: "An unexpected error occurred", color: "red" });
 		} finally {
-			setLoading(false);
+			setDeleting(false);
 			closeDeleteModal();
 		}
 	};
 
-	const formatFileSize = (bytes: number) => {
-		if (bytes === 0) return "0 Bytes";
-		const k = 1024;
-		const sizes = ["Bytes", "KB", "MB", "GB"];
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+	const confirmReplace = async () => {
+		if (!newFile) return;
+		setReplacing(true);
+		const result = await replaceDocumentFile(document.id!, newFile);
+		setReplacing(false);
+		if (result.success) {
+			notifications.show({
+				title: "File replaced",
+				message: `${newFile.name} is now the document's file; the old file was deleted`,
+				color: "green",
+			});
+			setNewFile(null);
+			setSavedAt(result.data?.updatedAt ?? new Date());
+			router.refresh();
+		} else {
+			notifications.show({ title: "Couldn't replace the file", message: result.error, color: "red" });
+		}
 	};
 
-	const formatDate = (date: string | Date) => {
-		return new Date(date).toLocaleDateString("en-US", {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-		});
-	};
+	const busy = saving || deleting || replacing;
 
-	const getCategoryName = (categoryId: number) => {
-		return categories.find((cat) => cat.value === categoryId.toString())?.label || "Unknown";
-	};
+	const fileActions = (
+		<>
+			<Button
+				variant="default"
+				component="a"
+				href={fileUrl}
+				target="_blank"
+				rel="noopener noreferrer"
+				leftSection={<IconExternalLink size={16} />}
+			>
+				Open
+			</Button>
+			<Button variant="default" component="a" href={fileUrl} download={document.filename || true} leftSection={<IconDownload size={16} />}>
+				Download
+			</Button>
+		</>
+	);
+
+	const preview =
+		previewable ?
+			<div className={classes.filePreview}>
+				<div className={classes.filePreviewHead}>
+					<span>Preview</span>
+					<span style={{ textTransform: "none", letterSpacing: 0, fontWeight: 500 }}>{document.filename}</span>
+				</div>
+				<iframe src={`${fileUrl}#navpanes=0`} title={`Preview of ${document.title}`} loading="lazy" />
+			</div>
+		:	<div className={classes.fileCard}>
+				<span className={classes.fileIcon}>{(ext || "file").slice(0, 4).toUpperCase()}</span>
+				<div className={classes.fileInfo}>
+					<div className={classes.fileName}>{document.filename || document.title}</div>
+					<div className={classes.fileMeta}>
+						{formatFileSize(document.file_size)} · Preview isn&apos;t available for this file type
+					</div>
+				</div>
+				<div className={classes.fileActions}>{fileActions}</div>
+			</div>;
+
+	const extracted = contentText && (
+		<section className={classes.section}>
+			<div className={classes.sectionHeader}>
+				<div className={classes.sectionTitle}>Extracted text</div>
+				{contentText.length > 600 && (
+					<button type="button" className={classes.linkButton} onClick={() => setShowAllText((v) => !v)}>
+						{showAllText ? "Show less" : "Show all"}
+					</button>
+				)}
+			</div>
+			<div className={classes.extracted} data-clamped={(!showAllText && contentText.length > 600) || undefined}>
+				{contentText}
+			</div>
+		</section>
+	);
 
 	return (
-		<div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
-			{/* Header */}
-			<Paper withBorder p="xl" radius="md" mb="lg">
-				<Group justify="space-between" align="center">
-					<Group>
-						<Button
-							variant="light"
-							leftSection={<IconArrowLeft size={16} />}
-							onClick={() => router.push("/archives")}
-						>
-							Back to Archives
+		<EditorFrame
+			back={{ href: "/archives", label: "Archives" }}
+			status={editing ? <SaveState saving={saving} dirty={dirty} /> : <SaveState savedAt={savedAt} />}
+			actions={
+				editing ?
+					<>
+						<Button variant="default" onClick={cancelEdit} disabled={saving}>
+							Cancel
 						</Button>
-						<Divider orientation="vertical" />
-						<Group gap="sm">
-							<IconFileText size={24} color="red" />
-							<Title order={2}>{document.title}</Title>
-						</Group>
-					</Group>
-					<Group gap="xs">
-						<ActionIcon
-							variant="light"
-							color="blue"
-							component="a"
-							href={document.file_url}
-							download
-							disabled={loading}
-							title="Download Document"
-						>
-							<IconDownload size={16} />
-						</ActionIcon>
-						<ActionIcon
-							variant="light"
-							color="orange"
-							onClick={handleEdit}
-							disabled={loading}
-							title="Edit Document"
-						>
-							<IconEdit size={16} />
-						</ActionIcon>
-						<ActionIcon
-							variant="light"
+						<Button onClick={save} loading={saving}>
+							Save
+						</Button>
+					</>
+				:	<>
+						<Button
+							variant="subtle"
 							color="red"
-							onClick={handleDelete}
-							disabled={loading}
-							title="Delete Document"
+							onClick={openDeleteModal}
+							disabled={busy}
+							leftSection={<IconTrash size={16} />}
 						>
-							<IconTrash size={16} />
-						</ActionIcon>
-					</Group>
-				</Group>
-			</Paper>
+							Delete
+						</Button>
+						<Button onClick={startEdit} disabled={busy} leftSection={<IconEdit size={16} />}>
+							Edit
+						</Button>
+					</>
+			}
+		>
+			{editing && (
+				<TitleBlock
+					eyebrow="Archives · Edit document"
+					title={values.title}
+					onTitle={(value) => {
+						set("title")(value);
+						if (value.trim()) setErrors((e) => ({ ...e, title: undefined }));
+					}}
+					titlePlaceholder="Document title"
+					titleError={errors.title}
+					summary={values.description}
+					onSummary={set("description")}
+					summaryPlaceholder="Add a short description (optional)"
+				/>
+			)}
 
-			{/* Document Information */}
-			<Grid gutter="lg">
-				{/* Main Details */}
-				<Grid.Col span={8}>
-					<Paper withBorder p="xl" radius="md">
-						<Stack gap="lg">
-							<Title order={3}>Document Information</Title>
-							
-							<Grid>
-								<Grid.Col span={6}>
-									<Stack gap="xs">
-										<Text size="sm" c="dimmed">
-											<IconUser size={14} style={{ marginRight: 4 }} />
-											Author
-										</Text>
-										<Text fw={500}>
-											{document.author || "Not specified"}
-										</Text>
-									</Stack>
-								</Grid.Col>
-								<Grid.Col span={6}>
-									<Stack gap="xs">
-										<Text size="sm" c="dimmed">
-											<IconCategory size={14} style={{ marginRight: 4 }} />
-											Category
-										</Text>
-										<Badge variant="light" size="lg">
-											{getCategoryName(document.category_id)}
-										</Badge>
-									</Stack>
-								</Grid.Col>
-								<Grid.Col span={6}>
-									<Stack gap="xs">
-										<Text size="sm" c="dimmed">
-											<IconFile size={14} style={{ marginRight: 4 }} />
-											File Size
-										</Text>
-										<Text fw={500}>
-											{formatFileSize(document.file_size)}
-										</Text>
-									</Stack>
-								</Grid.Col>
-								<Grid.Col span={6}>
-									<Stack gap="xs">
-										<Text size="sm" c="dimmed">
-											<IconEye size={14} style={{ marginRight: 4 }} />
-											Views
-										</Text>
-										<Text fw={500}>
-											{document.view_count || 0}
-										</Text>
-									</Stack>
-								</Grid.Col>
-							</Grid>
+			<Workspace
+				main={
+					<>
+						{!editing && (
+							<article className={classes.article}>
+								<div className={classes.articleInner}>
+									<div className={classes.eyebrow}>{categoryName}</div>
+									<h1 className={classes.articleTitle}>{document.title}</h1>
+									<div className={classes.articleMeta}>
+										{document.author && <span>{document.author}</span>}
+										<span>{formatDate(document.createdAt)}</span>
+										{Boolean(document.file_size) && <span>{formatFileSize(document.file_size)}</span>}
+										<span>{(document.view_count ?? 0).toLocaleString()} views</span>
+									</div>
+									{document.description ?
+										<p className={classes.articleSummary}>{document.description}</p>
+									:	<p className={classes.empty} style={{ marginTop: 20 }}>
+											No description.
+										</p>
+									}
+								</div>
+							</article>
+						)}
+						{preview}
+						{extracted}
+					</>
+				}
+				aside={
+					<>
+						{editing && (
+							<SideCard title="Details">
+								<Select
+									label="Category"
+									placeholder="Choose a category"
+									data={categories}
+									value={values.category_id || null}
+									onChange={(v) => {
+										set("category_id")(v ?? "");
+										if (v) setErrors((e) => ({ ...e, category: undefined }));
+									}}
+									error={errors.category}
+									searchable
+									nothingFoundMessage="No matching category"
+									mb="sm"
+								/>
+								<TextInput
+									label="Author"
+									placeholder="Optional"
+									value={values.author}
+									onChange={(e) => set("author")(e.currentTarget.value)}
+								/>
+							</SideCard>
+						)}
 
-							<Divider />
+						<SideCard title="File">
+							<Facts
+								items={[
+									{ label: "Filename", value: document.filename || "—" },
+									{ label: "Type", value: ext ? ext.toUpperCase() : "—" },
+									{ label: "Size", value: formatFileSize(document.file_size) },
+									{ label: "Views", value: (document.view_count ?? 0).toLocaleString() },
+								]}
+							/>
+							<div className={classes.asideButtons}>{fileActions}</div>
+							<input
+								ref={fileInput}
+								type="file"
+								accept="application/pdf,.pdf"
+								hidden
+								onChange={(e) => {
+									const file = e.target.files?.[0];
+									if (file) setNewFile(file);
+									e.target.value = "";
+								}}
+							/>
+							<Button
+								fullWidth
+								mt="xs"
+								variant="light"
+								leftSection={<IconFileUpload size={16} />}
+								onClick={() => fileInput.current?.click()}
+								disabled={busy}
+							>
+								Replace file
+							</Button>
+						</SideCard>
 
-							{/* Description */}
-							{document.description && (
-								<Stack gap="xs">
-									<Title order={4}>Description</Title>
-									<Text>{document.description}</Text>
-								</Stack>
-							)}
+						{!editing && (
+							<SideCard title="Details">
+								<Facts
+									items={[
+										{ label: "Category", value: categoryName },
+										{ label: "Author", value: document.author || "—" },
+										{ label: "Uploaded", value: formatDate(document.createdAt) },
+										Boolean(document.updatedAt) && { label: "Last edited", value: formatDate(document.updatedAt) },
+									]}
+								/>
+							</SideCard>
+						)}
 
-							{/* Content Preview */}
-							{document.content_text && (
-								<Stack gap="xs">
-									<Title order={4}>Content Preview</Title>
-									<Paper withBorder p="md" bg="gray.0">
-										<Text size="sm" lineClamp={6}>
-											{document.content_text}
-										</Text>
-									</Paper>
-								</Stack>
-							)}
-						</Stack>
-					</Paper>
-				</Grid.Col>
+						<SideCard title="Search keywords" hint="Used by search; not shown on the website.">
+							{keywords.length ? <Chips items={keywords} /> : <p className={classes.prose}>None</p>}
+						</SideCard>
+					</>
+				}
+			/>
 
-				{/* Sidebar */}
-				<Grid.Col span={4}>
-					<Stack gap="lg">
-						{/* File Details */}
-						<Paper withBorder p="xl" radius="md">
-							<Stack gap="md">
-								<Title order={4}>File Details</Title>
-								
-								<Stack gap="xs">
-									<Text size="sm" c="dimmed">
-										<IconFileText size={14} style={{ marginRight: 4 }} />
-										Filename
-									</Text>
-									<Text size="sm" fw={500}>
-										{document.filename}
-									</Text>
-								</Stack>
-
-								<Stack gap="xs">
-									<Text size="sm" c="dimmed">
-										<IconCalendar size={14} style={{ marginRight: 4 }} />
-										Uploaded
-									</Text>
-									<Text size="sm" fw={500}>
-										{formatDate(document.createdAt)}
-									</Text>
-								</Stack>
-
-								{document.updatedAt && document.updatedAt !== document.createdAt && (
-									<Stack gap="xs">
-										<Text size="sm" c="dimmed">
-											<IconCalendar size={14} style={{ marginRight: 4 }} />
-											Last Modified
-										</Text>
-										<Text size="sm" fw={500}>
-											{formatDate(document.updatedAt)}
-										</Text>
-									</Stack>
-								)}
-
-								<Divider />
-
-								<Button
-									component="a"
-									href={document.file_url}
-									target="_blank"
-									leftSection={<IconExternalLink size={16} />}
-									fullWidth
-								>
-									View in Browser
-								</Button>
-							</Stack>
-						</Paper>
-
-						{/* Quick Actions */}
-						<Paper withBorder p="xl" radius="md">
-							<Stack gap="md">
-								<Title order={4}>Quick Actions</Title>
-								
-								<Button
-									variant="light"
-									leftSection={<IconDownload size={16} />}
-									component="a"
-									href={document.file_url}
-									download
-									fullWidth
-								>
-									Download PDF
-								</Button>
-								
-								<Button
-									variant="light"
-									color="orange"
-									leftSection={<IconEdit size={16} />}
-									onClick={handleEdit}
-									fullWidth
-								>
-									Edit Document
-								</Button>
-							</Stack>
-						</Paper>
-					</Stack>
-				</Grid.Col>
-			</Grid>
-
-			{/* Edit Modal */}
 			<Modal
-				opened={editModalOpened}
-				onClose={closeEditModal}
-				title="Edit Document"
-				size="lg"
+				opened={Boolean(newFile)}
+				onClose={() => !replacing && setNewFile(null)}
+				title="Replace file"
+				centered
+				radius="lg"
 			>
-				<form onSubmit={form.onSubmit(handleSubmit)}>
-					<Stack gap="md">
-						<TextInput
-							label="Document Title"
-							placeholder="Enter document title"
-							required
-							{...form.getInputProps("title")}
-						/>
-
-						<Select
-							label="Category"
-							placeholder="Select category"
-							data={categories}
-							required
-							{...form.getInputProps("category_id")}
-						/>
-
-						<TextInput
-							label="Author"
-							placeholder="Document author"
-							{...form.getInputProps("author")}
-						/>
-
-						<Textarea
-							label="Description"
-							placeholder="Document description"
-							rows={3}
-							{...form.getInputProps("description")}
-						/>
-
-						<Group justify="flex-end">
-							<Button variant="light" onClick={closeEditModal}>
-								Cancel
-							</Button>
-							<Button type="submit" loading={loading}>
-								Update Document
-							</Button>
-						</Group>
-					</Stack>
-				</form>
+				<Text size="sm">
+					Replace <b>{document.filename || "the current file"}</b> with <b>{newFile?.name}</b> (
+					{formatFileSize(newFile?.size)})?
+				</Text>
+				<Text size="sm" c="dimmed" mt="xs">
+					The current file is deleted from the server once the new one is saved. The title, description and other
+					details stay the same.
+				</Text>
+				<Group justify="flex-end" mt="lg">
+					<Button variant="default" onClick={() => setNewFile(null)} disabled={replacing}>
+						Cancel
+					</Button>
+					<Button onClick={confirmReplace} loading={replacing} leftSection={<IconFileUpload size={16} />}>
+						Replace file
+					</Button>
+				</Group>
 			</Modal>
 
-			{/* Delete Confirmation Modal */}
 			<DeleteConfirmationModal
 				opened={deleteModalOpened}
 				onClose={closeDeleteModal}
@@ -445,10 +403,10 @@ const DocumentDetails = ({ document, categories }: DocumentDetailsProps) => {
 				title="Delete Document"
 				itemName={document.title}
 				itemType="document"
-				loading={loading}
+				loading={deleting}
 			/>
-		</div>
+		</EditorFrame>
 	);
 };
 
-export default DocumentDetails; 
+export default DocumentDetails;

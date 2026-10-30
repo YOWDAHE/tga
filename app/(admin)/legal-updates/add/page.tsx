@@ -35,7 +35,7 @@ export default async function LegalUpdatesAddPage({ searchParams }: LegalUpdates
 
   return (
     <Suspense fallback={<Skeleton height={400} />}>
-      <LegalUpdatesForm legalUpdateToEdit={legalUpdateToEdit} categories={categories} />
+      <LegalUpdatesForm key={editId ?? "new"} legalUpdateToEdit={legalUpdateToEdit} categories={categories} />
     </Suspense>
   );
 }

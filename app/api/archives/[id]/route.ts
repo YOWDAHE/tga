@@ -44,15 +44,19 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const body = await request.json();
         const tokens = request.cookies ? await getTokenCookie(request) : null;
         const { id } = await params;
-        
+        // Multipart requests carry a replacement file; axios sets the boundary for FormData
+        const isMultipart = request.headers.get("content-type")?.includes("multipart/form-data");
+        const body = isMultipart ? await request.formData() : await request.json();
+
         const res = await axios.put(`${BACKEND_URL}/uploads/${id}`, body, {
             headers: {
-                'Content-Type': 'application/json',
+                ...(isMultipart ? {} : { 'Content-Type': 'application/json' }),
                 Authorization: `Bearer ${tokens?.accessToken}`,
             },
+            maxBodyLength: Infinity,
+            maxContentLength: Infinity,
         });
 
         return NextResponse.json({ success: true, data: res.data.data });
@@ -60,7 +64,7 @@ export async function PUT(
         return NextResponse.json({
             success: false,
             error: error?.response?.data?.message || error?.message || "Failed to update document",
-        }, { status: 500 });
+        }, { status: error?.response?.status || 500 });
     }
 }
 

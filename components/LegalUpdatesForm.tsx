@@ -1,274 +1,323 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Title,
-  Button,
-  TextInput,
-  Paper,
-  Stack,
-  Group,
-  Switch,
-  Select,
-  Textarea,
-  SimpleGrid,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
-import { DateTimePicker } from "@mantine/dates";
-import { IconArrowLeft } from "@tabler/icons-react";
-import RichTextEditorField from "./RichTextEditorField";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Button, Select, Switch, TagsInput, TextInput, Textarea } from "@mantine/core";
+import { DateTimePicker } from "@mantine/dates";
+import { notifications } from "@mantine/notifications";
+import { IconEye } from "@tabler/icons-react";
 import { createLegalUpdate, updateLegalUpdate } from "@/app/actions/legal-updates.actions";
 import { LegalUpdate } from "@/types/legal-updates";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+	DocumentEditor,
+	EditorFrame,
+	SaveState,
+	SideCard,
+	SlugField,
+	StatusMenu,
+	TitleBlock,
+	Workspace,
+	slugify,
+	splitList,
+	useEditorGuards,
+} from "./editor";
 
 const CONTENT_TYPE_OPTIONS = [
-  { value: "alert", label: "Client Alert" },
-  { value: "analysis", label: "Analysis" },
-  { value: "guide", label: "Guide" },
-  { value: "update", label: "Legal Update" },
+	{ value: "alert", label: "Client Alert" },
+	{ value: "analysis", label: "Analysis" },
+	{ value: "guide", label: "Guide" },
+	{ value: "update", label: "Legal Update" },
 ];
 
 interface LegalUpdatesFormProps {
-  legalUpdateToEdit?: LegalUpdate | null;
-  categories?: Array<{ value: string; label: string }>;
+	legalUpdateToEdit?: LegalUpdate | null;
+	categories?: Array<{ value: string; label: string }>;
 }
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+export default function LegalUpdatesForm({ legalUpdateToEdit: item, categories = [] }: LegalUpdatesFormProps) {
+	const router = useRouter();
+	const { user } = useAuth();
+	const editing = Boolean(item);
 
-export default function LegalUpdatesForm({
-  legalUpdateToEdit,
-  categories = [],
-}: LegalUpdatesFormProps) {
-  const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [slugTouched, setSlugTouched] = useState(false);
-  const router = useRouter();
-  const { user } = useAuth();
+	const [title, setTitle] = useState(item?.title ?? "");
+	const [slug, setSlug] = useState(item?.slug ?? "");
+	// New updates follow the title until the slug is edited by hand
+	const [slugAuto, setSlugAuto] = useState(!item || item.slug === slugify(item.title));
+	const [summary, setSummary] = useState(item?.summary ?? "");
+	const [content, setContent] = useState(item?.content ?? "");
+	const [contentType, setContentType] = useState<string>(item?.content_type ?? "update");
+	const [categoryId, setCategoryId] = useState(item?.category_id ? String(item.category_id) : "");
+	const [author, setAuthor] = useState(item?.author ?? "");
+	const [keywords, setKeywords] = useState<string[]>(splitList(item?.seo_keywords));
+	const [metaDescription, setMetaDescription] = useState(item?.meta_description ?? "");
+	const [featured, setFeatured] = useState(item?.featured ?? false);
+	const [published, setPublished] = useState(item?.published ?? false);
+	const [wasPublished, setWasPublished] = useState(item?.published ?? false);
+	const [publishedDate, setPublishedDate] = useState<Date | null>(
+		item?.published_date ? new Date(item.published_date) : new Date(),
+	);
+	const [notify, setNotify] = useState(item?.notify_subscribers ?? true);
+	const [saving, setSaving] = useState(false);
+	const [savedAt, setSavedAt] = useState<string | Date | null>(item?.updatedAt ?? null);
+	const [errors, setErrors] = useState<{ title?: string; content?: string }>({});
 
-  const form = useForm({
-    initialValues: {
-      title: "",
-      slug: "",
-      summary: "",
-      content_type: "update",
-      category_id: "",
-      author: "",
-      seo_keywords: "",
-      meta_description: "",
-      featured: false,
-      published: false,
-      published_date: new Date() as Date | null,
-      notify_subscribers: true,
-    },
-  });
+	const snapshot = JSON.stringify({
+		title,
+		slug,
+		summary,
+		content,
+		contentType,
+		categoryId,
+		author,
+		keywords,
+		metaDescription,
+		featured,
+		published,
+		publishedDate: publishedDate?.toISOString() ?? null,
+		notify,
+	});
+	const [baseline, setBaseline] = useState<string | null>(null);
+	useEffect(() => {
+		if (baseline === null) setBaseline(snapshot);
+	}, [baseline, snapshot]);
+	const dirty = baseline !== null && snapshot !== baseline;
 
-  useEffect(() => {
-    if (legalUpdateToEdit) {
-      form.setValues({
-        title: legalUpdateToEdit.title,
-        slug: legalUpdateToEdit.slug,
-        summary: legalUpdateToEdit.summary || "",
-        content_type: legalUpdateToEdit.content_type,
-        category_id: legalUpdateToEdit.category_id ? String(legalUpdateToEdit.category_id) : "",
-        author: legalUpdateToEdit.author || "",
-        seo_keywords: legalUpdateToEdit.seo_keywords || "",
-        meta_description: legalUpdateToEdit.meta_description || "",
-        featured: legalUpdateToEdit.featured,
-        published: legalUpdateToEdit.published,
-        published_date: legalUpdateToEdit.published_date ? new Date(legalUpdateToEdit.published_date) : new Date(),
-        notify_subscribers: legalUpdateToEdit.notify_subscribers,
-      });
-      setContent(legalUpdateToEdit.content);
-      setSlugTouched(true);
-    }
-  }, [legalUpdateToEdit]);
+	const handleTitle = (value: string) => {
+		setTitle(value);
+		if (slugAuto) setSlug(slugify(value));
+		if (value.trim()) setErrors((e) => ({ ...e, title: undefined }));
+	};
 
-  const handleTitleChange = (value: string) => {
-    form.setFieldValue("title", value);
-    if (!slugTouched) {
-      form.setFieldValue("slug", slugify(value));
-    }
-  };
+	const save = async () => {
+		if (saving) return;
+		const nextErrors = {
+			title: title.trim() ? undefined : "Give the update a title",
+			content: content.trim() ? undefined : "Write the update before saving",
+		};
+		setErrors(nextErrors);
+		if (nextErrors.title || nextErrors.content) {
+			notifications.show({
+				title: "Missing details",
+				message: nextErrors.title ?? nextErrors.content,
+				color: "red",
+			});
+			return;
+		}
+		if (editing && !dirty) return;
 
-  const handleSubmit = async (values: typeof form.values) => {
-    if (!content.trim() || content === "<p></p>") {
-      notifications.show({ title: "Validation error", message: "Content is required", color: "red" });
-      return;
-    }
+		setSaving(true);
+		try {
+			const submitData = {
+				title: title.trim(),
+				slug: slug || slugify(title),
+				summary,
+				content,
+				content_type: contentType,
+				category_id: categoryId ? parseInt(categoryId) : null,
+				author,
+				seo_keywords: keywords.join(", "),
+				meta_description: metaDescription,
+				featured,
+				published,
+				published_date: publishedDate,
+				notify_subscribers: notify,
+				created_by: user?.username || "admin",
+			};
 
-    setLoading(true);
-    try {
-      const submitData = {
-        ...values,
-        content,
-        slug: values.slug || slugify(values.title),
-        category_id: values.category_id ? parseInt(values.category_id) : null,
-        created_by: user?.username || "admin",
-      };
+			const result =
+				item ? await updateLegalUpdate({ id: item.id, ...submitData }) : await createLegalUpdate(submitData);
 
-      const result = legalUpdateToEdit
-        ? await updateLegalUpdate({ id: legalUpdateToEdit.id, ...submitData })
-        : await createLegalUpdate(submitData);
+			if (!result.success) {
+				notifications.show({ title: "Couldn't save", message: result.error || "Something went wrong", color: "red" });
+				return;
+			}
 
-      if (result.success) {
-        const emailInfo = result.data?.emailNotification;
-        const emailMsg = emailInfo
-          ? ` (${emailInfo.emailsSent} subscriber emails sent)`
-          : "";
-        notifications.show({
-          title: "Success",
-          message: `${legalUpdateToEdit ? "Legal update updated" : "Legal update created"} successfully${emailMsg}`,
-          color: "green",
-        });
-        router.push("/legal-updates");
-      } else {
-        notifications.show({
-          title: "Error",
-          message: result.error || "Something went wrong",
-          color: "red",
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+			const emailInfo = result.data?.emailNotification;
+			const emailMsg = emailInfo ? ` · ${emailInfo.emailsSent} subscriber emails sent` : "";
+			notifications.show({
+				title: published ? (wasPublished ? "Saved" : "Published") : "Draft saved",
+				message: `${published ? "Live on the website" : "Not visible on the website yet"}${emailMsg}`,
+				color: "green",
+			});
 
-  return (
-    <Paper p="md" withBorder>
-      <Group mb="md">
-        <Button
-          variant="subtle"
-          leftSection={<IconArrowLeft size={16} />}
-          onClick={() => router.push("/legal-updates")}
-          disabled={loading}
-        >
-          Back
-        </Button>
-        <Title order={2}>{legalUpdateToEdit ? "Edit Legal Update" : "Create Legal Update"}</Title>
-      </Group>
+			if (!item) {
+				setBaseline(snapshot);
+				router.push(result.data?.id ? `/legal-updates/${result.data.id}` : "/legal-updates");
+				return;
+			}
 
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Stack gap="md">
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <TextInput
-              label="Title"
-              placeholder="Enter title"
-              required
-              value={form.values.title}
-              onChange={(e) => handleTitleChange(e.currentTarget.value)}
-              disabled={loading}
-            />
-            <TextInput
-              label="Slug"
-              placeholder="url-friendly-slug"
-              required
-              {...form.getInputProps("slug")}
-              onChange={(e) => {
-                setSlugTouched(true);
-                form.setFieldValue("slug", e.currentTarget.value);
-              }}
-              disabled={loading}
-            />
-          </SimpleGrid>
-          <Textarea
-            label="Summary"
-            placeholder="Brief excerpt for list cards and emails"
-            rows={3}
-            {...form.getInputProps("summary")}
-            disabled={loading}
-          />
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <Select
-              label="Content Type"
-              data={CONTENT_TYPE_OPTIONS}
-              {...form.getInputProps("content_type")}
-              disabled={loading}
-            />
-            <Select
-              label="Practice Area (Category)"
-              placeholder="Select category"
-              data={categories}
-              clearable
-              {...form.getInputProps("category_id")}
-              disabled={loading}
-            />
-          </SimpleGrid>
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <TextInput
-              label="Author"
-              placeholder="Attorney or author name"
-              {...form.getInputProps("author")}
-              disabled={loading}
-            />
-            <TextInput
-              label="SEO Keywords"
-              placeholder="comma, separated, keywords"
-              {...form.getInputProps("seo_keywords")}
-              disabled={loading}
-            />
-          </SimpleGrid>
-          <RichTextEditorField
-            label="Content"
-            value={content}
-            onChange={setContent}
-            disabled={loading}
-          />
-          <Textarea
-            label="Meta Description"
-            placeholder="SEO meta description (max 300 chars)"
-            maxLength={300}
-            {...form.getInputProps("meta_description")}
-            disabled={loading}
-          />
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <Switch
-              label="Featured"
-              description="Pin this update at the top of the public list"
-              {...form.getInputProps("featured", { type: "checkbox" })}
-              disabled={loading}
-            />
-            <Switch
-              label="Published"
-              description="Make visible on the public website"
-              {...form.getInputProps("published", { type: "checkbox" })}
-              disabled={loading}
-            />
-          </SimpleGrid>
-          {form.values.published && (
-            <SimpleGrid cols={{ base: 1, sm: 2 }}>
-              <DateTimePicker
-                label="Published Date"
-                {...form.getInputProps("published_date")}
-                disabled={loading}
-              />
-              <Switch
-                label="Notify subscribers"
-                description="Send email alert to confirmed subscribers when publishing"
-                mt={{ base: 0, sm: 28 }}
-                {...form.getInputProps("notify_subscribers", { type: "checkbox" })}
-                disabled={loading}
-              />
-            </SimpleGrid>
-          )}
-          <Group justify="flex-end">
-            <Button variant="light" onClick={() => router.push("/legal-updates")} disabled={loading}>
-              Cancel
-            </Button>
-            <Button type="submit" loading={loading}>
-              {legalUpdateToEdit ? "Update" : "Create"}
-            </Button>
-          </Group>
-        </Stack>
-      </form>
-    </Paper>
-  );
+			setWasPublished(published);
+			setSavedAt(result.data?.updatedAt ?? new Date());
+			setBaseline(snapshot);
+			router.refresh();
+		} finally {
+			setSaving(false);
+		}
+	};
+
+	useEditorGuards({ dirty, onSave: save });
+
+	const saveLabel =
+		!editing ? (published ? "Publish" : "Save draft")
+		: published && !wasPublished ? "Publish"
+		: "Save";
+
+	return (
+		<EditorFrame
+			back={{ href: "/legal-updates", label: "Legal updates" }}
+			status={<SaveState saving={saving} dirty={dirty} savedAt={editing ? savedAt : null} />}
+			actions={
+				<>
+					<StatusMenu published={published} onChange={setPublished} />
+					{item && (
+						<Button
+							variant="default"
+							component={Link}
+							href={`/legal-updates/${item.id}`}
+							leftSection={<IconEye size={16} />}
+						>
+							View
+						</Button>
+					)}
+					<Button onClick={save} loading={saving} disabled={editing && !dirty}>
+						{saveLabel}
+					</Button>
+				</>
+			}
+		>
+			<TitleBlock
+				eyebrow={editing ? "Legal updates · Edit" : "Legal updates · New update"}
+				title={title}
+				onTitle={handleTitle}
+				titlePlaceholder="Update title"
+				titleError={errors.title}
+				summary={summary}
+				onSummary={setSummary}
+				summaryPlaceholder="Add a short summary for the list page and subscriber emails…"
+			/>
+
+			<Workspace
+				main={
+					<>
+						<DocumentEditor
+							value={content}
+							onChange={(html) => {
+								setContent(html);
+								if (html) setErrors((e) => ({ ...e, content: undefined }));
+							}}
+							placeholder="Write the update…"
+						/>
+						{errors.content && (
+							<div style={{ color: "#b4233c", fontSize: 13, marginTop: -6 }}>{errors.content}</div>
+						)}
+					</>
+				}
+				aside={
+					<>
+						<SideCard
+							title="Publishing"
+							hint={published ? undefined : "Drafts aren't shown on the website or emailed to subscribers."}
+						>
+							{published && (
+								<>
+									<DateTimePicker
+										label="Publish date"
+										value={publishedDate}
+										onChange={(v) => setPublishedDate(v ? new Date(v) : null)}
+										valueFormat="MMM D, YYYY h:mm A"
+										mb="md"
+									/>
+									{/* Subscribers are only emailed the first time an update is published */}
+									{!wasPublished && (
+										<Switch
+											label="Email subscribers"
+											description="Send this update to confirmed subscribers when it's published"
+											checked={notify}
+											onChange={(e) => setNotify(e.currentTarget.checked)}
+											mb="md"
+										/>
+									)}
+								</>
+							)}
+							<Switch
+								label="Featured"
+								description="Pin to the top of the public list"
+								checked={featured}
+								onChange={(e) => setFeatured(e.currentTarget.checked)}
+							/>
+						</SideCard>
+
+						<SideCard title="Details">
+							<Select
+								label="Type"
+								data={CONTENT_TYPE_OPTIONS}
+								value={contentType}
+								onChange={(v) => setContentType(v ?? "update")}
+								allowDeselect={false}
+								mb="sm"
+							/>
+							<Select
+								label="Practice area"
+								placeholder="Choose a category"
+								data={categories}
+								value={categoryId || null}
+								onChange={(v) => setCategoryId(v ?? "")}
+								clearable
+								searchable
+								nothingFoundMessage="No matching category"
+								mb="sm"
+							/>
+							<TextInput
+								label="Author"
+								placeholder="Attorney or author name"
+								value={author}
+								onChange={(e) => setAuthor(e.currentTarget.value)}
+							/>
+						</SideCard>
+
+						<SideCard title="URL">
+							<SlugField
+								prefix="/legal-updates/"
+								value={slug}
+								auto={slugAuto}
+								onChange={(value) => {
+									setSlug(value);
+									setSlugAuto(false);
+								}}
+								onReset={() => {
+									setSlug(slugify(title));
+									setSlugAuto(true);
+								}}
+							/>
+						</SideCard>
+
+						<SideCard title="Search engines">
+							<Textarea
+								label="Meta description"
+								placeholder="One or two sentences shown in search results"
+								autosize
+								minRows={3}
+								maxLength={300}
+								value={metaDescription}
+								onChange={(e) => setMetaDescription(e.currentTarget.value)}
+								description={`${metaDescription.length}/300`}
+								inputWrapperOrder={["label", "input", "description"]}
+								mb="sm"
+							/>
+							<TagsInput
+								label="Keywords"
+								placeholder={keywords.length ? "" : "Type and press Enter"}
+								value={keywords}
+								onChange={setKeywords}
+								splitChars={[","]}
+								clearable
+							/>
+						</SideCard>
+					</>
+				}
+			/>
+		</EditorFrame>
+	);
 }

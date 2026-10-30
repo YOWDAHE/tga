@@ -66,20 +66,41 @@ const errorColor: MantineColorsTuple = [
   "#b71c1c",
 ]
 
+// Near-black accent used for active chips, primary buttons and highlights
+const inkColor: MantineColorsTuple = [
+  "#f5f5f6",
+  "#e8e8ea",
+  "#cfcfd3",
+  "#b3b3b9",
+  "#8e8e96",
+  "#6b6b73",
+  "#2b2b30",
+  "#1d1d21",
+  "#141417",
+  "#0b0b0d",
+]
+
 export const theme = createTheme({
   colors: {
+    ink: inkColor,
     primary: primaryColor,
     secondary: secondaryColor,
     success: successColor,
     warning: warningColor,
     error: errorColor,
   },
-  primaryColor: "primary",
-  primaryShade: 6,
+  primaryColor: "ink",
+  primaryShade: 7,
+  defaultRadius: "md",
   fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
   headings: {
     fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
     fontWeight: "600",
+    sizes: {
+      h1: { fontSize: "32px", lineHeight: "1.2" },
+      h2: { fontSize: "28px", lineHeight: "1.25" },
+      h3: { fontSize: "20px", lineHeight: "1.3" },
+    },
   },
   radius: {
     xs: "4px",
@@ -94,6 +115,27 @@ export const theme = createTheme({
     md: "0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 15px rgba(0, 0, 0, 0.1)",
     lg: "0 10px 15px rgba(0, 0, 0, 0.05), 0 20px 25px rgba(0, 0, 0, 0.1)",
     xl: "0 25px 50px rgba(0, 0, 0, 0.15)",
+  },
+  components: {
+    Button: { defaultProps: { radius: "xl" } },
+    ActionIcon: { defaultProps: { radius: "xl" } },
+    Badge: {
+      defaultProps: { radius: "xl", variant: "light" },
+      styles: { root: { textTransform: "none", fontWeight: 500 } },
+    },
+    Paper: { defaultProps: { radius: "lg" } },
+    Card: { defaultProps: { radius: "lg" } },
+    Modal: { defaultProps: { radius: "lg" } },
+    Menu: { defaultProps: { radius: "md", shadow: "md" } },
+    Tabs: { defaultProps: { variant: "pills", radius: "xl" } },
+    TextInput: { defaultProps: { radius: "md" } },
+    PasswordInput: { defaultProps: { radius: "md" } },
+    Select: { defaultProps: { radius: "md" } },
+    MultiSelect: { defaultProps: { radius: "md" } },
+    Textarea: { defaultProps: { radius: "md" } },
+    Table: {
+      defaultProps: { verticalSpacing: "sm", horizontalSpacing: "md", highlightOnHover: true },
+    },
   },
 })
 

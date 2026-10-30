@@ -1,4 +1,4 @@
-import { get, post, put, del } from '@/lib/axiosWrapper';
+import { get, post, put, patch, del } from '@/lib/axiosWrapper';
 
 export async function fetchRemarks() {
     try {
@@ -50,12 +50,23 @@ export async function deleteRemark(id: number) {
     }
 }
 
+export async function updateRemarkStatus(id: number, status: string) {
+    try {
+        const res = await patch(`/remarks/${id}/status`, { status });
+        if (!res.data.success) throw new Error(res.data.error || 'Failed to update status');
+        return { success: true, data: res.data.data };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+/** Sends the reply by email. A failed send still returns the recorded attempt in `data.reply`. */
 export async function replyToRemark(id: number, data: { subject: string; response: string }) {
     try {
         const res = await post(`/remarks/reply/${id}`, data);
         if (!res.data.success) throw new Error(res.data.error || 'Failed to send reply');
-        return { success: true };
+        return { success: true as const, data: res.data.data };
     } catch (error: any) {
-        return { success: false, error: error.message };
+        return { success: false as const, error: error.message, data: error?.data?.data ?? null };
     }
-} 
+}

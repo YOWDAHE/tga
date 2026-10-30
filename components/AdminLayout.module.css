@@ -1,0 +1,293 @@
+/* Light canvas holding one floating, rounded app frame */
+.root {
+	--admin-canvas: #dcdfe3;
+	--admin-border: #eceef1;
+	--admin-muted: #9a9ea6;
+	--admin-ink: #1d1d21;
+	--admin-gutter: 16px;
+	--admin-sidebar: 272px;
+	min-height: 100vh;
+	padding: var(--admin-gutter);
+	background: var(--admin-canvas);
+}
+
+/* Frosted mint-to-gray glass behind the sidebar and content card */
+.frame {
+	display: flex;
+	min-height: calc(100vh - 2 * var(--admin-gutter));
+	border-radius: 28px;
+	background:
+		radial-gradient(120% 60% at 0% 0%, #dcebe8 0%, rgba(220, 235, 232, 0) 60%),
+		linear-gradient(180deg, #eef1f2 0%, #f3f4f5 55%, #eceef0 100%);
+	box-shadow:
+		0 1px 2px rgba(17, 17, 19, 0.04),
+		0 12px 40px rgba(17, 17, 19, 0.06);
+}
+
+.frame[data-collapsed] {
+	--admin-sidebar: 88px;
+}
+
+.sidebar {
+	position: sticky;
+	top: var(--admin-gutter);
+	flex: 0 0 var(--admin-sidebar);
+	width: var(--admin-sidebar);
+	height: calc(100vh - 2 * var(--admin-gutter));
+	display: flex;
+	flex-direction: column;
+	padding: 24px 18px 20px;
+	transition:
+		width 200ms ease,
+		flex-basis 200ms ease;
+}
+
+.brand {
+	padding: 0 4px 0 8px;
+	margin-bottom: 22px;
+}
+
+.logo {
+	height: 44px;
+	max-width: 150px;
+	object-fit: contain;
+	object-position: left center;
+}
+
+.nav {
+	flex: 1;
+	overflow-y: auto;
+	margin: 0 -6px;
+	padding: 0 6px;
+}
+
+.section + .section {
+	margin-top: 20px;
+}
+
+.sectionLabel {
+	font-size: 13px;
+	color: var(--admin-muted);
+	padding: 0 12px;
+	margin-bottom: 8px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.navLink {
+	border-radius: 999px;
+	padding: 11px 14px;
+	margin-bottom: 4px;
+	color: var(--admin-ink);
+	font-size: 14px;
+	font-weight: 500;
+	background: transparent;
+	transition:
+		background-color 150ms ease,
+		box-shadow 150ms ease;
+}
+
+.navLink:hover {
+	background: rgba(255, 255, 255, 0.55);
+}
+
+.navLink[data-active],
+.navLink[data-active]:hover {
+	background: #ffffff;
+	color: #111113;
+	font-weight: 600;
+	box-shadow: 0 1px 3px rgba(17, 17, 19, 0.06);
+}
+
+.navLink :global(.mantine-NavLink-section) {
+	margin-inline-end: 14px;
+}
+
+.footer {
+	padding-top: 12px;
+}
+
+.account {
+	padding-top: 14px;
+}
+
+.userButton {
+	width: 100%;
+	padding: 8px;
+	border-radius: 18px;
+	transition: background-color 150ms ease;
+}
+
+.userButton:hover {
+	background: rgba(255, 255, 255, 0.55);
+}
+
+.userText {
+	flex: 1;
+	min-width: 0;
+}
+
+.userChevron {
+	color: var(--admin-muted);
+	flex-shrink: 0;
+}
+
+/* Main column sits directly on the frame; only cards are white */
+.main {
+	flex: 1;
+	min-width: 0;
+	padding: 12px 12px 12px 0;
+	display: flex;
+}
+
+.surface {
+	flex: 1;
+	min-width: 0;
+}
+
+.topbar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 14px 14px 0;
+	padding: 6px 8px;
+}
+
+.burger {
+	display: none;
+}
+
+.breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	min-width: 0;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.crumbMuted {
+	color: var(--admin-muted);
+	flex-shrink: 0;
+}
+
+.crumbLink {
+	color: #6b6b73;
+	font-size: 14px;
+}
+
+.crumbLink:hover {
+	color: #111113;
+}
+
+.crumbCurrent {
+	font-weight: 600;
+	color: #111113;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.content {
+	padding: 8px 14px 28px;
+}
+
+.backdrop {
+	display: none;
+}
+
+/* Collapsed icon rail (desktop only) */
+@media (min-width: 48em) {
+	.frame[data-collapsed] .brand {
+		flex-direction: column;
+		gap: 14px;
+		padding: 0;
+	}
+
+	.frame[data-collapsed] .logo {
+		max-width: 48px;
+		object-position: center;
+	}
+
+	.frame[data-collapsed] .sectionLabel {
+		visibility: hidden;
+		height: 4px;
+		margin-bottom: 0;
+	}
+
+	.frame[data-collapsed] .navLink {
+		justify-content: center;
+		padding: 11px;
+	}
+
+	.frame[data-collapsed] .navLink :global(.mantine-NavLink-section) {
+		margin-inline-end: 0;
+	}
+
+	.frame[data-collapsed] .navLink :global(.mantine-NavLink-body),
+	.frame[data-collapsed] .userText,
+	.frame[data-collapsed] .userChevron,
+	.frame[data-collapsed] .account .sectionLabel {
+		display: none;
+	}
+}
+
+/* Phones: sidebar becomes a slide-over drawer */
+@media (max-width: 47.99em) {
+	.root {
+		--admin-gutter: 8px;
+	}
+
+	.frame {
+		border-radius: 20px;
+	}
+
+	.sidebar {
+		position: fixed;
+		z-index: 200;
+		top: 0;
+		left: 0;
+		height: 100vh;
+		width: 280px;
+		background: linear-gradient(180deg, #e3eeec 0%, #f3f4f5 60%, #eceef0 100%);
+		border-radius: 0 24px 24px 0;
+		box-shadow: 0 12px 40px rgba(17, 17, 19, 0.18);
+		transform: translateX(-105%);
+		transition: transform 220ms ease;
+	}
+
+	.frame[data-mobile-open] .sidebar {
+		transform: none;
+	}
+
+	.frame[data-mobile-open] .backdrop {
+		display: block;
+		position: fixed;
+		inset: 0;
+		z-index: 150;
+		background: rgba(17, 17, 19, 0.25);
+	}
+
+	.main {
+		padding: 8px;
+	}
+
+	.burger {
+		display: inline-flex;
+	}
+
+	.topbar {
+		margin: 8px 8px 0;
+		padding: 10px 12px;
+	}
+
+	.breadcrumb > .crumbMuted:first-child,
+	.breadcrumb > .crumbMuted:first-child + .crumbMuted {
+		display: none;
+	}
+
+	.content {
+		padding: 4px 4px 16px;
+	}
+}

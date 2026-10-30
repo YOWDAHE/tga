@@ -23,6 +23,4 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          BACKEND_URL: http://127.0.0.1:1
           BACKEND_API_URL: http://127.0.0.1:1/api
-          NEXT_PUBLIC_API_URL: http://127.0.0.1:1/api

@@ -22,6 +22,14 @@ export async function POST(
         }
         return NextResponse.json({ success: true, data: res.data.data });
     } catch (error: any) {
-        return NextResponse.json({ success: false, error: error?.response?.data?.message || error?.message || "Failed to send reply" }, { status: 500 });
+        // A failed send still returns the recorded attempt so the thread can show it
+        return NextResponse.json(
+            {
+                success: false,
+                error: error?.response?.data?.message || error?.message || "Failed to send reply",
+                data: error?.response?.data?.data ?? null,
+            },
+            { status: error?.response?.status || 500 },
+        );
     }
 } 

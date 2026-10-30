@@ -34,7 +34,7 @@ import {
 	IconPlayerPlay,
 	IconLink,
 } from "@tabler/icons-react";
-import { updateHomepage } from "@/app/actions/homepage.actions";
+import { createHomepageItem, deleteHomepageItem, updateHomepageItem } from "@/app/actions/homepage.actions";
 
 interface NewsLink {
 	id?: number;
@@ -49,25 +49,9 @@ interface OtherNewsManagementProps {
 	initialNewsLinks?: NewsLink[];
 }
 
-const mockNewsLinks: NewsLink[] = [
-	{
-		id: 1,
-		title: "Latest News Update",
-		description: "Watch our latest news coverage",
-		link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-	},
-	{
-		id: 2,
-		title: "Company Overview",
-		description: "Learn more about our company",
-		link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-	},
-];
-
 export default function OtherNewsManagement({
-	initialNewsLinks = mockNewsLinks,
+	initialNewsLinks = [],
 }: OtherNewsManagementProps) {
-	const [originalNewsLinks, setOriginalNewsLinks] = useState<NewsLink[]>(initialNewsLinks);
 	const [newsLinks, setNewsLinks] = useState<NewsLink[]>(initialNewsLinks);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -93,63 +77,29 @@ export default function OtherNewsManagement({
 		},
 	});
 
-	// Reusable function to update news links
-	const handleNewsLinksUpdate = async (updatedNewsLinks: NewsLink[]) => {
-		try {
-			// Remove createdAt and updatedAt from the data being sent
-			const sanitizedNewsLinks = updatedNewsLinks.map((item) => {
-				const { createdAt, updatedAt, ...rest } = item as any;
-				return rest;
-			});
-
-			const updatePayload = {
-				newsLinks: sanitizedNewsLinks,
-			};
-			const result = await updateHomepage(updatePayload);
-			if (result.success) {
-				// Update local state immediately
-				setNewsLinks(updatedNewsLinks);
-				setOriginalNewsLinks(updatedNewsLinks);
-				return true;
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to update news links",
-					color: "red",
-				});
-				return false;
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
-			return false;
-		}
-	};
-
+	// Each add/edit/delete touches only that one link on the server
 	const handleNewsLinkSubmit = async (values: typeof newsLinkForm.values) => {
 		setIsSubmitting(true);
 		try {
-			const updatedNewsLinks =
-				editingNewsLink ?
-					newsLinks.map((item) =>
-						item.id === editingNewsLink.id ? { ...item, ...values } : item
-					)
-				:	[...newsLinks, { ...values }];
-			
-			const success = await handleNewsLinksUpdate(updatedNewsLinks as NewsLink[]);
-			if (success) {
-				notifications.show({
-					title: "Success",
-					message:
-						editingNewsLink ?
-							"News link updated successfully"
-						:	"News link added successfully",
-					color: "green",
-				});
+			const result =
+				editingNewsLink?.id ?
+					await updateHomepageItem<NewsLink>("newsLinks", editingNewsLink.id, values)
+				:	await createHomepageItem<NewsLink>("newsLinks", values);
+			if (!result.success) {
+				notifications.show({ title: "Error", message: result.error || "Failed to save news link", color: "red" });
+				return;
 			}
+			const saved = result.data;
+			setNewsLinks((prev) =>
+				prev.some((item) => item.id === saved.id) ?
+					prev.map((item) => (item.id === saved.id ? saved : item))
+				:	[saved, ...prev]
+			);
+			notifications.show({
+				title: "Success",
+				message: editingNewsLink ? "News link updated successfully" : "News link added successfully",
+				color: "green",
+			});
 			closeNewsLinkModal();
 			setEditingNewsLink(null);
 			newsLinkForm.reset();
@@ -158,25 +108,15 @@ export default function OtherNewsManagement({
 		}
 	};
 
-	const handleDeleteNewsLink = async (id: number | undefined) => {
-		try {
-			if (!id) return;
-			const updatedNewsLinks = newsLinks.filter((item) => item.id !== id);
-			const success = await handleNewsLinksUpdate(updatedNewsLinks);
-			if (success) {
-				notifications.show({
-					title: "Success",
-					message: "News link deleted successfully",
-					color: "green",
-				});
-			}
-		} catch (error: any) {
-			notifications.show({
-				title: "Error",
-				message: error.message || "An unexpected error occurred",
-				color: "red",
-			});
+	const handleDeleteNewsLink = async (newsLink: NewsLink) => {
+		if (!newsLink.id || !window.confirm(`Delete "${newsLink.title}"? Other links are not affected.`)) return;
+		const result = await deleteHomepageItem("newsLinks", newsLink.id);
+		if (!result.success) {
+			notifications.show({ title: "Error", message: result.error || "Failed to delete news link", color: "red" });
+			return;
 		}
+		setNewsLinks((prev) => prev.filter((item) => item.id !== newsLink.id));
+		notifications.show({ title: "Success", message: "News link deleted successfully", color: "green" });
 	};
 
 	const handleEditNewsLink = (newsLink: NewsLink) => {
@@ -432,7 +372,7 @@ export default function OtherNewsManagement({
 													variant="light"
 													color="red"
 													size="sm"
-													onClick={() => newsLink.id && handleDeleteNewsLink(newsLink.id)}
+													onClick={() => handleDeleteNewsLink(newsLink)}
 													title="Delete"
 													disabled={!newsLink.id}
 												>

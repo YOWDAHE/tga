@@ -1,0 +1,75 @@
+/* Admin visual language: soft surfaces, pill chips, thin grid lines.
+   Applied on top of Mantine's base styles. */
+
+:root {
+  --mantine-color-body: #ffffff;
+  --admin-line: #eceef1;
+  --admin-chip: #f2f3f5;
+  --admin-muted: #8b8f97;
+  --admin-accent: #0f9480;
+  --admin-accent-ink: #0b6e60;
+  --admin-accent-soft: rgba(15, 148, 128, 0.1);
+  --admin-pill-shadow: 0 10px 30px -20px rgba(15, 23, 42, 0.35);
+}
+
+/* Pill tabs read as filter chips: gray idle, black active */
+.mantine-Tabs-list[data-variant="pills"] {
+  gap: 8px;
+}
+
+.mantine-Tabs-tab[data-variant="pills"] {
+  background: var(--admin-chip);
+  color: #55555c;
+  font-weight: 500;
+  padding: 8px 16px;
+}
+
+.mantine-Tabs-tab[data-variant="pills"]:hover:not([data-active]) {
+  background: #e8e9ec;
+}
+
+.mantine-Tabs-tab[data-variant="pills"][data-active] {
+  background: #111113;
+  color: #ffffff;
+}
+
+/* Sections and cards are the only white surfaces: no border, a faint lift */
+.mantine-Paper-root[data-with-border],
+.mantine-Card-root[data-with-border] {
+  background: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 1px 2px rgba(17, 17, 19, 0.04);
+}
+
+/* Cards nested inside a white section become a soft gray tile */
+:is(.mantine-Paper-root, .mantine-Card-root)[data-with-border] :is(.mantine-Paper-root, .mantine-Card-root)[data-with-border] {
+  background: #f6f7f8;
+  box-shadow: none;
+}
+
+/* Tables: thin lines, muted headers */
+.mantine-Table-table {
+  --table-border-color: var(--admin-line);
+  --table-striped-color: transparent;
+}
+
+.mantine-Table-th {
+  color: #8a8e96;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.mantine-Table-thead {
+  background: #fafbfc;
+}
+
+/* Default (outline-ish) buttons and subtle icons in neutral tones */
+.mantine-Button-root[data-variant="default"] {
+  border-color: var(--admin-line);
+}
+
+.mantine-Modal-title {
+  font-weight: 600;
+  font-size: 18px;
+}

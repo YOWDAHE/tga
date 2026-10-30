@@ -14,7 +14,6 @@ export async function POST(req: Request) {
         );
     }
     try {
-        console.log("Login request body:", body);
         const res = await axios.post(`${backend}/auth/signin`, body);
         const { accessToken, refreshToken, ...user } = res.data.data;
         if (!accessToken || !refreshToken) {
@@ -23,7 +22,6 @@ export async function POST(req: Request) {
         }
         const cookieStore = await cookies();
         try {
-            console.log('The token is ', accessToken)
             cookieStore.set("tgaAccessToken", accessToken, cookieSettings);
             cookieStore.set("tgaRefreshToken", refreshToken, cookieSettings);
         } catch (error) {

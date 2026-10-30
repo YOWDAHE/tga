@@ -47,8 +47,8 @@ export async function fetchDocument(id: string) {
 
 export async function getCategories() {
     try {
-        const res = await get("/category");
-        console.log("res", res.data);
+        // Pickers need every category, not the first page
+        const res = await get("/category", { params: { limit: 500 } });
 
         // Transform the data to match the expected format for Mantine Select
         // Filter out categories with invalid or missing IDs

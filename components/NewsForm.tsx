@@ -1,449 +1,295 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
-import {
-	Title,
-	Button,
-	TextInput,
-	Paper,
-	Stack,
-	FileInput,
-	Group,
-	Text,
-	ActionIcon,
-	Image,
-	Card,
-	Badge,
-	Flex,
-	Box,
-	Divider,
-	Switch,
-	NumberInput,
-	Select,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
-import { DateTimePicker } from "@mantine/dates";
-import {
-	IconUpload,
-	IconArrowLeft,
-	IconX,
-	IconPhoto,
-	IconTrash,
-} from "@tabler/icons-react";
-import SimpleRichTextEditor from "./SimpleRichTextEditor";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Button, NumberInput, Select, Switch, TagsInput } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { IconEye, IconPhotoPlus, IconX } from "@tabler/icons-react";
 import { createNews, updateNews } from "@/app/actions/news.actions";
 import { News } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { convertToApiUrl } from "@/lib/utils";
+import {
+	DocumentEditor,
+	EditorFrame,
+	SaveState,
+	SideCard,
+	TitleBlock,
+	Workspace,
+	editorClasses as classes,
+	splitList,
+	textStats,
+	useEditorGuards,
+} from "./editor";
 
-// If News type is imported from '@/types', extend it here for local use
 export interface NewsExtended extends News {
 	featured?: boolean;
 	read_minutes?: number;
 }
-	
+
 interface NewsFormProps {
 	newsToEdit?: NewsExtended | null;
 	categories?: Array<{ value: string; label: string }>;
 }
 
+const imageUrls = (visual?: News["visual_content"] | null) =>
+	(Array.isArray(visual) ? visual : [])
+		.map((img: any) =>
+			typeof img === "string" ? img
+			: img && typeof img === "object" && "secure_url" in img ? img.secure_url
+			: "",
+		)
+		.filter(Boolean) as string[];
+
 export default function NewsForm({ newsToEdit, categories = [] }: NewsFormProps) {
-	const [content, setContent] = useState("");
-	const [loading, setLoading] = useState(false);
-	const [visualFiles, setVisualFiles] = useState<File[]>([]);
-	const [existingImages, setExistingImages] = useState<string[]>([]);
-	const [originalImages, setOriginalImages] = useState<string[]>([]);
-	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-	const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(
-		null
-	);
-	const [loadingImages, setLoadingImages] = useTransition();
 	const router = useRouter();
 	const { user } = useAuth();
+	const editing = Boolean(newsToEdit);
+	const fileInput = useRef<HTMLInputElement>(null);
 
-	const form = useForm({
-		initialValues: {
-			title: "",
-			content: "",
-			category_id: "",
-			published_date: new Date(),
-			visual_content: [] as File[],
-			hashtags: "",
-			seo_keywords: "",
-			featured: false,
-			read_minutes: 1,
-		},
+	const [title, setTitle] = useState(newsToEdit?.title ?? "");
+	const [content, setContent] = useState(newsToEdit?.content ?? "");
+	const [categoryId, setCategoryId] = useState(newsToEdit?.category_id ? String(newsToEdit.category_id) : "");
+	const [hashtags, setHashtags] = useState<string[]>(splitList(newsToEdit?.hashtags));
+	const [keywords, setKeywords] = useState<string[]>(splitList(newsToEdit?.seo_keywords));
+	const [featured, setFeatured] = useState(newsToEdit?.featured ?? false);
+	const [readMinutes, setReadMinutes] = useState<number>(newsToEdit?.read_minutes ?? 0);
+	const [existingImages, setExistingImages] = useState<string[]>(imageUrls(newsToEdit?.visual_content));
+	const [newFiles, setNewFiles] = useState<File[]>([]);
+	const previews = useMemo(() => newFiles.map((f) => URL.createObjectURL(f)), [newFiles]);
+	const [saving, setSaving] = useState(false);
+	const [savedAt, setSavedAt] = useState<string | Date | null>(newsToEdit?.updatedAt ?? null);
+	const [titleError, setTitleError] = useState<string | null>(null);
+
+	useEffect(() => () => previews.forEach((url) => URL.revokeObjectURL(url)), [previews]);
+
+	const stats = textStats(content);
+	// Leaving read time empty uses the estimate from the text
+	const effectiveMinutes = readMinutes || Math.max(1, stats.minutes);
+
+	const snapshot = JSON.stringify({
+		title,
+		content,
+		categoryId,
+		hashtags,
+		keywords,
+		featured,
+		readMinutes,
+		existingImages,
+		files: newFiles.map((f) => `${f.name}:${f.size}`),
 	});
-
+	const [baseline, setBaseline] = useState<string | null>(null);
 	useEffect(() => {
-		console.log("newsToEdit", newsToEdit);
-		if (newsToEdit) {
-			form.setValues({
-				title: newsToEdit.title,
-				content: newsToEdit.content,
-				category_id: newsToEdit.category_id ? newsToEdit.category_id.toString() : "",
-				published_date:
-					newsToEdit.published_date ?
-						new Date(newsToEdit.published_date)
-					:	new Date(),
-				visual_content: [],
-				hashtags: newsToEdit.hashtags || "",
-				seo_keywords: newsToEdit.seo_keywords || "",
-				featured: newsToEdit.featured || false,
-				read_minutes: newsToEdit.read_minutes || 1,
-			});
-			setContent(newsToEdit.content);
+		if (baseline === null) setBaseline(snapshot);
+	}, [baseline, snapshot]);
+	const dirty = baseline !== null && snapshot !== baseline;
 
-			// Set existing images if any
-			if (newsToEdit.visual_content && Array.isArray(newsToEdit.visual_content)) {
-				const images = newsToEdit.visual_content
-					.map((img) =>
-						typeof img === "string" ? img
-						: img && typeof img === "object" && "secure_url" in img ? img.secure_url
-						: ""
-					)
-					.filter(Boolean);
-				setExistingImages(images);
-				setOriginalImages([...images]); // Keep a copy of the original images
-			}
+	const save = async () => {
+		if (saving) return;
+		if (!title.trim()) {
+			setTitleError("Give the article a title");
+			return;
 		}
-	}, []);
-
-	// Cleanup preview URLs on unmount
-	useEffect(() => {
-		return () => {
-			imagePreviews.forEach((url) => URL.revokeObjectURL(url));
-		};
-	}, [imagePreviews]);
-
-	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const files = event.target.files;
-		if (files && files.length > 0) {
-			const newFiles = Array.from(files);
-			// Add new files to existing ones instead of replacing
-			const updatedFiles = [...visualFiles, ...newFiles];
-			setVisualFiles(updatedFiles);
-			form.setFieldValue("visual_content", updatedFiles);
-
-			// Create preview URLs for new files and add to existing previews
-			const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
-			setImagePreviews((prev) => [...prev, ...newPreviews]);
-		} else {
-			setVisualFiles([]);
-			setImagePreviews([]);
-			form.setFieldValue("visual_content", []);
-		}
-		// Reset the input value to allow selecting the same file again
-		if (fileInputRef) {
-			fileInputRef.value = "";
-		}
-	};
-
-	const handleAddImage = () => {
-		fileInputRef?.click();
-	};
-
-	const removeNewImage = (index: number) => {
-		const newFiles = visualFiles.filter((_, i) => i !== index);
-		const newPreviews = imagePreviews.filter((_, i) => i !== index);
-
-		setVisualFiles(newFiles);
-		setImagePreviews(newPreviews);
-		form.setFieldValue("visual_content", newFiles);
-	};
-
-	const removeExistingImage = (index: number) => {
-		const newImages = existingImages.filter((_, i) => i !== index);
-		setExistingImages(newImages);
-		// You might want to send this information to the backend to remove the image
-	};
-
-	const handleSubmit = async (values: typeof form.values) => {
-		setLoading(true);
+		if (editing && !dirty) return;
+		setTitleError(null);
+		setSaving(true);
 		try {
-			let result;
 			const submitData: any = {
-				...values,
+				title: title.trim(),
 				content,
-				category_id: values.category_id ? parseInt(values.category_id) : null,
-				hashtags: values.hashtags,
-				seo_keywords: values.seo_keywords,
-				featured: values.featured,
-				read_minutes: values.read_minutes,
+				category_id: categoryId ? parseInt(categoryId) : null,
+				published_date:
+					newsToEdit?.published_date ? new Date(newsToEdit.published_date) : new Date(),
+				hashtags: hashtags.join(","),
+				seo_keywords: keywords.join(","),
+				featured,
+				read_minutes: effectiveMinutes,
 				source: "Website",
 				created_by: user?.username || "admin",
 			};
 
-			// Handle visual content updates
+			let result;
 			if (newsToEdit) {
-				// Always send the remaining existing image URLs and new files together
-				submitData.visual_content = [...existingImages, ...visualFiles];
+				// The backend keeps the listed URLs and uploads the new files
+				submitData.visual_content = [...existingImages, ...newFiles];
 				result = await updateNews({ id: newsToEdit.id, ...submitData });
 			} else {
-				// For new news, only include visual_content if there are files
-				if (visualFiles.length > 0) {
-					submitData.visual_content = visualFiles;
-				}
+				if (newFiles.length > 0) submitData.visual_content = newFiles;
 				result = await createNews(submitData);
 			}
 
-			if (result.success) {
-				notifications.show({
-					title: "Success",
-					message:
-						newsToEdit ? "News updated successfully" : "News created successfully",
-					color: "green",
-				});
-				router.push("/news");
-			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to save news",
-					color: "red",
-				});
+			if (!result.success) {
+				notifications.show({ title: "Couldn't save", message: result.error || "Failed to save news", color: "red" });
+				return;
 			}
-		} catch (error) {
-			notifications.show({
-				title: "Error",
-				message: "An unexpected error occurred",
-				color: "red",
-			});
+
+			if (!newsToEdit) {
+				notifications.show({ title: "Published", message: "The article is live on the website", color: "green" });
+				setBaseline(snapshot);
+				router.push(result.data?.id ? `/news/${result.data.id}` : "/news");
+				return;
+			}
+
+			notifications.show({ title: "Saved", message: "Changes are live on the website", color: "green" });
+			if (result.data?.visual_content) setExistingImages(imageUrls(result.data.visual_content));
+			setNewFiles([]);
+			setSavedAt(result.data?.updatedAt ?? new Date());
+			setBaseline(null);
+			router.refresh();
+		} catch {
+			notifications.show({ title: "Couldn't save", message: "An unexpected error occurred", color: "red" });
 		} finally {
-			setLoading(false);
+			setSaving(false);
 		}
 	};
 
+	useEditorGuards({ dirty, onSave: save });
+
+	const addFiles = (files: FileList | null) => {
+		if (files?.length) setNewFiles((prev) => [...prev, ...Array.from(files)]);
+		if (fileInput.current) fileInput.current.value = "";
+	};
+
 	return (
-		<div>
-			<Button
-				leftSection={<IconArrowLeft size={16} />}
-				onClick={() => router.back()}
-				mb="lg"
-				variant="light"
-			>
-				Back to News
-			</Button>
+		<EditorFrame
+			back={{ href: "/news", label: "News" }}
+			status={<SaveState saving={saving} dirty={dirty} savedAt={editing ? savedAt : null} />}
+			actions={
+				<>
+					{newsToEdit && (
+						<Button variant="default" component={Link} href={`/news/${newsToEdit.id}`} leftSection={<IconEye size={16} />}>
+							View
+						</Button>
+					)}
+					<Button onClick={save} loading={saving} disabled={editing && !dirty}>
+						{editing ? "Save" : "Publish"}
+					</Button>
+				</>
+			}
+		>
+			<TitleBlock
+				eyebrow={editing ? "News · Edit article" : "News · New article"}
+				title={title}
+				onTitle={(value) => {
+					setTitle(value);
+					if (value.trim()) setTitleError(null);
+				}}
+				titlePlaceholder="Article title"
+				titleError={titleError}
+			/>
 
-			<Paper withBorder p="lg" radius="md">
-				<Title order={2} mb="lg">
-					{newsToEdit ? "Edit News" : "Create News"}
-				</Title>
+			<Workspace
+				main={<DocumentEditor value={content} onChange={setContent} placeholder="Write the article…" />}
+				aside={
+					<>
+						<SideCard title="Category">
+							<Select
+								placeholder="Choose a category"
+								data={categories}
+								value={categoryId || null}
+								onChange={(v) => setCategoryId(v ?? "")}
+								clearable
+								searchable
+								nothingFoundMessage="No matching category"
+							/>
+						</SideCard>
 
-				<form onSubmit={form.onSubmit(handleSubmit)}>
-					<Stack>
-						<TextInput
-							label="Title"
-							placeholder="Enter news title"
-							required
-							{...form.getInputProps("title")}
-						/>
-						<Select
-							label="Category"
-							placeholder="Select category"
-							data={categories}
-							{...form.getInputProps("category_id")}
-						/>
-						<TextInput
-							label="Hashtags"
-							placeholder="Enter hashtags, separated by commas (e.g. news,update,breaking)"
-							{...form.getInputProps("hashtags")}
-						/>
-						<TextInput
-							label="Search Keywords"
-							placeholder="Enter search keywords, separated by commas (e.g. legal news,ethiopia law,corporate law) - These won't be displayed on the frontend but used for search engine optimization"
-							{...form.getInputProps("seo_keywords")}
-						/>
-						<Switch
-							label="Featured Article?"
-							{...form.getInputProps("featured", { type: "checkbox" })}
-						/>
-						<NumberInput
-							label="Estimated Read Minutes"
-							min={1}
-							max={120}
-							{...form.getInputProps("read_minutes")}
-						/>
-						{/* 
-						<DateTimePicker
-							label="Published Date"
-							placeholder="Select date and time"
-							{...form.getInputProps("published_date")}
-						/> */}
-
-						<Box>
-							<Text size="sm" fw={500} mb="xs">
-								Visual Content
-							</Text>
-
-							{/* Hidden file input */}
+						<SideCard
+							title="Images"
+							hint={
+								existingImages.length + newFiles.length > 0 ?
+									"The first image is used as the cover."
+								:	"Add a cover image and any photos for the gallery."
+							}
+						>
 							<input
-								ref={setFileInputRef}
+								ref={fileInput}
 								type="file"
 								accept="image/*,video/*"
 								multiple
-								onChange={handleFileChange}
-								style={{ display: "none" }}
+								hidden
+								onChange={(e) => addFiles(e.target.files)}
 							/>
+							<div className={classes.gallery}>
+								{existingImages.map((src, i) => (
+									<div key={src} className={classes.thumb}>
+										<img src={convertToApiUrl(src)} alt={`Image ${i + 1}`} />
+										{i === 0 && <span className={classes.thumbBadge}>Cover</span>}
+										<button
+											type="button"
+											className={classes.thumbRemove}
+											aria-label={`Remove image ${i + 1}`}
+											onClick={() => setExistingImages((prev) => prev.filter((s) => s !== src))}
+										>
+											<IconX size={13} />
+										</button>
+									</div>
+								))}
+								{previews.map((src, i) => (
+									<div key={src} className={classes.thumb}>
+										<img src={src} alt={newFiles[i]?.name ?? "New image"} />
+										<span className={classes.thumbBadge}>
+											{existingImages.length === 0 && i === 0 ? "Cover · new" : "New"}
+										</span>
+										<button
+											type="button"
+											className={classes.thumbRemove}
+											aria-label={`Remove ${newFiles[i]?.name ?? "image"}`}
+											onClick={() => setNewFiles((prev) => prev.filter((_, j) => j !== i))}
+										>
+											<IconX size={13} />
+										</button>
+									</div>
+								))}
+								<button type="button" className={classes.addThumb} onClick={() => fileInput.current?.click()}>
+									<IconPhotoPlus size={20} />
+									Add
+								</button>
+							</div>
+						</SideCard>
 
-							{/* Add Image Button */}
-							<Button
-								onClick={handleAddImage}
-								leftSection={<IconUpload size={16} />}
-								variant="outline"
+						<SideCard title="Tags" hint="Hashtags show on the article. Search keywords are only used by search engines.">
+							<TagsInput
+								label="Hashtags"
+								placeholder={hashtags.length ? "" : "Type and press Enter"}
+								value={hashtags}
+								onChange={setHashtags}
+								splitChars={[",", " "]}
+								clearable
+								mb="sm"
+							/>
+							<TagsInput
+								label="Search keywords"
+								placeholder={keywords.length ? "" : "e.g. ethiopia corporate law"}
+								value={keywords}
+								onChange={setKeywords}
+								splitChars={[","]}
+								clearable
+							/>
+						</SideCard>
+
+						<SideCard title="Display">
+							<Switch
+								label="Featured article"
+								description="Shown first on the news page"
+								checked={featured}
+								onChange={(e) => setFeatured(e.currentTarget.checked)}
 								mb="md"
-							>
-								Add Image
-							</Button>
-
-							{/* New Image Previews */}
-							{imagePreviews.length > 0 && (
-								<Box mb="md">
-									<Text size="sm" fw={500} mb="xs" c="dimmed">
-										New Images ({imagePreviews.length})
-									</Text>
-									<Group gap="sm">
-										{imagePreviews.map((preview, index) => (
-											<Card key={index} p={0} radius="md" withBorder>
-												<Box style={{ position: "relative" }}>
-													<Image
-														src={preview}
-														alt={`Preview ${index + 1}`}
-														width={120}
-														height={120}
-														fit="cover"
-														radius="md"
-													/>
-													<ActionIcon
-														size="sm"
-														variant="filled"
-														color="red"
-														style={{
-															position: "absolute",
-															top: 4,
-															right: 4,
-														}}
-														onClick={() => removeNewImage(index)}
-													>
-														<IconTrash size={12} />
-													</ActionIcon>
-													<Badge
-														size="xs"
-														variant="filled"
-														color="blue"
-														style={{
-															position: "absolute",
-															bottom: 4,
-															left: 4,
-														}}
-													>
-														{index + 1}
-													</Badge>
-												</Box>
-												<Box p="xs">
-													<Text size="xs" c="dimmed" ta="center">
-														{visualFiles[index]?.name || "Image"}
-													</Text>
-												</Box>
-											</Card>
-										))}
-									</Group>
-								</Box>
-							)}
-
-							{/* Existing Images */}
-							{existingImages.length > 0 && (
-								<Box>
-									<Divider my="md" />
-									<Text size="sm" fw={500} mb="xs" c="dimmed">
-										Existing Images ({existingImages.length})
-									</Text>
-									<Group gap="sm">
-										{existingImages.map((imageData, index) => (
-											<Card key={index} p={0} radius="md" withBorder>
-												<Box style={{ position: "relative" }}>
-													<Image
-														src={convertToApiUrl(imageData)}
-														alt={`Existing Image ${index + 1}`}
-														width={120}
-														height={120}
-														fit="cover"
-														radius="md"
-													/>
-													<ActionIcon
-														size="sm"
-														variant="filled"
-														color="red"
-														style={{
-															position: "absolute",
-															top: 4,
-															right: 4,
-														}}
-														onClick={() => removeExistingImage(index)}
-													>
-														<IconTrash size={12} />
-													</ActionIcon>
-													<Badge
-														size="xs"
-														variant="filled"
-														color="green"
-														style={{
-															position: "absolute",
-															bottom: 4,
-															left: 4,
-														}}
-													>
-														{index + 1}
-													</Badge>
-												</Box>
-												<Box p="xs">
-													<Text size="xs" c="dimmed" ta="center">
-														Existing Image
-													</Text>
-												</Box>
-											</Card>
-										))}
-									</Group>
-								</Box>
-							)}
-
-							{/* Empty State */}
-							{imagePreviews.length === 0 && existingImages.length === 0 && (
-								<Card p="xl" radius="md" withBorder>
-									<Flex direction="column" align="center" gap="sm">
-										<IconPhoto size={48} color="var(--mantine-color-gray-4)" />
-										<Text size="sm" c="dimmed" ta="center">
-											No images selected. Upload images to see previews here.
-										</Text>
-									</Flex>
-								</Card>
-							)}
-						</Box>
-
-						<SimpleRichTextEditor
-							label="Content"
-							value={content}
-							onChange={setContent}
-							placeholder="Enter news content..."
-							rows={10}
-						/>
-
-						<Group justify="flex-end">
-							<Button
-								variant="light"
-								onClick={() => router.push("/news")}
-								disabled={loading}
-							>
-								Cancel
-							</Button>
-							<Button type="submit" loading={loading}>
-								{newsToEdit ? "Update" : "Create"}
-							</Button>
-						</Group>
-					</Stack>
-				</form>
-			</Paper>
-		</div>
+							/>
+							<NumberInput
+								label="Read time (minutes)"
+								placeholder={`${Math.max(1, stats.minutes)} (estimated)`}
+								min={0}
+								max={120}
+								value={readMinutes || ""}
+								onChange={(v) => setReadMinutes(typeof v === "number" ? v : 0)}
+								description={readMinutes ? undefined : "Leave empty to use the estimate"}
+							/>
+						</SideCard>
+					</>
+				}
+			/>
+		</EditorFrame>
 	);
 }

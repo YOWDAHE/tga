@@ -6,6 +6,7 @@ export async function fetchNews(params?: {
     search?: string;
     sortBy?: string;
     order?: string;
+    category?: string;
 }) {
     try {
         const queryParams = new URLSearchParams();
@@ -15,11 +16,10 @@ export async function fetchNews(params?: {
         if (params?.search) queryParams.append('q', params.search);
         if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
         if (params?.order) queryParams.append('order', params.order);
+        if (params?.category) queryParams.append('category', params.category);
 
         const url = `/news${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
         const res = await get(url);
-
-        console.log(res.data.data);
 
         return {
             success: true,

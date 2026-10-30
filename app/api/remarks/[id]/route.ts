@@ -25,26 +25,27 @@ export async function GET(
     }
 }
 
-// export async function PUT(
-//     req: NextRequest,
-//     { params }: { params: { id: string } }
-// ) {
-//     try {
-//         const tokens = req.cookies ? await getTokenCookie(req) : null;
-//         const body = await req.json();
-//         const res = await axios.put(`${BACKEND_URL}/remarks/${params.id}`, body, {
-//             headers: {
-//                 Authorization: `Bearer ${tokens?.accessToken}`,
-//             },
-//         });
-//         if (!res.data) {
-//             return NextResponse.json({ success: false, error: res.data?.error || "Failed to update remark" }, { status: 500 });
-//         }
-//         return NextResponse.json({ success: true, data: res.data.data });
-//     } catch (error: any) {
-//         return NextResponse.json({ success: false, error: error?.response?.data?.message || error?.message || "Failed to update remark" }, { status: 500 });
-//     }
-// }
+export async function PUT(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const tokens = req.cookies ? await getTokenCookie(req) : null;
+        const body = await req.json();
+        const res = await axios.put(`${BACKEND_URL}/remark/${id}`, body, {
+            headers: {
+                Authorization: `Bearer ${tokens?.accessToken}`,
+            },
+        });
+        if (!res.data) {
+            return NextResponse.json({ success: false, error: res.data?.error || "Failed to update remark" }, { status: 500 });
+        }
+        return NextResponse.json({ success: true, data: res.data.data });
+    } catch (error: any) {
+        return NextResponse.json({ success: false, error: error?.response?.data?.message || error?.message || "Failed to update remark" }, { status: 500 });
+    }
+}
 
 export async function DELETE(
     req: NextRequest,

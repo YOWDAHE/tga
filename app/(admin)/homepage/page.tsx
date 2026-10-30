@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-import { Skeleton } from "@mantine/core";
 import HomepageManagement from "@/components/HomepageManagement";
 import { fetchHomepage } from "@/app/actionsServers/homepage.server.actions";
 
@@ -7,28 +5,12 @@ export default async function HomepagePage() {
   const homepageRes = await fetchHomepage();
   const homepage = homepageRes.success ? homepageRes.data : null;
 
-  if (!homepage) {
-    return (
-      <HomepageManagement
-        initialContent={undefined}
-        initialStats={undefined}
-        initialPractices={undefined}
-        initialPartners={undefined}
-        initialContactInfo={undefined}
-      />
-    );
-  }
-
+  // No mock fallbacks: an empty page is safer than saving placeholder data over real content
   return (
-    <Suspense fallback={<Skeleton height={400} />}>
-      <HomepageManagement
-        initialContent={homepage.landing}
-        initialStats={homepage.stats}
-        initialPractices={homepage.practices}
-        initialPartners={homepage.partners}
-        initialContactInfo={homepage.contactUs}
-        // initialNewsLinks={homepage.newsLinks || []}
-      />
-    </Suspense>
+    <HomepageManagement
+      initialStats={homepage?.stats ?? []}
+      initialPractices={homepage?.practices ?? []}
+      initialPartners={homepage?.partners ?? []}
+    />
   );
 }

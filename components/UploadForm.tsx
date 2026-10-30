@@ -1,111 +1,88 @@
 "use client";
 
-import React from "react";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-	Paper,
-	Group,
-	Text,
-	Button,
-	Modal,
-	TextInput,
-	Textarea,
-	Select,
-	Stack,
-	Title,
-	Loader,
-	Alert,
-	FileInput,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { Button, Select, TagsInput, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { useForm } from "@mantine/form";
-import { Dropzone, PDF_MIME_TYPE } from "@mantine/dropzone";
-import {
-	IconUpload,
-	IconFileText,
-	IconCheck,
-	IconX,
-	IconAlertCircle,
-} from "@tabler/icons-react";
+import { Dropzone, PDF_MIME_TYPE, type FileRejection } from "@mantine/dropzone";
+import { IconCheck, IconFileUpload, IconUpload, IconX } from "@tabler/icons-react";
 import { uploadDocument } from "@/app/actions/archive.actions";
+import {
+	EditorFrame,
+	SideCard,
+	TitleBlock,
+	Workspace,
+	editorClasses as classes,
+	useEditorGuards,
+} from "./editor";
 
-interface UploadFormData {
-	title: string;
-	category_id: string;
-	author: string;
-	description: string;
-	seo_keywords: string;
+type Category = { value: string; label: string };
+
+function formatFileSize(bytes?: number | null) {
+	if (!bytes) return "0 KB";
+	if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+	return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-const UploadForm = ({ categories }: { categories: any[] }) => {
-	const [loading, setLoading] = useState(false);
-	const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-	const [
-		previewModalOpened,
-		{ open: openPreviewModal, close: closePreviewModal },
-	] = useDisclosure(false);
+const UploadForm = ({ categories }: { categories: Category[] }) => {
 	const router = useRouter();
+	const openPicker = useRef<() => void>(null);
 
-	const form = useForm<UploadFormData>({
-		initialValues: {
-			title: "",
-			category_id: "",
-			author: "",
-			description: "",
-			seo_keywords: "",
-		},
-		validate: {
-			title: (value) => (!value ? "Title is required" : null),
-			category_id: (value) => (!value ? "Category is required" : null),
-		},
-	});
+	const [file, setFile] = useState<File | null>(null);
+	const [title, setTitle] = useState("");
+	const [description, setDescription] = useState("");
+	const [categoryId, setCategoryId] = useState("");
+	const [author, setAuthor] = useState("");
+	const [keywords, setKeywords] = useState<string[]>([]);
+	const [loading, setLoading] = useState(false);
+	const [errors, setErrors] = useState<{ title?: string; category?: string; file?: string }>({});
 
-	// Categories are already in the correct format from the server action
-	const initialCategories = categories;
+	const previewUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
+	useEffect(() => () => {
+		if (previewUrl) URL.revokeObjectURL(previewUrl);
+	}, [previewUrl]);
 
-	const handleFileDrop = (files: File[]) => {
-		if (files.length > 0) {
-			const file = files[0];
-			if (file.type === "application/pdf") {
-				setUploadedFile(file);
-				// Auto-fill title if empty
-				if (!form.values.title) {
-					form.setFieldValue("title", file.name.replace(".pdf", ""));
-				}
-				notifications.show({
-					title: "File uploaded",
-					message: `${file.name} has been selected for upload`,
-					color: "green",
-					icon: <IconCheck size={16} />,
-				});
-			} else {
-				notifications.show({
-					title: "Invalid file type",
-					message: "Please upload a PDF file",
-					color: "red",
-					icon: <IconX size={16} />,
-				});
-			}
+	const dirty = Boolean(file || title || description || categoryId || author || keywords.length);
+
+	const handleDrop = (files: File[]) => {
+		const next = files[0];
+		if (!next) return;
+		if (next.type !== "application/pdf") {
+			notifications.show({ title: "Invalid file type", message: "Please upload a PDF file", color: "red", icon: <IconX size={16} /> });
+			return;
+		}
+		setFile(next);
+		setErrors((e) => ({ ...e, file: undefined }));
+		// Auto-fill the title from the file name when it's empty
+		if (!title.trim()) {
+			setTitle(next.name.replace(/\.pdf$/i, ""));
+			setErrors((e) => ({ ...e, title: undefined }));
 		}
 	};
 
-    const handleFileReject = (files: any[]) => {
-        console.log(files);
+	const handleReject = (rejections: FileRejection[]) => {
+		const reason = rejections[0]?.errors[0]?.message;
 		notifications.show({
 			title: "File rejected",
-			message: "Please upload a valid PDF file",
+			message: reason ? `Please upload a valid PDF file (${reason})` : "Please upload a valid PDF file",
 			color: "red",
 			icon: <IconX size={16} />,
 		});
 	};
 
-	const handleSubmit = async (values: UploadFormData) => {
-		if (!uploadedFile) {
+	const submit = async () => {
+		if (loading) return;
+		const nextErrors = {
+			title: title.trim() ? undefined : "Title is required",
+			category: categoryId ? undefined : "Category is required",
+			file: file ? undefined : "Choose a PDF to upload",
+		};
+		setErrors(nextErrors);
+		if (!file || nextErrors.title || nextErrors.category) {
 			notifications.show({
-				title: "No file selected",
-				message: "Please upload a PDF file",
+				title: "Missing details",
+				message: [nextErrors.file, nextErrors.title, nextErrors.category].filter(Boolean).join(" · "),
 				color: "red",
 				icon: <IconX size={16} />,
 			});
@@ -113,30 +90,30 @@ const UploadForm = ({ categories }: { categories: any[] }) => {
 		}
 
 		setLoading(true);
-
 		try {
-			// Create FormData for file upload
 			const formData = new FormData();
-			formData.append("file", uploadedFile);
-			formData.append("title", values.title);
-			formData.append("category_id", values.category_id);
-			formData.append("author", values.author);
-			formData.append("description", values.description);
-			formData.append("seo_keywords", values.seo_keywords);
+			formData.append("file", file);
+			formData.append("title", title.trim());
+			formData.append("category_id", categoryId);
+			formData.append("author", author);
+			formData.append("description", description);
+			formData.append("seo_keywords", keywords.join(","));
 
 			const result = await uploadDocument(formData);
 
 			if (result.success) {
 				notifications.show({
-					title: "Success",
+					title: "Uploaded",
 					message: "Document uploaded successfully",
 					color: "green",
 					icon: <IconCheck size={16} />,
 				});
-
-				// Reset form and redirect
-				form.reset();
-				setUploadedFile(null);
+				setFile(null);
+				setTitle("");
+				setDescription("");
+				setCategoryId("");
+				setAuthor("");
+				setKeywords([]);
 				router.push("/archives");
 			} else {
 				notifications.show({
@@ -146,222 +123,162 @@ const UploadForm = ({ categories }: { categories: any[] }) => {
 					icon: <IconX size={16} />,
 				});
 			}
-		} catch (error) {
-			notifications.show({
-				title: "Error",
-				message: "An unexpected error occurred",
-				color: "red",
-				icon: <IconX size={16} />,
-			});
+		} catch {
+			notifications.show({ title: "Error", message: "An unexpected error occurred", color: "red", icon: <IconX size={16} /> });
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const handlePreview = () => {
-		if (uploadedFile) {
-			openPreviewModal();
-		}
-	};
-
-	const formatFileSize = (bytes: number) => {
-		if (bytes === 0) return "0 Bytes";
-		const k = 1024;
-		const sizes = ["Bytes", "KB", "MB", "GB"];
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-	};
+	useEditorGuards({ dirty: dirty && !loading, onSave: submit });
 
 	return (
-		<div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
-			<Paper withBorder p="xl" radius="md">
-				<Stack gap="lg">
-					{/* Header */}
-					<Group justify="space-between" align="center">
-						<div>
-							<Title order={2}>Upload Document</Title>
-							<Text c="dimmed" size="sm">
-								Upload a PDF document to the archives
-							</Text>
-						</div>
-						<Button variant="light" onClick={() => router.push("/archives")}>
-							Back to Archives
-						</Button>
-					</Group>
+		<EditorFrame
+			back={{ href: "/archives", label: "Archives" }}
+			actions={
+				<>
+					<Button variant="default" component={Link} href="/archives" disabled={loading}>
+						Cancel
+					</Button>
+					<Button onClick={submit} loading={loading} leftSection={<IconUpload size={16} />}>
+						Upload
+					</Button>
+				</>
+			}
+		>
+			<TitleBlock
+				eyebrow="Archives · Upload document"
+				title={title}
+				onTitle={(value) => {
+					setTitle(value);
+					if (value.trim()) setErrors((e) => ({ ...e, title: undefined }));
+				}}
+				titlePlaceholder="Document title"
+				titleError={errors.title}
+				summary={description}
+				onSummary={setDescription}
+				summaryPlaceholder="Add a short description (optional)"
+			/>
 
-					{/* File Upload Section */}
-					<Paper withBorder p="md">
-						<Text fw={500} mb="md">
-							Select PDF File
-						</Text>
+			<Workspace
+				main={
+					<>
+						<Dropzone
+							unstyled
+							openRef={openPicker}
+							onDrop={handleDrop}
+							onReject={handleReject}
+							accept={PDF_MIME_TYPE}
+							maxFiles={1}
+							multiple={false}
+							disabled={loading}
+							activateOnClick={!file}
+							className={classes.dropzone}
+							data-invalid={errors.file ? true : undefined}
+							style={file ? { display: "none" } : undefined}
+						>
+							<div style={{ pointerEvents: "none" }}>
+								<div className={classes.dropzoneIcon}>
+									<Dropzone.Reject>
+										<IconX size={26} stroke={1.6} />
+									</Dropzone.Reject>
+									<Dropzone.Accept>
+										<IconUpload size={26} stroke={1.6} />
+									</Dropzone.Accept>
+									<Dropzone.Idle>
+										<IconFileUpload size={26} stroke={1.6} />
+									</Dropzone.Idle>
+								</div>
+								<div className={classes.dropzoneTitle}>
+									<Dropzone.Reject>Only PDF files can be uploaded</Dropzone.Reject>
+									<Dropzone.Idle>Drop a PDF here</Dropzone.Idle>
+									<Dropzone.Accept>Drop to add this file</Dropzone.Accept>
+								</div>
+								<div className={classes.dropzoneHint}>
+									{errors.file ?? "One PDF per document. The title is filled in from the file name."}
+								</div>
+								<span className={classes.dropzoneButton}>Choose file</span>
+							</div>
+						</Dropzone>
 
-						{uploadedFile ?
-							<Paper withBorder p="md" bg="gray.0">
-								<Group justify="space-between" align="center">
-									<Group gap="sm">
-										<IconFileText size={24} color="red" />
-										<div>
-											<Text fw={500}>{uploadedFile.name}</Text>
-											<Text size="sm" c="dimmed">
-												{formatFileSize(uploadedFile.size)}
-											</Text>
+						{file && (
+							<>
+								<div className={classes.fileCard}>
+									<span className={classes.fileIcon}>PDF</span>
+									<div className={classes.fileInfo}>
+										<div className={classes.fileName}>{file.name}</div>
+										<div className={classes.fileMeta}>
+											{formatFileSize(file.size)} · {file.type || "application/pdf"}
 										</div>
-									</Group>
-									<Group gap="xs">
-										<Button variant="light" size="sm" onClick={handlePreview}>
-											Preview
+									</div>
+									<div className={classes.fileActions}>
+										<Button variant="default" size="sm" onClick={() => openPicker.current?.()} disabled={loading}>
+											Replace
 										</Button>
-										<Button
-											variant="light"
-											color="red"
-											size="sm"
-											onClick={() => setUploadedFile(null)}
-										>
+										<Button variant="light" size="sm" color="red" onClick={() => setFile(null)} disabled={loading}>
 											Remove
 										</Button>
-									</Group>
-								</Group>
-							</Paper>
-						:	<Dropzone
-								onDrop={handleFileDrop}
-                                onReject={handleFileReject}
-								accept={PDF_MIME_TYPE}
-								maxFiles={1}
-							>
-								<Group
-									justify="center"
-									gap="xl"
-									mih={220}
-									style={{ pointerEvents: "none" }}
-								>
-									<Dropzone.Accept>
-										<IconUpload
-											size={50}
-											stroke={1.5}
-											color="var(--mantine-color-blue-6)"
-										/>
-									</Dropzone.Accept>
-									<Dropzone.Reject>
-										<IconX size={50} stroke={1.5} color="var(--mantine-color-red-6)" />
-									</Dropzone.Reject>
-									<Dropzone.Idle>
-										<IconUpload size={50} stroke={1.5} />
-									</Dropzone.Idle>
-
-									<div>
-										<Text size="xl" inline>
-											Drag PDF file here or click to select
-										</Text>
-										<Text size="sm" c="dimmed" inline mt={7}>
-											Only PDF files are accepted
-										</Text>
 									</div>
-								</Group>
-							</Dropzone>
-						}
-					</Paper>
+								</div>
 
-					{/* Form Section */}
-					<form onSubmit={form.onSubmit(handleSubmit)}>
-						<Stack gap="md">
-							<TextInput
-								label="Document Title"
-								placeholder="Enter document title"
-								required
-								{...form.getInputProps("title")}
-							/>
-
+								{previewUrl && (
+									<div className={classes.filePreview}>
+										<div className={classes.filePreviewHead}>Preview</div>
+										<iframe src={`${previewUrl}#navpanes=0`} title={`Preview of ${file.name}`} />
+									</div>
+								)}
+							</>
+						)}
+					</>
+				}
+				aside={
+					<>
+						<SideCard title="Category">
 							<Select
-								label="Category"
-								placeholder="Select category"
-								data={initialCategories}
-								required
-								{...form.getInputProps("category_id")}
+								placeholder="Choose a category"
+								data={categories}
+								value={categoryId || null}
+								onChange={(v) => {
+									setCategoryId(v ?? "");
+									if (v) setErrors((e) => ({ ...e, category: undefined }));
+								}}
+								error={errors.category}
+								searchable
+								nothingFoundMessage="No matching category"
+								aria-label="Category"
 							/>
+						</SideCard>
 
+						<SideCard title="Author">
 							<TextInput
-								label="Author"
-								placeholder="Document author (optional)"
-								{...form.getInputProps("author")}
+								placeholder="Optional"
+								value={author}
+								onChange={(e) => setAuthor(e.currentTarget.value)}
+								aria-label="Author"
 							/>
+						</SideCard>
 
-							<Textarea
-								label="Description"
-								placeholder="Brief description of the document (optional)"
-								rows={3}
-								{...form.getInputProps("description")}
+						<SideCard title="Search keywords" hint="Used by search; not shown on the website.">
+							<TagsInput
+								placeholder={keywords.length ? "" : "e.g. ethiopia law, contract"}
+								value={keywords}
+								onChange={setKeywords}
+								splitChars={[","]}
+								clearable
+								aria-label="Search keywords"
 							/>
+						</SideCard>
 
-							<TextInput
-								label="Search Keywords"
-								placeholder="Enter search keywords, separated by commas (e.g. legal document,ethiopia law,contract template) - These won't be displayed on the frontend but used for search engine optimization"
-								{...form.getInputProps("seo_keywords")}
-							/>
-
-							{/* Submit Button */}
-							<Group justify="flex-end" mt="md">
-								<Button
-									variant="light"
-									onClick={() => router.push("/archives")}
-									disabled={loading}
-								>
-									Cancel
-								</Button>
-								<Button
-									type="submit"
-									loading={loading}
-									disabled={!uploadedFile}
-									leftSection={<IconUpload size={16} />}
-								>
-									Upload Document
-								</Button>
-							</Group>
-						</Stack>
-					</form>
-
-					{/* Info Alert */}
-					<Alert
-						icon={<IconAlertCircle size={16} />}
-						title="Upload Guidelines"
-						color="blue"
-						variant="light"
-					>
-						<Text size="sm">
-							• Only PDF files are accepted
-							<br />
-							• Document title and category are required
-							<br />• Author and description are optional
-						</Text>
-					</Alert>
-				</Stack>
-			</Paper>
-
-			{/* Preview Modal */}
-			<Modal
-				opened={previewModalOpened}
-				onClose={closePreviewModal}
-				title="File Preview"
-				size="lg"
-			>
-				{uploadedFile && (
-					<Stack>
-						<Group>
-							<IconFileText size={24} color="red" />
-							<div>
-								<Text fw={500}>{uploadedFile.name}</Text>
-								<Text size="sm" c="dimmed">
-									{formatFileSize(uploadedFile.size)}
-								</Text>
-							</div>
-						</Group>
-						<Text size="sm">
-							File preview is not available for PDF files. Please ensure this is the
-							correct document before uploading.
-						</Text>
-					</Stack>
-				)}
-			</Modal>
-		</div>
+						<SideCard title="Before you upload">
+							<p className={classes.prose}>
+								Only PDF files are accepted. A title and category are required; author, description and
+								keywords are optional and can be edited later.
+							</p>
+						</SideCard>
+					</>
+				}
+			/>
+		</EditorFrame>
 	);
 };
 

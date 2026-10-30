@@ -1,11 +1,6 @@
-import { Suspense } from "react";
+import { Box } from "@mantine/core";
 import { fetchDocuments, getCategories } from "@/app/actionsServers/archive.server.actions";
-import { Button, Skeleton } from "@mantine/core";
 import DocumentsManagement from "@/components/DocumentsManagement";
-import EmptyState from "@/components/EmptyState";
-import { FileIcon, FileX2Icon } from "lucide-react";
-import Link from "next/link";
-import { IconPlus } from "@tabler/icons-react";
 
 interface ArchivesPageProps {
 	searchParams: Promise<{
@@ -17,91 +12,34 @@ interface ArchivesPageProps {
 	}>;
 }
 
-export default async function ArchivesPage({
-	searchParams,
-}: ArchivesPageProps) {
-	const searchParamsResolved = await searchParams;
-	const page =
-		searchParamsResolved.page ? parseInt(searchParamsResolved.page) : 1;
-	const search = searchParamsResolved.search || "";
-	const category = searchParamsResolved.category || "";
-	const sortBy = searchParamsResolved.sortBy || "createdAt";
-	const order = searchParamsResolved.order || "desc";
+export default async function ArchivesPage({ searchParams }: ArchivesPageProps) {
+	const params = await searchParams;
+	const page = params.page ? parseInt(params.page) : 1;
+	const search = params.search || "";
+	const category = params.category || "";
+	const sortBy = params.sortBy || "createdAt";
+	const order = params.order || "desc";
 
-	try {
-		const documentsRes = await fetchDocuments({
-			page,
-			limit: 6,
-			search: search || undefined,
-			category: category || undefined,
-			sortBy: sortBy || undefined,
-			order: order || undefined,
-    });
-    
-    		const categoriesRes = await getCategories();
-		const categories = categoriesRes.success ? categoriesRes.data : [];
+	const [documentsRes, categoriesRes] = await Promise.all([
+		fetchDocuments({ page, limit: 10, search: search || undefined, category: category || undefined, sortBy, order }),
+		getCategories(),
+	]);
+	const pagination = (documentsRes.success && documentsRes.pagination) || { currentPage: 1, totalPages: 1, totalCount: 0 };
 
-		if (!documentsRes.data) {
-      return <EmptyState
-        title="No documents found"
-        description="There are no documents to display at the moment."
-        icon={<FileX2Icon size={48} />}
-        action={
-          <Link href="/archives/uploads">
-            <Button>
-              <IconPlus size={16} style={{ marginRight: 4 }} /> Add Document
-            </Button>
-          </Link>
-        }
-      />;
-		}
-
-		const documents = documentsRes.data;
-    const pagination = documentsRes.pagination;
-
-		return (
-			<Suspense fallback={<Skeleton height={400} />}>
-				{/* <ArchivesManagement
-					documents={documents}
-					currentPage={pagination.currentPage}
-					totalPages={pagination.totalPages}
-					searchQuery={search}
-				/> */}
-				<DocumentsManagement
-					documents={documents}
-					currentPage={pagination.currentPage}
-					totalPages={pagination.totalPages}
-					searchQuery={search}
-					category={category}
-					sortBy={sortBy}
-					order={order}
-					initialCategories={categories}
-				/>
-			</Suspense>
-		);
-	} catch (error) {
-		console.error("Error in ArchivesPage:", error);
-
-		// Return empty state on error
-		return (
-			<Suspense fallback={<Skeleton height={400} />}>
-				<DocumentsManagement
-					documents={[]}
-					currentPage={1}
-					totalPages={1}
-					searchQuery={search}
-					category={category}
-					sortBy={sortBy}
-          order={order}
-          initialCategories={[]}
-				/>
-				{/* <ArchivesManagement
-					documents={[]}
-					currentPage={1}
-					totalPages={1}
-					searchQuery={search}
-				/> */}
-			</Suspense>
-		);
-	}
+	return (
+		<Box p={{ base: "sm", sm: "lg" }}>
+			<DocumentsManagement
+				documents={documentsRes.success ? documentsRes.data ?? [] : []}
+				error={documentsRes.success ? null : documentsRes.error}
+				currentPage={pagination.currentPage}
+				totalPages={pagination.totalPages}
+				totalItems={Number(pagination.totalCount ?? 0)}
+				searchQuery={search}
+				category={category}
+				sortBy={sortBy}
+				order={order}
+				initialCategories={categoriesRes.success ? categoriesRes.data : []}
+			/>
+		</Box>
+	);
 }

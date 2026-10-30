@@ -1,8 +1,15 @@
 import { get } from '@/lib/axiosServerWrapper';
 
-export async function fetchRemarksServer() {
+export async function fetchRemarksServer(params: { search?: string; status?: string; sort?: string; page?: number } = {}) {
     try {
-        const res = await get('/remark');
+        const res = await get('/remark', {
+            params: {
+                search: params.search || undefined,
+                status: params.status || undefined,
+                sort: params.sort || undefined,
+                page: params.page || undefined,
+            },
+        });
         if (!res.data.data) throw new Error(res.data.error || 'Failed to fetch remarks');
         return { success: true, data: res.data.data };
     } catch (error: any) {

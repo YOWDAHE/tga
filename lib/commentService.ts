@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { patch, del } from './axiosWrapper';
-import dotenv from 'dotenv';
-dotenv.config();
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tgagloballawfirm.com/office/api';
+// Same-origin Next API routes (they forward to the backend server-side)
+const API_BASE_URL = '/office/api';
 
 export interface Comment {
     id: number;
@@ -34,12 +32,9 @@ export const commentService = {
     // Fetch comments for a specific news article with optional username
     async getCommentsByNewsId(newsId: number, username?: string): Promise<{ success: boolean; data?: Comment[]; error?: string }> {
         try {
-            const url = new URL(`${API_BASE_URL}/public/comments/news/${newsId}`);
-            if (username) {
-                url.searchParams.set('username', username);
-            }
-            
-            const response = await axios.get(url.toString());
+            const response = await axios.get(`${API_BASE_URL}/public/comments/news/${newsId}`, {
+                params: username ? { username } : undefined,
+            });
             return {
                 success: true,
                 data: response.data.data
@@ -90,10 +85,10 @@ export const commentService = {
         }
     },
 
-    // Admin actions - require authentication
+    // Admin actions - require authentication, so they go through the cookie-authenticated /office/api proxy
     async toggleCommentFlag(commentId: number, reason?: string): Promise<{ success: boolean; data?: Comment; error?: string }> {
         try {
-            const response = await axios.patch(`${API_BASE_URL}comments/${commentId}/toggle-flag`, { reason });
+            const response = await patch(`comments/${commentId}/toggle-flag`, { reason });
             return {
                 success: true,
                 data: response.data.data
@@ -109,7 +104,7 @@ export const commentService = {
 
     async toggleCommentVisibility(commentId: number, reason?: string): Promise<{ success: boolean; data?: Comment; error?: string }> {
         try {
-            const response = await axios.patch(`${API_BASE_URL}/comments/${commentId}/toggle-visibility`, { reason });
+            const response = await patch(`comments/${commentId}/toggle-visibility`, { reason });
             return {
                 success: true,
                 data: response.data.data
@@ -125,7 +120,7 @@ export const commentService = {
 
     async deleteComment(commentId: number): Promise<{ success: boolean; data?: Comment; error?: string }> {
         try {
-            const response = await axios.delete(`${API_BASE_URL}/comments/${commentId}`);
+            const response = await del(`comments/${commentId}`);
             return {
                 success: true,
                 data: response.data.data

@@ -1,4 +1,4 @@
-import { get, post, put } from '@/lib/axiosWrapper';
+import { get, post, put, del } from '@/lib/axiosWrapper';
 
 export async function updateHomepage(updateData: any) {
     try {
@@ -44,5 +44,37 @@ export async function uploadPartnerImage(file: File) {
         return { success: true, data: res.data };
     } catch (error: any) {
         return { success: false, error: error.message };
+    }
+}
+export type HomepageSection = 'stats' | 'practices' | 'partners' | 'contactUs' | 'newsLinks';
+
+// Single-item edits: each call touches exactly one row on the server
+export async function createHomepageItem<T = any>(section: HomepageSection, data: Record<string, any>) {
+    try {
+        const res = await post(`homepage/items/${section}/`, data);
+        if (!res.data?.success) throw new Error(res.data?.error || 'Failed to add item');
+        return { success: true as const, data: res.data.data as T };
+    } catch (error: any) {
+        return { success: false as const, error: error.message as string };
+    }
+}
+
+export async function updateHomepageItem<T = any>(section: HomepageSection, id: number, data: Record<string, any>) {
+    try {
+        const res = await put(`homepage/items/${section}/${id}/`, data);
+        if (!res.data?.success) throw new Error(res.data?.error || 'Failed to update item');
+        return { success: true as const, data: res.data.data as T };
+    } catch (error: any) {
+        return { success: false as const, error: error.message as string };
+    }
+}
+
+export async function deleteHomepageItem(section: HomepageSection, id: number) {
+    try {
+        const res = await del(`homepage/items/${section}/${id}/`);
+        if (!res.data?.success) throw new Error(res.data?.error || 'Failed to delete item');
+        return { success: true as const };
+    } catch (error: any) {
+        return { success: false as const, error: error.message as string };
     }
 }

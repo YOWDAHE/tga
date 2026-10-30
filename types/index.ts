@@ -39,6 +39,9 @@ export interface News {
     twitter_message_id?: string | null;
     published_date: Date | null;
     created_by: string | null;
+    view_count?: number;
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
 }
 
 // User

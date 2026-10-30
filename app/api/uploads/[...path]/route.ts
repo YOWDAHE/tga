@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getTokenCookie } from '@/app/utils/server/token';
 
 export async function GET(
     request: NextRequest,
@@ -6,10 +7,8 @@ export async function GET(
 ) {
     try {
         const pathSegments = (await params).path;
-        console.log('Uploads API route - pathSegments:', pathSegments);
         
         if (pathSegments.length < 2) {
-            console.log('Uploads API route - Invalid path length:', pathSegments.length);
             return NextResponse.json(
                 { error: 'Invalid path' },
                 { status: 400 }
@@ -18,12 +17,10 @@ export async function GET(
 
         const folder = pathSegments[0];
         const filename = pathSegments[1];
-        console.log('Uploads API route - folder:', folder, 'filename:', filename);
 
         // Validate folder to prevent directory traversal
-        const allowedFolders = ['partners', 'documents', 'news-images'];
+        const allowedFolders = ['partners', 'landing', 'documents', 'news-images'];
         if (!allowedFolders.includes(folder)) {
-            console.log('Uploads API route - Invalid folder:', folder);
             return NextResponse.json(
                 { error: 'Invalid folder' },
                 { status: 400 }
@@ -31,20 +28,22 @@ export async function GET(
         }
 
         // Forward the request to the backend
-        const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
+        const backendApiUrl = process.env.BACKEND_API_URL;
         let response;
         
-        if (folder === 'partners') {
-            response = await fetch(`${backendUrl}/api/landing/uploads/${folder}/${filename}`);
+        if (folder === 'partners' || folder === 'landing') {
+            response = await fetch(`${backendApiUrl}/landing/uploads/${folder}/${filename}`);
         } else if (folder === 'documents') {
-            response = await fetch(`${backendUrl}/api/uploads/documents/${filename}`);
+            // Documents are served by the authenticated /uploads route, so pass the admin's token on
+            const tokens = request.cookies ? await getTokenCookie(request) : null;
+            response = await fetch(`${backendApiUrl}/uploads/documents/${encodeURIComponent(filename)}`, {
+                headers: tokens?.accessToken ? { Authorization: `Bearer ${tokens.accessToken}` } : {},
+            });
         } else if (folder === 'news-images') {
-            console.log('Uploads API route - Fetching news image from:', `${backendUrl}/api/news/images/${filename}`);
-            response = await fetch(`${backendUrl}/api/news/images/${filename}`);
+            response = await fetch(`${backendApiUrl}/news/images/${filename}`);
         }
 
         if (!response || !response.ok) {
-            console.log('Uploads API route - Backend response not ok:', response?.status, response?.statusText);
             return NextResponse.json(
                 { error: 'File not found' },
                 { status: 404 }

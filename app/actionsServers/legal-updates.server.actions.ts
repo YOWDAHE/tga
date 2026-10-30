@@ -8,6 +8,7 @@ export async function fetchLegalUpdates(params?: {
   order?: string;
   content_type?: string;
   category?: string;
+  status?: string;
 }) {
   try {
     const queryParams = new URLSearchParams();
@@ -18,6 +19,7 @@ export async function fetchLegalUpdates(params?: {
     if (params?.order) queryParams.append("order", params.order);
     if (params?.content_type) queryParams.append("content_type", params.content_type);
     if (params?.category) queryParams.append("category", params.category);
+    if (params?.status) queryParams.append("status", params.status);
 
     const url = `/legal-updates${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
     const res = await get(url);
@@ -26,6 +28,7 @@ export async function fetchLegalUpdates(params?: {
       success: true,
       data: res.data.data.legalUpdates,
       pagination: res.data.data.pagination,
+      statusCounts: res.data.data.statusCounts as { published: number; draft: number } | undefined,
     };
   } catch (error: unknown) {
     const err = error as { response?: { data?: { message?: string } }; message?: string };

@@ -1,0 +1,175 @@
+/* Sign-in: same canvas and glass frame as the admin shell, with a white form card */
+.root {
+	min-height: 100vh;
+	min-height: 100dvh;
+	padding: 16px;
+	background: #dcdfe3;
+}
+
+.frame {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	min-height: calc(100dvh - 32px);
+	border-radius: 28px;
+	background:
+		radial-gradient(120% 60% at 0% 0%, #dcebe8 0%, rgba(220, 235, 232, 0) 60%),
+		linear-gradient(180deg, #eef1f2 0%, #f3f4f5 55%, #eceef0 100%);
+	box-shadow:
+		0 1px 2px rgba(17, 17, 19, 0.04),
+		0 12px 40px rgba(17, 17, 19, 0.06);
+	overflow: hidden;
+}
+
+/* ---------- brand side ---------- */
+
+.brand {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 40px 44px;
+}
+
+.logo {
+	display: block;
+	width: 148px;
+	height: auto;
+}
+
+.pitch {
+	max-width: 420px;
+}
+
+.eyebrow {
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--admin-accent-ink);
+}
+
+.headline {
+	margin-top: 12px;
+	font-size: 40px;
+	font-weight: 600;
+	line-height: 1.08;
+	letter-spacing: -0.03em;
+	color: #111113;
+}
+
+.lede {
+	margin-top: 14px;
+	font-size: 15px;
+	line-height: 1.6;
+	color: #5c5c64;
+}
+
+.features {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 24px;
+}
+
+.feature {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 7px 12px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.7);
+	font-size: 13px;
+	color: #3a3a40;
+}
+
+.feature svg {
+	color: var(--admin-accent);
+}
+
+.legal {
+	font-size: 12px;
+	color: var(--admin-muted);
+}
+
+/* ---------- form side ---------- */
+
+.panel {
+	display: grid;
+	place-items: center;
+	padding: 24px;
+}
+
+.card {
+	width: 100%;
+	max-width: 420px;
+	padding: 36px;
+	border-radius: 24px;
+	background: #fff;
+	box-shadow:
+		0 1px 2px rgba(17, 17, 19, 0.04),
+		0 20px 50px rgba(17, 17, 19, 0.08);
+}
+
+.cardLogo {
+	display: none;
+	width: 112px;
+	height: auto;
+	margin-bottom: 24px;
+}
+
+.title {
+	font-size: 26px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	color: #111113;
+}
+
+.subtitle {
+	margin-top: 4px;
+	margin-bottom: 28px;
+	font-size: 14px;
+	color: #6b6b73;
+}
+
+.foot {
+	margin-top: 22px;
+	font-size: 12px;
+	line-height: 1.5;
+	color: var(--admin-muted);
+	text-align: center;
+}
+
+@media (max-width: 61.99em) {
+	.frame {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.brand {
+		display: none;
+	}
+
+	.cardLogo {
+		display: block;
+	}
+}
+
+@media (max-width: 30em) {
+	.root {
+		padding: 0;
+		background: #f3f4f5;
+	}
+
+	.frame {
+		min-height: 100dvh;
+		border-radius: 0;
+		box-shadow: none;
+	}
+
+	.panel {
+		padding: 16px;
+	}
+
+	.card {
+		padding: 28px 22px;
+	}
+}

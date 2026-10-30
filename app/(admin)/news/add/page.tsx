@@ -19,7 +19,6 @@ export default async function NewsAddPage({ searchParams }: NewsAddPageProps) {
   // Fetch categories
   try {
     const categoriesRes = await getCategories();
-    console.log("categoriesRes", categoriesRes);
     if (categoriesRes.success) {
       categories = categoriesRes.data || [];
     }
@@ -41,7 +40,7 @@ export default async function NewsAddPage({ searchParams }: NewsAddPageProps) {
 
   return (
     <Suspense fallback={<Skeleton height={400} />}>
-      <NewsForm newsToEdit={newsToEdit} categories={categories} />
+      <NewsForm key={editId ?? "new"} newsToEdit={newsToEdit} categories={categories} />
     </Suspense>
   );
 } 

@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
     try {
         const tokens = req.cookies ? await getTokenCookie(req) : null;
         const res = await axios.get(`${BACKEND_URL}/remark`, {
+            params: Object.fromEntries(req.nextUrl.searchParams),
             headers: {
                 Authorization: `Bearer ${tokens?.accessToken}`,
             },
@@ -21,20 +22,20 @@ export async function GET(req: NextRequest) {
     }
 }
 
-// export async function POST(req: NextRequest) {
-//     try {
-//         const tokens = req.cookies ? await getTokenCookie(req) : null;
-//         const body = await req.json();
-//         const res = await axios.post(`${BACKEND_URL}/remarks`, body, {
-//             headers: {
-//                 Authorization: `Bearer ${tokens?.accessToken}`,
-//             },
-//         });
-//         if (!res.data) {
-//             return NextResponse.json({ success: false, error: res.data?.error || "Failed to create remark" }, { status: 500 });
-//         }
-//         return NextResponse.json({ success: true, data: res.data.data });
-//     } catch (error: any) {
-//         return NextResponse.json({ success: false, error: error?.response?.data?.message || error?.message || "Failed to create remark" }, { status: 500 });
-//     }
-// } 
+export async function POST(req: NextRequest) {
+    try {
+        const tokens = req.cookies ? await getTokenCookie(req) : null;
+        const body = await req.json();
+        const res = await axios.post(`${BACKEND_URL}/remark`, body, {
+            headers: {
+                Authorization: `Bearer ${tokens?.accessToken}`,
+            },
+        });
+        if (!res.data) {
+            return NextResponse.json({ success: false, error: res.data?.error || "Failed to create remark" }, { status: 500 });
+        }
+        return NextResponse.json({ success: true, data: res.data.data });
+    } catch (error: any) {
+        return NextResponse.json({ success: false, error: error?.response?.data?.message || error?.message || "Failed to create remark" }, { status: 500 });
+    }
+}

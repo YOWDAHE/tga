@@ -3,8 +3,9 @@ import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
+import "./admin-theme.css";
 
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { theme } from "@/config/theme";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -23,7 +24,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="en">
+		<html lang="en" {...mantineHtmlProps}>
 			<head>
 				<ColorSchemeScript />
 			</head>

@@ -1,25 +1,27 @@
-import { Suspense } from 'react';
-import { fetchRemarksServer } from '@/app/actionsServers/remarks.server.actions';
-import RemarksManagement from '@/components/RemarksManagement';
-import { Skeleton } from '@mantine/core';
+import { Box } from "@mantine/core";
+import { fetchRemarksServer } from "@/app/actionsServers/remarks.server.actions";
+import RemarksManagement from "@/components/RemarksManagement";
 
-export default async function RemarksPage() {
-    const result = await fetchRemarksServer();
-    
-    if (!result.success) {
-        return (
-            <div style={{ padding: '24px' }}>
-                <h2>Error loading remarks</h2>
-                <p>{result.error}</p>
-            </div>
-        );
-    }
-  
-  console.log(result.data);
+interface RemarksPageProps {
+	searchParams: Promise<{ search?: string; status?: string; sort?: string; page?: string }>;
+}
 
-    return (
-        <Suspense fallback={<Skeleton height={400} />}>
-            <RemarksManagement initialRemarks={result.data} />
-        </Suspense>
-    );
+export default async function RemarksPage({ searchParams }: RemarksPageProps) {
+	const { search = "", status = "", sort = "", page = "1" } = await searchParams;
+	const result = await fetchRemarksServer({ search, status, sort, page: Number(page) || 1 });
+
+	return (
+		<Box p={{ base: "sm", sm: "lg" }}>
+			<RemarksManagement
+				remarks={result.success ? result.data.remarks : []}
+				statusCounts={result.success ? result.data.statusCounts : undefined}
+				pagination={result.success ? result.data.pagination : undefined}
+				mail={result.success ? result.data.mail : undefined}
+				error={result.success ? null : result.error}
+				searchQuery={search}
+				status={status}
+				sort={sort}
+			/>
+		</Box>
+	);
 }

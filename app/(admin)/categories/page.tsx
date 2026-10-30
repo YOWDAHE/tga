@@ -1,4 +1,4 @@
-"use server";
+import { Box } from "@mantine/core";
 import CategoriesManagement from "@/components/CategoriesManagement";
 import { fetchCategories } from "@/app/actionsServers/category.server.actions";
 
@@ -40,6 +40,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
     }
 
     return (
+        <Box p={{ base: "sm", sm: "lg" }}>
         <CategoriesManagement 
             categories={categories} 
             pagination={pagination}
@@ -47,5 +48,6 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
             searchQuery={search}
             error={error}
         />
+        </Box>
     );
 }

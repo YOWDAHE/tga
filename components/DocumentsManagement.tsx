@@ -1,51 +1,68 @@
 "use client";
-import React from "react";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import {
-	Table,
-	Paper,
-	Group,
-	Text,
-	ActionIcon,
-	Badge,
-	Button,
-	Modal,
-	TextInput,
-	Textarea,
-	Select,
-	Stack,
-	Title,
-	Loader,
-	Skeleton,
-} from "@mantine/core";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Alert, Button, Group, Modal, Select, Stack, TextInput, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useForm } from "@mantine/form";
-import { Dropzone, PDF_MIME_TYPE } from "@mantine/dropzone";
-
 import {
-	IconEdit,
-	IconTrash,
-	IconPlus,
+	IconAlertCircle,
+	IconArrowsSort,
+	IconCategory,
 	IconDownload,
-	IconFileText,
-	IconChevronLeft,
-	IconChevronRight,
-	IconSearch,
+	IconEdit,
 	IconEye,
+	IconFileText,
+	IconPlus,
+	IconTrash,
 } from "@tabler/icons-react";
 import { updateDocument, deleteDocument } from "@/app/actions/archive.actions";
 import { Document } from "@/types";
+import { convertToApiUrl } from "@/lib/utils";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
-import EmptyState from "./EmptyState";
-import { FileX2Icon } from "lucide-react";
+import {
+	ActiveFilters,
+	EmptyList,
+	FilterPill,
+	ListFooter,
+	PageHeader,
+	Person,
+	RowActions,
+	SearchPill,
+	TableCard,
+	Tag,
+	TitleCell,
+	Toolbar,
+	ToolbarRow,
+	formatDate,
+	listClasses as classes,
+	sortValue,
+	splitSort,
+	useListParams,
+} from "./admin-ui";
+
+const SORTS = [
+	{ value: "createdAt:desc", label: "Newest first" },
+	{ value: "createdAt:asc", label: "Oldest first" },
+	{ value: "updatedAt:desc", label: "Recently edited" },
+	{ value: "title:asc", label: "Title A–Z" },
+];
+const DEFAULT_SORT = "createdAt:desc";
+
+function formatSize(bytes?: number) {
+	if (!bytes) return null;
+	if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+	return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
 
 type Props = {
 	documents: Document[];
+	error?: string | null;
 	currentPage: number;
 	totalPages: number;
+	totalItems?: number;
 	searchQuery: string;
 	category?: string;
 	sortBy?: string;
@@ -55,210 +72,30 @@ type Props = {
 
 function DocumentsManagement({
 	documents: initialDocuments,
+	error,
 	currentPage,
 	totalPages,
+	totalItems = 0,
 	searchQuery,
-	category,
-	sortBy,
-	order,
+	category = "",
+	sortBy = "createdAt",
+	order = "desc",
 	initialCategories,
 }: Props) {
-	const [documents, setDocuments] = useState<Document[]>(
-		initialDocuments.map((doc) => ({
-			...doc,
-			createdAt:
-				typeof doc.createdAt === "string" ? new Date(doc.createdAt) : doc.createdAt,
-			updatedAt:
-				typeof doc.updatedAt === "string" ? new Date(doc.updatedAt) : doc.updatedAt,
-		}))
-	);
-
-	// Update state when props change (for pagination)
-	useEffect(() => {
-		setDocuments(
-			initialDocuments.map((doc) => ({
-				...doc,
-				createdAt:
-					typeof doc.createdAt === "string" ?
-						new Date(doc.createdAt)
-					:	doc.createdAt,
-				updatedAt:
-					typeof doc.updatedAt === "string" ?
-						new Date(doc.updatedAt)
-					:	doc.updatedAt,
-			}))
-		);
-		setPaginationLoading(false);
-	}, [initialDocuments]);
-
-	const [loading, setLoading] = useState(false);
-	const [searchLoading, setSearchLoading] = useState(false);
-	const [paginationLoading, setPaginationLoading] = useState(false);
-	const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] =
-		useDisclosure(false);
-	const [itemToDelete, setItemToDelete] = useState<{
-		id: number;
-		name: string;
-	} | null>(null);
-
-	// Router for pagination
 	const router = useRouter();
-	const searchParams = useSearchParams();
-
-	// Skeleton component for loading states
-	const DocumentsTableSkeleton = () => (
-		<Table>
-			<Table.Thead>
-				<Table.Tr>
-					<Table.Th>Title</Table.Th>
-					<Table.Th>Category</Table.Th>
-					<Table.Th>Author</Table.Th>
-					<Table.Th>Filename</Table.Th>
-					<Table.Th>Upload Date</Table.Th>
-					<Table.Th>Actions</Table.Th>
-				</Table.Tr>
-			</Table.Thead>
-			<Table.Tbody>
-				{Array.from({ length: 6 }).map((_, index) => (
-					<Table.Tr key={index}>
-						<Table.Td>
-							<Group gap="sm">
-								<Skeleton height={20} width={20} circle />
-								<Skeleton height={20} width={150} />
-							</Group>
-						</Table.Td>
-						<Table.Td>
-							<Skeleton height={24} width={100} radius="xl" />
-						</Table.Td>
-						<Table.Td>
-							<Skeleton height={20} width={120} />
-						</Table.Td>
-						<Table.Td>
-							<Skeleton height={20} width={180} />
-						</Table.Td>
-						<Table.Td>
-							<Skeleton height={20} width={100} />
-						</Table.Td>
-						<Table.Td>
-							<Group gap="xs">
-								<Skeleton height={32} width={32} radius="sm" />
-								<Skeleton height={32} width={32} radius="sm" />
-								<Skeleton height={32} width={32} radius="sm" />
-							</Group>
-						</Table.Td>
-					</Table.Tr>
-				))}
-			</Table.Tbody>
-		</Table>
-	);
-
-	// Pagination functions
-	const handlePageChange = (newPage: number) => {
-		if (newPage >= 1 && newPage <= totalPages) {
-			setPaginationLoading(true);
-			const params = new URLSearchParams(searchParams.toString());
-			params.set("page", newPage.toString());
-			router.push(`/archives?${params.toString()}`);
-		}
-	};
-
-	// Search and filter functions
-	const [searchInputValue, setSearchInputValue] = useState(searchQuery);
-	const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
-		null
-	);
-	const [selectedCategory, setSelectedCategory] = useState(category || "");
-	const [selectedSortBy, setSelectedSortBy] = useState(sortBy || "createdAt");
-	const [selectedOrder, setSelectedOrder] = useState(order || "desc");
-
-	// Debounced search function
-	const debouncedSearch = useCallback(
-		(query: string) => {
-			if (searchTimeout) {
-				clearTimeout(searchTimeout);
-			}
-
-			const timeout = setTimeout(() => {
-				setSearchLoading(true);
-				const params = new URLSearchParams(searchParams.toString());
-				if (query.trim()) {
-					params.set("search", query.trim());
-				} else {
-					params.delete("search");
-				}
-				params.delete("page"); // Reset to first page when searching
-				router.push(`/archives?${params.toString()}`);
-			}, 500); // 500ms delay
-
-			setSearchTimeout(timeout);
-		},
-		[searchParams, router, searchTimeout]
-	);
-
-	const handleSearchInput = (query: string) => {
-		setSearchInputValue(query);
-		debouncedSearch(query);
-	};
-
-	const handleSearchClear = () => {
-		setSearchInputValue("");
-		debouncedSearch("");
-	};
-
-	const handleCategoryChange = (newCategory: string | null) => {
-		const categoryValue = newCategory || "";
-		setSelectedCategory(categoryValue);
-		const params = new URLSearchParams(searchParams.toString());
-		if (categoryValue) {
-			params.set("category", categoryValue);
-		} else {
-			params.delete("category");
-		}
-		params.delete("page"); // Reset to first page when filtering
-		router.push(`/archives?${params.toString()}`);
-	};
-
-	const handleSortChange = (newSortBy: string | null) => {
-		const sortValue = newSortBy || "createdAt";
-		setSelectedSortBy(sortValue);
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("sortBy", sortValue);
-		params.delete("page"); // Reset to first page when sorting
-		router.push(`/archives?${params.toString()}`);
-	};
-
-	const handleOrderChange = (newOrder: string | null) => {
-		const orderValue = newOrder || "desc";
-		setSelectedOrder(orderValue);
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("order", orderValue);
-		params.delete("page"); // Reset to first page when sorting
-		router.push(`/archives?${params.toString()}`);
-	};
-
-	// Update search input value when URL changes
-	useEffect(() => {
-		setSearchInputValue(searchQuery);
-		setSelectedCategory(category || "");
-		setSelectedSortBy(sortBy || "createdAt");
-		setSelectedOrder(order || "desc");
-		setSearchLoading(false);
-	}, [searchQuery, category, sortBy, order]);
-
-	// Cleanup timeouts on unmount
-	useEffect(() => {
-		return () => {
-			if (searchTimeout) {
-				clearTimeout(searchTimeout);
-			}
-		};
-	}, [searchTimeout]);
-
-	// Modal states
-	const [modalOpened, { open: openModal, close: closeModal }] =
-		useDisclosure(false);
+	const { update, pending } = useListParams();
+	const [documents, setDocuments] = useState<Document[]>(initialDocuments);
+	const [loading, setLoading] = useState(false);
+	const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+	const [itemToDelete, setItemToDelete] = useState<{ id: number; name: string } | null>(null);
+	const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure(false);
 	const [editingDocument, setEditingDocument] = useState<Document | null>(null);
-	const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+	useEffect(() => setDocuments(initialDocuments), [initialDocuments]);
+
+	const categoryName = (id?: number | null) => initialCategories.find((c) => c.value === String(id))?.label;
+	const sort = sortValue(sortBy, order);
+	const filtered = Boolean(searchQuery || category);
 
 	const form = useForm({
 		initialValues: {
@@ -269,65 +106,6 @@ function DocumentsManagement({
 			seo_keywords: "",
 		},
 	});
-
-	const handleSubmit = async (values: typeof form.values) => {
-		if (!uploadedFile && !editingDocument) {
-			notifications.show({
-				title: "Error",
-				message: "Please upload a PDF file",
-				color: "red",
-			});
-			return;
-		}
-
-		setLoading(true);
-
-		try {
-			if (editingDocument) {
-				const result = await updateDocument({
-					id: editingDocument.id!,
-					title: values.title,
-					category_id: Number.parseInt(values.category_id),
-					author: values.author,
-					description: values.description,
-					seo_keywords: values.seo_keywords,
-				});
-
-				if (result.success) {
-					notifications.show({
-						title: "Success",
-						message: "Document updated successfully",
-						color: "green",
-					});
-					// Refresh the page to get updated data
-					router.refresh();
-				} else {
-					notifications.show({
-						title: "Error",
-						message: result.error || "Failed to update document",
-						color: "red",
-					});
-				}
-			} else {
-				// For now, we'll skip file upload in this implementation
-				// You would need to implement file upload to Cloudinary here
-				notifications.show({
-					title: "Info",
-					message: "File upload functionality needs to be implemented",
-					color: "blue",
-				});
-			}
-		} catch (error) {
-			notifications.show({
-				title: "Error",
-				message: "An unexpected error occurred",
-				color: "red",
-			});
-		} finally {
-			setLoading(false);
-			handleClose();
-		}
-	};
 
 	const handleEdit = (document: Document) => {
 		setEditingDocument(document);
@@ -341,41 +119,48 @@ function DocumentsManagement({
 		openModal();
 	};
 
-	const handleDelete = async (id: number) => {
-		const document = documents.find((doc) => doc.id === id);
-		if (document) {
-			setItemToDelete({ id, name: document.title });
-			openDeleteModal();
+	const handleClose = () => {
+		closeModal();
+		setEditingDocument(null);
+		form.reset();
+	};
+
+	const handleSubmit = async (values: typeof form.values) => {
+		if (!editingDocument) return;
+		setLoading(true);
+		try {
+			const result = await updateDocument({
+				id: editingDocument.id!,
+				title: values.title,
+				category_id: Number.parseInt(values.category_id),
+				author: values.author,
+				description: values.description,
+				seo_keywords: values.seo_keywords,
+			});
+			if (result.success) {
+				notifications.show({ title: "Saved", message: "Document updated", color: "green" });
+				router.refresh();
+				handleClose();
+			} else {
+				notifications.show({ title: "Error", message: result.error || "Failed to update document", color: "red" });
+			}
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	const handleConfirmDelete = async () => {
 		if (!itemToDelete) return;
-
 		setLoading(true);
 		try {
 			const result = await deleteDocument(itemToDelete.id);
 			if (result.success) {
-				notifications.show({
-					title: "Success",
-					message: "Document deleted successfully",
-					color: "green",
-				});
-				// Refresh the page to get updated data
+				setDocuments((prev) => prev.filter((d) => d.id !== itemToDelete.id));
+				notifications.show({ title: "Deleted", message: `“${itemToDelete.name}” was deleted`, color: "green" });
 				router.refresh();
 			} else {
-				notifications.show({
-					title: "Error",
-					message: result.error || "Failed to delete document",
-					color: "red",
-				});
+				notifications.show({ title: "Error", message: result.error || "Failed to delete document", color: "red" });
 			}
-		} catch (error) {
-			notifications.show({
-				title: "Error",
-				message: "An unexpected error occurred",
-				color: "red",
-			});
 		} finally {
 			setLoading(false);
 			closeDeleteModal();
@@ -383,322 +168,152 @@ function DocumentsManagement({
 		}
 	};
 
-	const handleClose = () => {
-		closeModal();
-		setEditingDocument(null);
-		setUploadedFile(null);
-		form.reset();
-	};
-
-	const handleCreate = () => {
-		router.push("/archives/uploads");
-	};
-
-	const formatDate = (date: string | Date) => {
-		return new Date(date).toLocaleDateString("en-US", {
-			year: "numeric",
-			month: "short",
-			day: "numeric",
-		});
-	};
-
 	return (
-		<div style={{ padding: "24px" }}>
-			<Group justify="space-between" mb="lg">
-				<Title order={2}>Archives Management</Title>
-				<Button leftSection={<IconPlus size={16} />} onClick={handleCreate}>
-					Upload Document
-				</Button>
-			</Group>
+		<div>
+			<PageHeader
+				eyebrow="Library"
+				title="Archives"
+				description="Legal documents and PDFs available in the public archive."
+				actions={
+					<Button component={Link} href="/archives/uploads" leftSection={<IconPlus size={16} />}>
+						Upload document
+					</Button>
+				}
+			/>
 
-			{/* Search and Filter Bar */}
-			<Paper withBorder p="md" mb="md">
-				<Stack gap="md">
-					<Group>
-						<TextInput
-							placeholder="Search documents..."
-							value={searchInputValue}
-							onChange={(e) => handleSearchInput(e.currentTarget.value)}
-							style={{ flex: 1 }}
-							leftSection={
-								searchLoading ? <Loader size="xs" /> : <IconSearch size={16} />
-							}
-						/>
-						{searchInputValue && (
-							<Button variant="light" onClick={handleSearchClear}>
-								Clear
-							</Button>
-						)}
-
-						<Select
-							placeholder="Filter by category"
-							value={selectedCategory}
-							onChange={handleCategoryChange}
-							data={[{ value: "", label: "All Categories" }, ...initialCategories]}
-							style={{ minWidth: 200 }}
-						/>
-
-						<Select
-							placeholder="Sort by"
-							value={selectedSortBy}
-							onChange={handleSortChange}
-							data={[
-								{ value: "createdAt", label: "Upload Date" },
-								{ value: "updatedAt", label: "Last Modified" },
-								{ value: "title", label: "Title" },
-							]}
-							style={{ minWidth: 150 }}
-						/>
-
-						<Select
-							placeholder="Order"
-							value={selectedOrder}
-							onChange={handleOrderChange}
-							data={[
-								{ value: "desc", label: "Descending" },
-								{ value: "asc", label: "Ascending" },
-							]}
-							style={{ minWidth: 120 }}
-						/>
-					</Group>
-
-					{(searchInputValue || selectedCategory) && (
-						<Text size="sm" c="dimmed">
-							Found {documents.length} document{documents.length !== 1 ? "s" : ""}
-							{searchInputValue && ` matching "${searchInputValue}"`}
-							{selectedCategory &&
-								` in ${initialCategories.find((c) => c.value === selectedCategory)?.label || "selected category"}`}
-						</Text>
-					)}
-				</Stack>
-			</Paper>
-
-			{documents.length === 0 && (
-				<EmptyState
-					title="No documents found"
-					description="There are no documents that match your search."
-					icon={<FileX2Icon size={48} />}
+			<Toolbar>
+				<ToolbarRow>
+					<SearchPill
+						value={searchQuery}
+						onSearch={(q) => update({ search: q })}
+						placeholder="Search title, file name or author"
+						pending={pending}
+					/>
+					<FilterPill
+						icon={<IconCategory size={16} />}
+						label="Category"
+						value={category}
+						options={[{ value: "", label: "All categories" }, ...initialCategories]}
+						onChange={(value) => update({ category: value })}
+					/>
+					<FilterPill
+						icon={<IconArrowsSort size={16} />}
+						label="Sort"
+						value={sort}
+						defaultValue={DEFAULT_SORT}
+						options={SORTS}
+						onChange={(value) => update(value === DEFAULT_SORT ? { sortBy: null, order: null } : splitSort(value))}
+					/>
+				</ToolbarRow>
+				<ActiveFilters
+					chips={[
+						...(searchQuery ? [{ key: "q", label: `“${searchQuery}”`, onRemove: () => update({ search: null }) }] : []),
+						...(category ?
+							[{ key: "c", label: categoryName(Number(category)) ?? "Category", onRemove: () => update({ category: null }) }]
+						:	[]),
+					]}
+					onClear={() => update({ search: null, category: null })}
 				/>
+			</Toolbar>
+
+			{error && (
+				<Alert color="red" radius="lg" mb="md" icon={<IconAlertCircle size={18} />}>
+					{error}
+				</Alert>
 			)}
 
-			{documents.length > 0 && (
-				<Paper withBorder>
-					{searchLoading || paginationLoading ?
-						<DocumentsTableSkeleton />
-					:	<Table striped highlightOnHover>
-							<Table.Thead>
-								<Table.Tr>
-									<Table.Th>Title</Table.Th>
-									<Table.Th>Category</Table.Th>
-									<Table.Th>Author</Table.Th>
-									<Table.Th>Filename</Table.Th>
-									<Table.Th>Upload Date</Table.Th>
-									<Table.Th>Actions</Table.Th>
-								</Table.Tr>
-							</Table.Thead>
-							<Table.Tbody>
-								{documents.map((item) => (
-									<Table.Tr key={item.id}>
-										<Table.Td>
-											<Group gap="sm">
-												<IconFileText size={20} color="red" />
-												<Text fw={500} truncate w={200}>{item.title}</Text>
-											</Group>
-										</Table.Td>
-										<Table.Td>
-											<Badge variant="light">
-												{initialCategories.find(
-													(c) => c.value === item.category_id.toString()
-												)?.label || "Unknown"}
-											</Badge>
-										</Table.Td>
-										<Table.Td>{item.author || "N/A"}</Table.Td>
-										<Table.Td>
-											<Text size="sm" c="dimmed">
-												{item.filename}
-											</Text>
-										</Table.Td>
-										<Table.Td>{formatDate(item.createdAt)}</Table.Td>
-										<Table.Td>
-											<Group gap="xs">
-												<ActionIcon
-													variant="light"
-													color="green"
-													component="a"
-													href={`/office/archives/${item.id}`}
-													disabled={loading}
-													title="View Details"
-												>
-													<IconEye size={16} />
-												</ActionIcon>
-												<ActionIcon
-													variant="light"
-													color="blue"
-													component="a"
-													href={item.file_url}
-													download
-													disabled={loading}
-													title="Download"
-												>
-													<IconDownload size={16} />
-												</ActionIcon>
-												<ActionIcon
-													variant="light"
-													color="orange"
-													onClick={() => handleEdit(item)}
-													disabled={loading}
-													title="Edit"
-												>
-													<IconEdit size={16} />
-												</ActionIcon>
-												<ActionIcon
-													variant="light"
-													color="red"
-													onClick={() => handleDelete(item.id!)}
-													disabled={loading}
-													title="Delete"
-												>
-													<IconTrash size={16} />
-												</ActionIcon>
-											</Group>
-										</Table.Td>
-									</Table.Tr>
-								))}
-							</Table.Tbody>
-						</Table>
+			{documents.length === 0 ?
+				<EmptyList
+					title={filtered ? "No documents match these filters" : "No documents yet"}
+					body={filtered ? "Try a different search or category." : "Uploaded PDFs appear in the public archive."}
+					action={
+						filtered ?
+							<Button variant="default" onClick={() => update({ search: null, category: null })}>
+								Clear filters
+							</Button>
+						:	<Button component={Link} href="/archives/uploads" leftSection={<IconPlus size={16} />}>
+								Upload the first document
+							</Button>
 					}
-				</Paper>
-			)}
-
-			{/* Pagination Controls */}
-			{totalPages > 1 && (
-				<Group justify="end" mt="md">
-					<Button
-						variant="light"
-						onClick={() => handlePageChange(currentPage - 1)}
-						disabled={currentPage <= 1 || paginationLoading}
-						leftSection={
-							paginationLoading ? <Loader size="xs" /> : <IconChevronLeft size={16} />
-						}
-					>
-						Previous
-					</Button>
-
-					<Group gap="xs">
-						{/* Show first page */}
-						{currentPage > 3 && (
-							<Button variant="light" size="sm" onClick={() => handlePageChange(1)}>
-								1
-							</Button>
-						)}
-
-						{/* Show ellipsis if needed */}
-						{currentPage > 4 && (
-							<Text size="sm" c="dimmed">
-								...
-							</Text>
-						)}
-
-						{/* Show pages around current page */}
-						{Array.from({ length: totalPages }, (_, i) => i + 1)
-							.filter(
-								(page) =>
-									page >= Math.max(1, currentPage - 1) &&
-									page <= Math.min(totalPages, currentPage + 1)
-							)
-							.map((page) => (
-								<Button
-									key={page}
-									variant={page === currentPage ? "filled" : "light"}
-									size="sm"
-									onClick={() => handlePageChange(page)}
-								>
-									{page}
-								</Button>
+				/>
+			:	<>
+					<TableCard pending={pending}>
+						<thead>
+							<tr>
+								<th>Document</th>
+								<th>Category</th>
+								<th>Author</th>
+								<th>Uploaded</th>
+								<th style={{ textAlign: "right" }}>Views</th>
+								<th aria-label="Actions" />
+							</tr>
+						</thead>
+						<tbody>
+							{documents.map((item) => (
+								<tr key={item.id}>
+									<td>
+										<TitleCell
+											href={`/archives/${item.id}`}
+											title={item.title}
+											subtitle={[item.filename, formatSize(item.file_size)].filter(Boolean).join(" · ")}
+											leading={
+												<span className={classes.fileIcon}>
+													<IconFileText size={18} />
+												</span>
+											}
+										/>
+									</td>
+									<td>
+										{categoryName(item.category_id) ?
+											<Tag>{categoryName(item.category_id)}</Tag>
+										:	<span className={classes.muted}>—</span>}
+									</td>
+									<td>
+										<Person name={item.author} />
+									</td>
+									<td className={classes.nowrap}>{formatDate(item.createdAt)}</td>
+									<td className={classes.nowrap} style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+										{(item.view_count ?? 0).toLocaleString()}
+									</td>
+									<td style={{ width: 48 }}>
+										<RowActions
+											label={item.title}
+											actions={[
+												{ label: "View details", icon: <IconEye size={14} />, href: `/archives/${item.id}` },
+												{ label: "Download PDF", icon: <IconDownload size={14} />, href: convertToApiUrl(item.file_url) ?? item.file_url, external: true },
+												{ label: "Edit details", icon: <IconEdit size={14} />, onClick: () => handleEdit(item) },
+												{
+													label: "Delete",
+													icon: <IconTrash size={14} />,
+													danger: true,
+													divider: true,
+													onClick: () => {
+														setItemToDelete({ id: item.id!, name: item.title });
+														openDeleteModal();
+													},
+												},
+											]}
+										/>
+									</td>
+								</tr>
 							))}
+						</tbody>
+					</TableCard>
+					<ListFooter
+						page={currentPage}
+						totalPages={totalPages}
+						shown={documents.length}
+						total={totalItems || undefined}
+						noun={["document", "documents"]}
+						onPage={(page) => update({ page: String(page) })}
+					/>
+				</>
+			}
 
-						{/* Show ellipsis if needed */}
-						{currentPage < totalPages - 3 && (
-							<Text size="sm" c="dimmed">
-								...
-							</Text>
-						)}
-
-						{/* Show last page */}
-						{currentPage < totalPages - 2 && (
-							<Button
-								variant="light"
-								size="sm"
-								onClick={() => handlePageChange(totalPages)}
-							>
-								{totalPages}
-							</Button>
-						)}
-					</Group>
-
-					<Button
-						variant="light"
-						onClick={() => handlePageChange(currentPage + 1)}
-						disabled={currentPage >= totalPages || paginationLoading}
-						rightSection={
-							paginationLoading ? <Loader size="xs" /> : <IconChevronRight size={16} />
-						}
-					>
-						Next
-					</Button>
-				</Group>
-			)}
-
-			{/* Upload/Edit Modal */}
-			<Modal
-				opened={modalOpened}
-				onClose={handleClose}
-				title={editingDocument ? "Edit Document" : "Upload Document"}
-				size="lg"
-			>
+			<Modal opened={modalOpened} onClose={handleClose} title="Edit document" size="lg">
 				<form onSubmit={form.onSubmit(handleSubmit)}>
 					<Stack>
-						{!editingDocument && (
-							<div>
-								<Text size="sm" fw={500} mb="xs">
-									Upload PDF File
-								</Text>
-								<Dropzone
-									onDrop={(files) => setUploadedFile(files[0])}
-									accept={PDF_MIME_TYPE}
-									maxFiles={1}
-								>
-									<Group
-										justify="center"
-										gap="xl"
-										mih={220}
-										style={{ pointerEvents: "none" }}
-									>
-										<div>
-											<Text size="xl" inline>
-												Drag PDF file here or click to select
-											</Text>
-											<Text size="sm" c="dimmed" inline mt={7}>
-												Only PDF files are accepted
-											</Text>
-										</div>
-									</Group>
-								</Dropzone>
-								{uploadedFile && (
-									<Text size="sm" mt="xs">
-										Selected: {uploadedFile.name}
-									</Text>
-								)}
-							</div>
-						)}
-
-						<TextInput
-							label="Title"
-							placeholder="Enter document title"
-							required
-							{...form.getInputProps("title")}
-						/>
-
+						<TextInput label="Title" placeholder="Enter document title" required {...form.getInputProps("title")} />
 						<Select
 							label="Category"
 							placeholder="Select category"
@@ -706,44 +321,36 @@ function DocumentsManagement({
 							required
 							{...form.getInputProps("category_id")}
 						/>
-
-						<TextInput
-							label="Author"
-							placeholder="Document author"
-							{...form.getInputProps("author")}
-						/>
-
+						<TextInput label="Author" placeholder="Document author" {...form.getInputProps("author")} />
 						<Textarea
 							label="Description"
 							placeholder="Brief description of the document"
 							rows={3}
 							{...form.getInputProps("description")}
 						/>
-
 						<TextInput
-							label="SEO Keywords"
-							placeholder="Enter SEO keywords, separated by commas (e.g. legal document,ethiopia law,contract template) - These won't be displayed on the frontend but used for search engine optimization"
+							label="SEO keywords"
+							description="Comma separated. Used by search engines, not shown on the site."
+							placeholder="legal document, ethiopia law, contract template"
 							{...form.getInputProps("seo_keywords")}
 						/>
-
 						<Group justify="flex-end">
-							<Button variant="light" onClick={handleClose}>
+							<Button variant="default" onClick={handleClose}>
 								Cancel
 							</Button>
 							<Button type="submit" loading={loading}>
-								{editingDocument ? "Update" : "Upload"}
+								Save
 							</Button>
 						</Group>
 					</Stack>
 				</form>
 			</Modal>
 
-			{/* Delete Confirmation Modal */}
 			<DeleteConfirmationModal
 				opened={deleteModalOpened}
 				onClose={closeDeleteModal}
 				onConfirm={handleConfirmDelete}
-				title="Delete Document"
+				title="Delete document"
 				itemName={itemToDelete?.name}
 				itemType="document"
 				loading={loading}

@@ -31,7 +31,7 @@ export type DocumentUpdate = z.infer<typeof documentUpdateSchema>;
 // Fetch all documents
 export async function fetchDocuments() {
     try {
-        const res = await get("/documents");
+        const res = await get("archives");
         return { success: true, data: res.data.data };
     } catch (error: any) {
         return { success: false, error: error?.response?.data?.message || error?.message };
@@ -41,7 +41,7 @@ export async function fetchDocuments() {
 // Fetch document by ID
 export async function fetchDocument(id: number) {
     try {
-        const res = await get(`/documents/${id}`);
+        const res = await get(`archives/${id}`);
         return { success: true, data: res.data.data };
     } catch (error: any) {
         return { success: false, error: error?.response?.data?.message || error?.message };
@@ -73,6 +73,18 @@ export async function updateDocument(input: DocumentUpdate) {
         return { success: true, data: res.data.data };
     } catch (error: any) {
         return { success: false, error: error?.response?.data?.message || error?.message };
+    }
+}
+
+/** Swaps a document's file; the backend deletes the old file once the new one is saved */
+export async function replaceDocumentFile(id: number, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+        const res = await put(`archives/${id}`, formData);
+        return { success: true, data: res.data.data };
+    } catch (error: any) {
+        return { success: false, error: error?.message || "Failed to replace file" };
     }
 }
 
