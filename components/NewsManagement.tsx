@@ -18,6 +18,7 @@ import {
 import { deleteNews } from "@/app/actions/news.actions";
 import { News } from "@/types";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import LinkedInConnection from "./LinkedInConnection";
 import {
 	ActiveFilters,
 	EmptyList,
@@ -112,6 +113,7 @@ export default function NewsManagement({
 				description="Articles published to the public news feed."
 				actions={
 					<>
+						<LinkedInConnection />
 						<Button component={Link} href="/news/other" variant="default" leftSection={<IconLink size={16} />}>
 							Other news
 						</Button>
