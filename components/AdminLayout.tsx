@@ -210,7 +210,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 				<div className={classes.backdrop} onClick={closeMobile} aria-hidden />
 				<aside className={classes.sidebar}>
 				<Group justify="space-between" className={classes.brand} wrap="nowrap">
-					<img src="/office/Logo/logo2.svg" alt="TGA Global Law Group" className={classes.logo} />
+					<img src="/office/Logo/tga-global-logo.svg" alt="TGA Global Law Firm" className={classes.logo} />
 					<ActionIcon
 						variant="subtle"
 						color="gray"

@@ -17,7 +17,7 @@ import {
 import { loginAction } from "@/app/actions/auth.actions"
 import classes from "./LoginForm.module.css"
 
-const LOGO = "/office/Logo/logo2.svg"
+const LOGO = "/office/Logo/tga-global-logo.svg"
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
@@ -73,7 +73,7 @@ export default function LoginForm() {
     <div className={classes.root}>
       <div className={classes.frame}>
         <section className={classes.brand}>
-          <img src={LOGO} alt="TGA Global Law Group" className={classes.logo} />
+          <img src={LOGO} alt="TGA Global Law Firm" className={classes.logo} />
 
           <div className={classes.pitch}>
             <div className={classes.eyebrow}>Admin workspace</div>
@@ -100,7 +100,7 @@ export default function LoginForm() {
 
         <section className={classes.panel}>
           <div className={classes.card}>
-            <img src={LOGO} alt="TGA Global Law Group" className={classes.cardLogo} />
+            <img src={LOGO} alt="TGA Global Law Firm" className={classes.cardLogo} />
             <h2 className={classes.title}>Sign in</h2>
             <p className={classes.subtitle}>Use your admin account to continue.</p>
 
