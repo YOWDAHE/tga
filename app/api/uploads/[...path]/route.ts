@@ -19,7 +19,7 @@ export async function GET(
         const filename = pathSegments[1];
 
         // Validate folder to prevent directory traversal
-        const allowedFolders = ['partners', 'landing', 'documents', 'news-images'];
+        const allowedFolders = ['partners', 'landing', 'home', 'documents', 'news-images'];
         if (!allowedFolders.includes(folder)) {
             return NextResponse.json(
                 { error: 'Invalid folder' },
@@ -31,7 +31,7 @@ export async function GET(
         const backendApiUrl = process.env.BACKEND_API_URL;
         let response;
         
-        if (folder === 'partners' || folder === 'landing') {
+        if (folder === 'partners' || folder === 'landing' || folder === 'home') {
             response = await fetch(`${backendApiUrl}/landing/uploads/${folder}/${filename}`);
         } else if (folder === 'documents') {
             // Documents are served by the authenticated /uploads route, so pass the admin's token on

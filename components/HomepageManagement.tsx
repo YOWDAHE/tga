@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import "@mantine/tiptap/styles.css";
 import {
 	ActionIcon,
@@ -14,6 +14,7 @@ import {
 	Paper,
 	SimpleGrid,
 	Stack,
+	Tabs,
 	Text,
 	TextInput,
 	Textarea,
@@ -26,6 +27,7 @@ import { convertToApiUrl } from "@/lib/utils";
 import {
 	IconDots,
 	IconEdit,
+	IconExternalLink,
 	IconPlus,
 	IconTrash,
 	IconUpload,
@@ -45,6 +47,14 @@ import {
 	uploadPartnerImage,
 	type HomepageSection,
 } from "@/app/actions/homepage.actions";
+import {
+	AboutEditor,
+	HeroEditor,
+	ServicesEditor,
+	StatementEditor,
+	type HomeContent,
+} from "@/components/HomeContentEditor";
+import { PageHeader } from "@/components/admin-ui";
 
 interface Stat {
 	id: number;
@@ -69,16 +79,28 @@ interface HomepageManagementProps {
 	initialStats?: Stat[];
 	initialPractices?: Practice[];
 	initialPartners?: Partner[];
+	/** Written sections; the editor is hidden when the backend didn't send them */
+	initialHomeContent?: HomeContent | null;
 }
 
 // Soft surfaces cycled across item cards
 const PASTELS = ["#ece7fb", "#e3f1fb", "#fdf1d9", "#e2f5e9", "#fde7ec", "#e8eefc"];
 
-const SECTIONS = [
+const WRITTEN: string[] = ["hero", "statement", "about", "services"];
+
+// The tabs, in the order the sections appear on the public home page
+const TABS = [
+	{ id: "hero", label: "Hero" },
+	{ id: "statement", label: "Statement" },
+	{ id: "about", label: "About" },
 	{ id: "stats", label: "Statistics" },
+	{ id: "services", label: "Services" },
 	{ id: "practices", label: "Practice areas" },
 	{ id: "partners", label: "Partners" },
-];
+] as const;
+
+// Where "View site" opens: the public site shares this domain in production
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "") || "/";
 
 const editorExtensions = [
 	StarterKit,
@@ -201,6 +223,7 @@ export default function HomepageManagement({
 	initialStats = [],
 	initialPractices = [],
 	initialPartners = [],
+	initialHomeContent = null,
 }: HomepageManagementProps) {
 	const [stats, setStats] = useState<Stat[]>(initialStats);
 	const [practices, setPractices] = useState<Practice[]>(initialPractices);
@@ -343,161 +366,207 @@ export default function HomepageManagement({
 		}
 	};
 
-	const scrollTo = (id: string) =>
-		document.getElementById(`section-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+	const [tab, setTab] = useState<string>(initialHomeContent ? "hero" : "stats");
+	// Written sections with unsaved edits get a dot on their tab
+	const [dirty, setDirty] = useState<Record<string, boolean>>({});
+	const onDirtyChange = useCallback(
+		(key: string, isDirty: boolean) => setDirty((d) => (d[key] === isDirty ? d : { ...d, [key]: isDirty })),
+		[]
+	);
+	const counts: Record<string, number> = { stats: stats.length, practices: practices.length, partners: partners.length };
+	const tabBadge = (id: string) =>
+		dirty[id] ? (
+			<Box w={8} h={8} bg="orange.5" style={{ borderRadius: 99 }} aria-label="Unsaved changes" />
+		) : counts[id] !== undefined ? (
+			<Text size="xs" c={id === tab ? "gray.4" : "dimmed"} fw={500}>
+				{counts[id]}
+			</Text>
+		) : null;
 
 	return (
-		<Box p={{ base: "sm", sm: "lg" }}>
-			<Group justify="space-between" align="flex-end" mb="xl" gap="md">
-				<div>
-					<Title order={2}>Homepage</Title>
-					<Text c="dimmed" size="sm" mt={4}>
-						Everything shown on the public landing page. Each item saves on its own.
-					</Text>
-				</div>
-				<Group gap={8}>
-					{SECTIONS.map((s) => (
-						<Button key={s.id} variant="default" size="xs" onClick={() => scrollTo(s.id)}>
-							{s.label}
-						</Button>
+		<Box p={{ base: "sm", sm: "lg" }} maw={1100}>
+			<PageHeader
+				eyebrow="Website"
+				title="Homepage"
+				description="Everything on the public home page, section by section. Written sections publish with their own save bar; list items save one at a time."
+				actions={
+					<Button
+						component="a"
+						href={SITE_URL}
+						target="_blank"
+						rel="noopener noreferrer"
+						variant="default"
+						radius="xl"
+						rightSection={<IconExternalLink size={16} />}
+					>
+						View site
+					</Button>
+				}
+			/>
+
+			<Tabs value={tab} onChange={(value) => value && setTab(value)} variant="pills" radius="xl">
+				<Tabs.List mb="xl">
+					{TABS.filter((t) => initialHomeContent || !WRITTEN.includes(t.id)).map((t) => (
+						<Tabs.Tab key={t.id} value={t.id} rightSection={tabBadge(t.id)}>
+							{t.label}
+						</Tabs.Tab>
 					))}
-				</Group>
-			</Group>
+				</Tabs.List>
 
-			<Stack gap="lg">
-				<SectionCard
-					id="stats"
-					title="Statistics"
-					description="Headline numbers shown in the statistics strip."
-					count={stats.length}
-					action={
-						<Button leftSection={<IconPlus size={16} />} onClick={() => openStat(null)}>
-							Add statistic
-						</Button>
-					}
-				>
-					{stats.length === 0 ?
-						<EmptyState label="statistics" />
-					:	<SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
-							{stats.map((stat, i) => (
-								<Paper key={stat.id} p="lg" style={{ background: PASTELS[i % PASTELS.length] }}>
-									<Group justify="space-between" align="flex-start" wrap="nowrap">
-										<Text fw={700} fz={28} lh={1.1}>
-											{stat.stat}
-										</Text>
-										<ItemMenu
-											label={stat.stat}
-											onEdit={() => openStat(stat)}
-											onDelete={() => setPendingDelete({ section: "stats", id: stat.id, label: stat.stat })}
-										/>
-									</Group>
-									<Text size="sm" c="dark.4" mt={6}>
-										{stat.description}
-									</Text>
-								</Paper>
-							))}
-						</SimpleGrid>
-					}
-				</SectionCard>
+				{initialHomeContent && (
+					<>
+						<Tabs.Panel value="hero">
+							<HeroEditor initial={initialHomeContent.hero} onDirtyChange={onDirtyChange} />
+						</Tabs.Panel>
+						<Tabs.Panel value="statement">
+							<StatementEditor initial={initialHomeContent.statement} onDirtyChange={onDirtyChange} />
+						</Tabs.Panel>
+						<Tabs.Panel value="about">
+							<AboutEditor initial={initialHomeContent.about} onDirtyChange={onDirtyChange} />
+						</Tabs.Panel>
+						<Tabs.Panel value="services">
+							<ServicesEditor initial={initialHomeContent.services} onDirtyChange={onDirtyChange} />
+						</Tabs.Panel>
+					</>
+				)}
 
-				<SectionCard
-					id="practices"
-					title="Practice areas"
-					description="Services listed under “Our practices”."
-					count={practices.length}
-					action={
-						<Button leftSection={<IconPlus size={16} />} onClick={() => openPractice(null)}>
-							Add practice area
-						</Button>
-					}
-				>
-					{practices.length === 0 ?
-						<EmptyState label="practice areas" />
-					:	<SimpleGrid cols={{ base: 1, md: 2, xl: 3 }} spacing="md">
-							{practices.map((practice, i) => (
-								<Paper key={practice.id} p="lg" style={{ background: PASTELS[i % PASTELS.length] }}>
-									<Group justify="space-between" align="flex-start" wrap="nowrap" mb={6}>
-										<Text fw={600}>{practice.title}</Text>
-										<ItemMenu
-											label={practice.title}
-											onEdit={() => openPractice(practice)}
-											onDelete={() =>
-												setPendingDelete({ section: "practices", id: practice.id, label: practice.title })
-											}
-										/>
-									</Group>
-									<Text
-										size="sm"
-										c="dark.4"
-										lineClamp={4}
-										className="rich-text-content"
-										dangerouslySetInnerHTML={{ __html: practice.description }}
-									/>
-								</Paper>
-							))}
-						</SimpleGrid>
-					}
-				</SectionCard>
-
-				<SectionCard
-					id="partners"
-					title="Partners"
-					description="Logos shown in the partners carousel."
-					count={partners.length}
-					action={
-						<Button leftSection={<IconPlus size={16} />} onClick={() => openPartner(null)}>
-							Add partner
-						</Button>
-					}
-				>
-					{partners.length === 0 ?
-						<EmptyState label="partners" />
-					:	<SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
-							{partners.map((partner) => (
-								<Paper key={partner.id} withBorder p="md">
-									<Group justify="space-between" align="flex-start" wrap="nowrap">
-										<Group gap="md" wrap="nowrap" style={{ minWidth: 0 }}>
-											<Box
-												style={{
-													width: 72,
-													height: 72,
-													flexShrink: 0,
-													borderRadius: 14,
-													background: "#f4f5f7",
-													display: "flex",
-													alignItems: "center",
-													justifyContent: "center",
-													overflow: "hidden",
-												}}
-											>
-												{/* eslint-disable-next-line @next/next/no-img-element */}
-												<img
-													src={convertToApiUrl(partner.logo_url)}
-													alt={partner.name}
-													style={{ width: "100%", height: "100%", objectFit: "contain" }}
-												/>
-											</Box>
-											<div style={{ minWidth: 0 }}>
-												<Text fw={600} truncate>
-													{partner.name}
-												</Text>
-												<Text size="sm" c="dimmed" lineClamp={2}>
-													{partner.description || "No description"}
-												</Text>
-											</div>
+				<Tabs.Panel value="stats">
+					<SectionCard
+						id="stats"
+						title="Statistics"
+						description="Headline numbers shown in the statistics strip."
+						count={stats.length}
+						action={
+							<Button leftSection={<IconPlus size={16} />} onClick={() => openStat(null)}>
+								Add statistic
+							</Button>
+						}
+					>
+						{stats.length === 0 ?
+							<EmptyState label="statistics" />
+						:	<SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
+								{stats.map((stat, i) => (
+									<Paper key={stat.id} p="lg" style={{ background: PASTELS[i % PASTELS.length] }}>
+										<Group justify="space-between" align="flex-start" wrap="nowrap">
+											<Text fw={700} fz={28} lh={1.1}>
+												{stat.stat}
+											</Text>
+											<ItemMenu
+												label={stat.stat}
+												onEdit={() => openStat(stat)}
+												onDelete={() => setPendingDelete({ section: "stats", id: stat.id, label: stat.stat })}
+											/>
 										</Group>
-										<ItemMenu
-											label={partner.name}
-											onEdit={() => openPartner(partner)}
-											onDelete={() => setPendingDelete({ section: "partners", id: partner.id, label: partner.name })}
+										<Text size="sm" c="dark.4" mt={6}>
+											{stat.description}
+										</Text>
+									</Paper>
+								))}
+							</SimpleGrid>
+						}
+					</SectionCard>
+				</Tabs.Panel>
+				<Tabs.Panel value="practices">
+					<SectionCard
+						id="practices"
+						title="Practice areas"
+						description="Services listed under “Our practices”."
+						count={practices.length}
+						action={
+							<Button leftSection={<IconPlus size={16} />} onClick={() => openPractice(null)}>
+								Add practice area
+							</Button>
+						}
+					>
+						{practices.length === 0 ?
+							<EmptyState label="practice areas" />
+						:	<SimpleGrid cols={{ base: 1, md: 2, xl: 3 }} spacing="md">
+								{practices.map((practice, i) => (
+									<Paper key={practice.id} p="lg" style={{ background: PASTELS[i % PASTELS.length] }}>
+										<Group justify="space-between" align="flex-start" wrap="nowrap" mb={6}>
+											<Text fw={600}>{practice.title}</Text>
+											<ItemMenu
+												label={practice.title}
+												onEdit={() => openPractice(practice)}
+												onDelete={() =>
+													setPendingDelete({ section: "practices", id: practice.id, label: practice.title })
+												}
+											/>
+										</Group>
+										<Text
+											size="sm"
+											c="dark.4"
+											lineClamp={4}
+											className="rich-text-content"
+											dangerouslySetInnerHTML={{ __html: practice.description }}
 										/>
-									</Group>
-								</Paper>
-							))}
-						</SimpleGrid>
-					}
-				</SectionCard>
-			</Stack>
+									</Paper>
+								))}
+							</SimpleGrid>
+						}
+					</SectionCard>
+				</Tabs.Panel>
+				<Tabs.Panel value="partners">
+					<SectionCard
+						id="partners"
+						title="Partners"
+						description="Logos shown in the partners carousel."
+						count={partners.length}
+						action={
+							<Button leftSection={<IconPlus size={16} />} onClick={() => openPartner(null)}>
+								Add partner
+							</Button>
+						}
+					>
+						{partners.length === 0 ?
+							<EmptyState label="partners" />
+						:	<SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+								{partners.map((partner) => (
+									<Paper key={partner.id} withBorder p="md">
+										<Group justify="space-between" align="flex-start" wrap="nowrap">
+											<Group gap="md" wrap="nowrap" style={{ minWidth: 0 }}>
+												<Box
+													style={{
+														width: 72,
+														height: 72,
+														flexShrink: 0,
+														borderRadius: 14,
+														background: "#f4f5f7",
+														display: "flex",
+														alignItems: "center",
+														justifyContent: "center",
+														overflow: "hidden",
+													}}
+												>
+													{/* eslint-disable-next-line @next/next/no-img-element */}
+													<img
+														src={convertToApiUrl(partner.logo_url)}
+														alt={partner.name}
+														style={{ width: "100%", height: "100%", objectFit: "contain" }}
+													/>
+												</Box>
+												<div style={{ minWidth: 0 }}>
+													<Text fw={600} truncate>
+														{partner.name}
+													</Text>
+													<Text size="sm" c="dimmed" lineClamp={2}>
+														{partner.description || "No description"}
+													</Text>
+												</div>
+											</Group>
+											<ItemMenu
+												label={partner.name}
+												onEdit={() => openPartner(partner)}
+												onDelete={() => setPendingDelete({ section: "partners", id: partner.id, label: partner.name })}
+											/>
+										</Group>
+									</Paper>
+								))}
+							</SimpleGrid>
+						}
+					</SectionCard>
+				</Tabs.Panel>
+			</Tabs>
 
 			<Modal opened={statModalOpened} onClose={statModal.close} title={editingStat ? "Edit statistic" : "Add statistic"}>
 				<form onSubmit={statForm.onSubmit(handleStatSubmit)}>

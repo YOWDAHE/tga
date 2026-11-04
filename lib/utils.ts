@@ -11,6 +11,7 @@ const PROXIED_UPLOADS: [marker: string, folder: string][] = [
   ['/landing/uploads/partners/', 'partners'],
   ['/uploads/partners/', 'partners'],
   ['/landing/uploads/landing/', 'landing'],
+  ['/landing/uploads/home/', 'home'],
   ['/news/images/', 'news-images'],
   ['/uploads/news-images/', 'news-images'],
   ['/uploads/documents/', 'documents'],

@@ -11,6 +11,7 @@ export default async function HomepagePage() {
       initialStats={homepage?.stats ?? []}
       initialPractices={homepage?.practices ?? []}
       initialPartners={homepage?.partners ?? []}
+      initialHomeContent={homepage?.homeContent ?? null}
     />
   );
 }

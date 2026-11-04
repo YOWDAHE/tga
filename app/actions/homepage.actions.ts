@@ -78,3 +78,29 @@ export async function deleteHomepageItem(section: HomepageSection, id: number) {
         return { success: false as const, error: error.message as string };
     }
 }
+
+export type HomeContentKey = 'hero' | 'statement' | 'about' | 'services';
+
+// Written sections save whole, one section per call
+export async function saveHomeContent<T = any>(key: HomeContentKey, content: T) {
+    try {
+        const res = await put(`homepage/content/${key}/`, content);
+        if (!res.data?.success) throw new Error(res.data?.error || 'Failed to save section');
+        return { success: true as const, data: res.data.data as T };
+    } catch (error: any) {
+        return { success: false as const, error: (error?.response?.data?.error || error.message) as string };
+    }
+}
+
+// Photos for the written sections; returns the stored image URL
+export async function uploadHomeContentImage(file: File) {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await post('landing/upload-content', formData);
+        if (!res.data?.imageUrl) throw new Error(res.data?.error || 'Failed to upload image');
+        return { success: true as const, url: res.data.imageUrl as string };
+    } catch (error: any) {
+        return { success: false as const, error: (error?.response?.data?.error || error.message) as string };
+    }
+}
