@@ -69,6 +69,17 @@ export async function updateHomepageItem<T = any>(section: HomepageSection, id: 
     }
 }
 
+// Saves a section's order; `ids` lists every item, first to last
+export async function reorderHomepageItems<T = any>(section: HomepageSection, ids: number[]) {
+    try {
+        const res = await put(`homepage/items/${section}/order/`, { ids });
+        if (!res.data?.success) throw new Error(res.data?.error || 'Failed to save order');
+        return { success: true as const, data: res.data.data as T[] };
+    } catch (error: any) {
+        return { success: false as const, error: (error?.response?.data?.error || error.message) as string };
+    }
+}
+
 export async function deleteHomepageItem(section: HomepageSection, id: number) {
     try {
         const res = await del(`homepage/items/${section}/${id}/`);

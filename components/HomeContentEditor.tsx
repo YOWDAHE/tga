@@ -21,8 +21,6 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
-	IconArrowDown,
-	IconArrowUp,
 	IconPhotoPlus,
 	IconPlus,
 	IconTrash,
@@ -35,6 +33,7 @@ import Underline from "@tiptap/extension-underline";
 import TextStyle from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import { convertToApiUrl } from "@/lib/utils";
+import { DragHandle, SortableList, arrayMove, useSortableItem } from "@/components/Sortable";
 import { saveHomeContent, uploadHomeContentImage, type HomeContentKey } from "@/app/actions/homepage.actions";
 
 // The site's palette, offered as one-click swatches; the picker's wheel is still there for anything else
@@ -84,12 +83,6 @@ type Keyed<T> = T & { _id: number };
 let nextId = 1;
 const withIds = <T extends object>(list: T[]): Keyed<T>[] => list.map((item) => ({ ...item, _id: nextId++ }));
 const withoutIds = <T extends object>(list: Keyed<T>[]): T[] => list.map(({ _id, ...item }) => item as unknown as T);
-const move = <T,>(list: T[], from: number, to: number) => {
-	const next = [...list];
-	const [item] = next.splice(from, 1);
-	next.splice(to, 0, item);
-	return next;
-};
 const patchById = <T extends { _id: number }>(list: T[], id: number, patch: Partial<T>) =>
 	list.map((item) => (item._id === id ? { ...item, ...patch } : item));
 
@@ -160,7 +153,53 @@ function RichField({
 	);
 }
 
-/** Thumbnails with remove buttons, plus a tile that uploads another. */
+/** One thumbnail; dragged anywhere on it to reorder. */
+function SortableThumb({
+	id,
+	url,
+	size,
+	sortable,
+	onRemove,
+}: {
+	id: string;
+	url: string;
+	size: { w: number; h: number };
+	sortable: boolean;
+	onRemove?: () => void;
+}) {
+	const { itemProps, dragProps } = useSortableItem(id);
+	return (
+		<Box {...size} {...itemProps}>
+			<Box pos="relative" h="100%" {...(sortable ? dragProps : {})}>
+				{/* eslint-disable-next-line @next/next/no-img-element */}
+				<img
+					src={imageSrc(url)}
+					alt=""
+					draggable={false}
+					style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 10, background: "#eceef1" }}
+				/>
+				{onRemove && (
+					<ActionIcon
+						size="sm"
+						radius="xl"
+						color="dark"
+						variant="filled"
+						pos="absolute"
+						top={6}
+						right={6}
+						onClick={onRemove}
+						onKeyDown={(e) => e.stopPropagation()}
+						aria-label="Remove image"
+					>
+						<IconX size={12} />
+					</ActionIcon>
+				)}
+			</Box>
+		</Box>
+	);
+}
+
+/** Thumbnails, dragged to reorder, with remove buttons, plus a tile that uploads another. */
 function ImagesField({
 	label,
 	images,
@@ -175,6 +214,8 @@ function ImagesField({
 }) {
 	const [uploading, setUploading] = useState(false);
 	const size = single ? { w: 160, h: 200 } : { w: 132, h: 96 };
+	// Drag ids: the URL, numbered when the same image is used twice
+	const ids = images.map((url, i) => `${url}#${images.slice(0, i).filter((u) => u === url).length}`);
 
 	const upload = async (file: File | null) => {
 		if (!file) return;
@@ -194,31 +235,18 @@ function ImagesField({
 				{label}
 			</Text>
 			<Group gap="sm" align="flex-start">
-				{images.map((url, i) => (
-					<Box key={`${url}-${i}`} pos="relative" {...size}>
-						{/* eslint-disable-next-line @next/next/no-img-element */}
-						<img
-							src={imageSrc(url)}
-							alt=""
-							style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 10, background: "#eceef1" }}
+				<SortableList ids={ids} layout="grid" onMove={(from, to) => onChange(arrayMove(images, from, to))}>
+					{images.map((url, i) => (
+						<SortableThumb
+							key={ids[i]}
+							id={ids[i]}
+							url={url}
+							size={size}
+							sortable={!single}
+							onRemove={single ? undefined : () => onChange(images.filter((_, j) => j !== i))}
 						/>
-						{!single && (
-							<ActionIcon
-								size="sm"
-								radius="xl"
-								color="dark"
-								variant="filled"
-								pos="absolute"
-								top={6}
-								right={6}
-								onClick={() => onChange(images.filter((_, j) => j !== i))}
-								aria-label="Remove image"
-							>
-								<IconX size={12} />
-							</ActionIcon>
-						)}
-					</Box>
-				))}
+					))}
+				</SortableList>
 				<FileButton onChange={upload} accept="image/png,image/jpeg,image/webp,image/gif">
 					{(props) => (
 						<Button
@@ -241,6 +269,58 @@ function ImagesField({
 }
 
 /* ---------- repeatable lists ---------- */
+
+/** One collapsible row, dragged by its grip to reorder. */
+function SortableAccordionItem({
+	id,
+	index,
+	title,
+	itemLabel,
+	canRemove,
+	onRemove,
+	children,
+}: {
+	id: number;
+	index: number;
+	title: string;
+	itemLabel: string;
+	canRemove: boolean;
+	onRemove: () => void;
+	children: ReactNode;
+}) {
+	const { itemProps, handle } = useSortableItem(id);
+	return (
+		<Accordion.Item value={String(id)} {...itemProps}>
+			<Group gap={4} wrap="nowrap" pl={6} pr="xs">
+				<DragHandle handle={handle} label={`Drag to reorder ${itemLabel.toLowerCase()} ${index + 1}`} />
+				<Accordion.Control>
+					<Group gap="sm" wrap="nowrap">
+						<Text size="xs" c="dimmed" fw={600} w={22} style={{ flexShrink: 0 }}>
+							{String(index + 1).padStart(2, "0")}
+						</Text>
+						<Text size="sm" fw={500} lineClamp={1}>
+							{title}
+						</Text>
+					</Group>
+				</Accordion.Control>
+				<ActionIcon
+					variant="subtle"
+					color="red"
+					disabled={!canRemove}
+					onClick={onRemove}
+					aria-label={`Remove ${itemLabel.toLowerCase()}`}
+				>
+					<IconTrash size={16} />
+				</ActionIcon>
+			</Group>
+			<Accordion.Panel>
+				<Stack gap="md" pt={4}>
+					{children}
+				</Stack>
+			</Accordion.Panel>
+		</Accordion.Item>
+	);
+}
 
 /** Collapsible rows for slides, lists and services: a summary line, controls, and the fields inside. */
 function ItemList<T extends { _id: number }>({
@@ -266,56 +346,26 @@ function ItemList<T extends { _id: number }>({
 
 	return (
 		<Stack gap="sm">
-			<Accordion value={open} onChange={setOpen} variant="separated" radius="md" chevronPosition="left">
-				{items.map((item, index) => (
-					<Accordion.Item key={item._id} value={String(item._id)}>
-						<Group gap={4} wrap="nowrap" pr="xs">
-							<Accordion.Control>
-								<Group gap="sm" wrap="nowrap">
-									<Text size="xs" c="dimmed" fw={600} w={22} style={{ flexShrink: 0 }}>
-										{String(index + 1).padStart(2, "0")}
-									</Text>
-									<Text size="sm" fw={500} lineClamp={1}>
-										{summary(item) || `Untitled ${itemLabel.toLowerCase()}`}
-									</Text>
-								</Group>
-							</Accordion.Control>
-							<ActionIcon
-								variant="subtle"
-								color="gray"
-								disabled={index === 0}
-								onClick={() => onChange(move(items, index, index - 1))}
-								aria-label={`Move ${itemLabel.toLowerCase()} up`}
-							>
-								<IconArrowUp size={16} />
-							</ActionIcon>
-							<ActionIcon
-								variant="subtle"
-								color="gray"
-								disabled={index === items.length - 1}
-								onClick={() => onChange(move(items, index, index + 1))}
-								aria-label={`Move ${itemLabel.toLowerCase()} down`}
-							>
-								<IconArrowDown size={16} />
-							</ActionIcon>
-							<ActionIcon
-								variant="subtle"
-								color="red"
-								disabled={items.length <= min}
-								onClick={() => onChange(items.filter((x) => x._id !== item._id))}
-								aria-label={`Remove ${itemLabel.toLowerCase()}`}
-							>
-								<IconTrash size={16} />
-							</ActionIcon>
-						</Group>
-						<Accordion.Panel>
-							<Stack gap="md" pt={4}>
-								{children(item)}
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-				))}
-			</Accordion>
+			<SortableList
+				ids={items.map((item) => item._id)}
+				onMove={(from, to) => onChange(arrayMove(items, from, to))}
+			>
+				<Accordion value={open} onChange={setOpen} variant="separated" radius="md" chevronPosition="left">
+					{items.map((item, index) => (
+						<SortableAccordionItem
+							key={item._id}
+							id={item._id}
+							index={index}
+							title={summary(item) || `Untitled ${itemLabel.toLowerCase()}`}
+							itemLabel={itemLabel}
+							canRemove={items.length > min}
+							onRemove={() => onChange(items.filter((x) => x._id !== item._id))}
+						>
+							{children(item)}
+						</SortableAccordionItem>
+					))}
+				</Accordion>
+			</SortableList>
 			<Button
 				variant="default"
 				leftSection={<IconPlus size={16} />}

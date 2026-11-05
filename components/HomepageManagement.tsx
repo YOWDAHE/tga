@@ -28,6 +28,7 @@ import {
 	IconDots,
 	IconEdit,
 	IconExternalLink,
+	IconGripVertical,
 	IconPlus,
 	IconTrash,
 	IconUpload,
@@ -43,6 +44,7 @@ import SubScript from "@tiptap/extension-subscript";
 import {
 	createHomepageItem,
 	deleteHomepageItem,
+	reorderHomepageItems,
 	updateHomepageItem,
 	uploadPartnerImage,
 	type HomepageSection,
@@ -55,6 +57,7 @@ import {
 	type HomeContent,
 } from "@/components/HomeContentEditor";
 import { PageHeader } from "@/components/admin-ui";
+import { SortableList, arrayMove, useSortableItem } from "@/components/Sortable";
 
 interface Stat {
 	id: number;
@@ -172,6 +175,71 @@ function ItemMenu({ onEdit, onDelete, label }: { onEdit: () => void; onDelete: (
 				</Menu.Item>
 			</Menu.Dropdown>
 		</Menu>
+	);
+}
+
+/** A partner's card; dragged anywhere on it to change the order. */
+function PartnerCard({
+	partner,
+	position,
+	onEdit,
+	onDelete,
+}: {
+	partner: Partner;
+	position: number;
+	onEdit: () => void;
+	onDelete: () => void;
+}) {
+	const { itemProps, dragProps } = useSortableItem(partner.id);
+	return (
+		<Paper withBorder p="md" {...itemProps} {...dragProps} style={{ ...itemProps.style, ...dragProps.style }}>
+			<Group justify="space-between" align="flex-start" wrap="nowrap">
+				<Group gap="md" wrap="nowrap" style={{ minWidth: 0 }}>
+					<Box
+						style={{
+							width: 72,
+							height: 72,
+							flexShrink: 0,
+							borderRadius: 14,
+							background: "#f4f5f7",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							overflow: "hidden",
+						}}
+					>
+						{/* eslint-disable-next-line @next/next/no-img-element */}
+						<img
+							src={convertToApiUrl(partner.logo_url)}
+							alt={partner.name}
+							draggable={false}
+							style={{ width: "100%", height: "100%", objectFit: "contain" }}
+						/>
+					</Box>
+					<div style={{ minWidth: 0 }}>
+						<Text size="xs" c="dimmed" fw={600}>
+							{String(position).padStart(2, "0")}
+						</Text>
+						<Text fw={600} truncate>
+							{partner.name}
+						</Text>
+						<Text size="sm" c="dimmed" lineClamp={2}>
+							{partner.description || "No description"}
+						</Text>
+					</div>
+				</Group>
+				{/* Enter and Space on the menu open it rather than picking the card up */}
+				<div onKeyDown={(e) => e.stopPropagation()}>
+					<ItemMenu label={partner.name} onEdit={onEdit} onDelete={onDelete} />
+				</div>
+			</Group>
+			<IconGripVertical
+				size={16}
+				color="var(--mantine-color-gray-5)"
+				aria-hidden
+				style={{ position: "absolute", right: 12, bottom: 12 }}
+			/>
+		</Paper>
 	);
 }
 
@@ -373,6 +441,18 @@ export default function HomepageManagement({
 		(key: string, isDirty: boolean) => setDirty((d) => (d[key] === isDirty ? d : { ...d, [key]: isDirty })),
 		[]
 	);
+	// Reorders at once and saves; puts the old order back if the save fails
+	const movePartner = async (from: number, to: number) => {
+		const previous = partners;
+		const next = arrayMove(partners, from, to);
+		setPartners(next);
+		const result = await reorderHomepageItems<Partner>("partners", next.map((p) => p.id));
+		if (!result.success) {
+			setPartners(previous);
+			notifyError(result.error);
+		} else notifySuccess("Partner order saved");
+	};
+
 	const counts: Record<string, number> = { stats: stats.length, practices: practices.length, partners: partners.length };
 	const tabBadge = (id: string) =>
 		dirty[id] ? (
@@ -510,7 +590,7 @@ export default function HomepageManagement({
 					<SectionCard
 						id="partners"
 						title="Partners"
-						description="Logos shown in the partners carousel."
+						description="Logos shown in the partners section, in this order. Drag a card to move it."
 						count={partners.length}
 						action={
 							<Button leftSection={<IconPlus size={16} />} onClick={() => openPartner(null)}>
@@ -520,49 +600,19 @@ export default function HomepageManagement({
 					>
 						{partners.length === 0 ?
 							<EmptyState label="partners" />
-						:	<SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
-								{partners.map((partner) => (
-									<Paper key={partner.id} withBorder p="md">
-										<Group justify="space-between" align="flex-start" wrap="nowrap">
-											<Group gap="md" wrap="nowrap" style={{ minWidth: 0 }}>
-												<Box
-													style={{
-														width: 72,
-														height: 72,
-														flexShrink: 0,
-														borderRadius: 14,
-														background: "#f4f5f7",
-														display: "flex",
-														alignItems: "center",
-														justifyContent: "center",
-														overflow: "hidden",
-													}}
-												>
-													{/* eslint-disable-next-line @next/next/no-img-element */}
-													<img
-														src={convertToApiUrl(partner.logo_url)}
-														alt={partner.name}
-														style={{ width: "100%", height: "100%", objectFit: "contain" }}
-													/>
-												</Box>
-												<div style={{ minWidth: 0 }}>
-													<Text fw={600} truncate>
-														{partner.name}
-													</Text>
-													<Text size="sm" c="dimmed" lineClamp={2}>
-														{partner.description || "No description"}
-													</Text>
-												</div>
-											</Group>
-											<ItemMenu
-												label={partner.name}
-												onEdit={() => openPartner(partner)}
-												onDelete={() => setPendingDelete({ section: "partners", id: partner.id, label: partner.name })}
-											/>
-										</Group>
-									</Paper>
-								))}
-							</SimpleGrid>
+						:	<SortableList ids={partners.map((p) => p.id)} layout="grid" onMove={movePartner}>
+								<SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+									{partners.map((partner, index) => (
+										<PartnerCard
+											key={partner.id}
+											partner={partner}
+											position={index + 1}
+											onEdit={() => openPartner(partner)}
+											onDelete={() => setPendingDelete({ section: "partners", id: partner.id, label: partner.name })}
+										/>
+									))}
+								</SimpleGrid>
+							</SortableList>
 						}
 					</SectionCard>
 				</Tabs.Panel>
