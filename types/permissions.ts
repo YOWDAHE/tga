@@ -7,6 +7,7 @@ export const USER_PERMISSIONS = [
   'USER_CRUD',
   'REMARKS_CRUD',
   'LEGAL_UPDATES_CRUD',
+  'JOBS_CRUD',
 ] as const;
 
 export type UserPermission = typeof USER_PERMISSIONS[number];
@@ -47,6 +48,11 @@ export const PERMISSION_OPTIONS = [
     value: "LEGAL_UPDATES_CRUD" as UserPermission,
     label: "Legal Updates Management",
     description: "Create, publish, and manage legal updates. Manage email subscribers.",
+  },
+  {
+    value: "JOBS_CRUD" as UserPermission,
+    label: "Careers / Jobs",
+    description: "Post and manage job openings on the careers page.",
   },
 ] as const;
 

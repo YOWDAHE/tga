@@ -1,0 +1,206 @@
+/* The module tab row: pill chips like the admin's pill tabs, with a grip and a ⋯ menu inside */
+
+.tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	height: 38px;
+	padding: 0 4px 0 2px;
+	border-radius: 999px;
+	background: #ffffff;
+	box-shadow: 0 1px 2px rgba(17, 17, 19, 0.06);
+	color: #55555c;
+	font-size: 14px;
+	font-weight: 500;
+	transition: background 120ms ease, color 120ms ease, opacity 120ms ease;
+	touch-action: none;
+}
+
+.pill:hover:not([data-active]) {
+	background: #f4f5f7;
+}
+
+.pill[data-active] {
+	background: #111113;
+	color: #ffffff;
+}
+
+.pill[data-dimmed] {
+	opacity: 0.55;
+}
+
+.pill[data-dimmed][data-active] {
+	opacity: 0.8;
+}
+
+.pillLabel {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 100%;
+	padding: 0 6px;
+	color: inherit;
+	font: inherit;
+	border-radius: 999px;
+	white-space: nowrap;
+}
+
+.pillLabel:focus-visible,
+.pillGrip:focus-visible,
+.addPill:focus-visible {
+	outline: 2px solid var(--admin-accent);
+	outline-offset: 2px;
+}
+
+.pillText {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	max-width: 220px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.pillGrip {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 26px;
+	border-radius: 999px;
+	color: inherit;
+	opacity: 0.35;
+	cursor: grab;
+}
+
+.pill:hover .pillGrip,
+.pillGrip:focus-visible {
+	opacity: 0.8;
+}
+
+.pillMenu {
+	color: inherit !important;
+	opacity: 0.6;
+}
+
+.pillMenu:hover,
+.pillMenu[data-expanded] {
+	opacity: 1;
+	background: rgba(127, 127, 127, 0.18) !important;
+}
+
+.dot {
+	display: inline-block;
+	width: 7px;
+	height: 7px;
+	border-radius: 99px;
+	background: var(--mantine-color-orange-5);
+	flex-shrink: 0;
+}
+
+.addPill {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 38px;
+	padding: 0 14px;
+	border-radius: 999px;
+	border: 1px dashed #c9ccd2;
+	color: #55555c;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.addPill:hover {
+	background: var(--admin-chip);
+	border-style: solid;
+}
+
+/* The page switcher: big titles, the unselected ones faded */
+
+.pageTitles {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: 36px;
+	row-gap: 8px;
+	margin-bottom: 28px;
+}
+
+.pageTitle {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 8px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: #111113;
+	font-size: clamp(22px, 3vw, 30px);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+	opacity: 0.3;
+	cursor: pointer;
+	transition: opacity 150ms ease;
+}
+
+.pageTitle:hover {
+	opacity: 0.6;
+}
+
+.pageTitle[data-active] {
+	opacity: 1;
+}
+
+.pageTitle:focus-visible {
+	outline: 2px solid var(--admin-accent);
+	outline-offset: 4px;
+	border-radius: 6px;
+}
+
+.pageTitle .dot {
+	align-self: center;
+}
+
+.pageCount {
+	font-size: 14px;
+	font-weight: 500;
+	color: #8a8d94;
+}
+
+/* The dark sticky bar */
+
+.bar {
+	position: sticky;
+	bottom: 16px;
+	z-index: 20;
+}
+
+/* Two columns in the module gallery; one on narrow screens */
+
+.gallery {
+	display: grid;
+	grid-template-columns: minmax(260px, 380px) 1fr;
+	gap: 20px;
+	min-height: 520px;
+}
+
+@media (max-width: 760px) {
+	.gallery {
+		grid-template-columns: 1fr;
+	}
+}
+
+.barIcon:disabled,
+.barIcon[data-disabled] {
+	background: transparent;
+	color: #ffffff;
+	opacity: 0.3;
+}

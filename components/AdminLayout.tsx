@@ -20,6 +20,7 @@ import { useDisclosure } from "@mantine/hooks";
 import {
 	IconNews,
 	IconArchive,
+	IconBriefcase,
 	IconCategory,
 	IconHome,
 	IconLayoutDashboard,
@@ -84,7 +85,7 @@ const navigationSections: NavigationSection[] = [
 		label: "Site and engagement",
 		items: [
 			{
-				label: "Homepage",
+				label: "Website pages",
 				icon: IconHome,
 				href: "/homepage",
 				permission: "HOMEPAGE_CRUD",
@@ -94,6 +95,12 @@ const navigationSections: NavigationSection[] = [
 				icon: IconPhone,
 				href: "/contact",
 				permission: "HOMEPAGE_CRUD",
+			},
+			{
+				label: "Careers",
+				icon: IconBriefcase,
+				href: "/jobs",
+				permission: "JOBS_CRUD",
 			},
 			{
 				label: "Remarks",
